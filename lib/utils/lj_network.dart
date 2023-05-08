@@ -33,10 +33,10 @@ class LJNetwork {
   static String get baseUrl => _baseUrl;
 
   /*headers*/
-  static Map<String, dynamic> headers = {};
+  static Map<String, String> headers = {};
 
   /*value*/
-  static Map<String, String> defaultParams = {};
+  static Map<String, dynamic> defaultParams = {};
 
   /*状态码key*/
   static late String codeKey;

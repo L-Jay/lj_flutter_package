@@ -4,7 +4,7 @@ class LJRadioTitleBar extends StatefulWidget {
   const LJRadioTitleBar({
     Key? key,
     required this.count,
-    this.selectedIndex = 0,
+    this.selectedIndex,
     this.height = 35,
     this.spacing = 10,
     this.padding,
@@ -19,7 +19,7 @@ class LJRadioTitleBar extends StatefulWidget {
   }) : super(key: key);
 
   final int count;
-  final int selectedIndex;
+  final int? selectedIndex;
   final double height;
   final double spacing;
   final EdgeInsets? padding;
@@ -41,9 +41,15 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
 
   @override
   void initState() {
-    _currentSelectedIndex = widget.selectedIndex;
-
     super.initState();
+    _currentSelectedIndex = widget.selectedIndex ?? 0;
+  }
+
+  @override
+  void didUpdateWidget(covariant LJRadioTitleBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedIndex != null)
+      _currentSelectedIndex = widget.selectedIndex!;
   }
 
   @override
