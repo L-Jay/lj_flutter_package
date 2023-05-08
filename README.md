@@ -11,7 +11,7 @@ lj_flutter_package包含网络请求组件(拦截请求、响应、mock)、页�
 ```yaml
 dependencies:
     lj_flutter_package:
-        git: https://github.com/L-Jay/lj_package.git
+        git: https://github.com/L-Jay/lj_flutter_package.git
 ```
 
 ## 网络请求
