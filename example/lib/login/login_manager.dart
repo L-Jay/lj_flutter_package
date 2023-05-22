@@ -30,7 +30,7 @@ class LoginManager {
     ) as bool?;
 
     if (result == true) {
-      LJNetwork.headers.addAll({'Authorization': userInfoResult?.token});
+      LJNetwork.headers.addAll({'Authorization': userInfoResult?.token ?? ""});
       LJEventBus().emit(kLoginEvent);
     }
 

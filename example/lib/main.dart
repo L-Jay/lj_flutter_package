@@ -63,26 +63,26 @@ class MyApp extends StatelessWidget {
     LJNetwork.successCode = 0;
     LJNetwork.messageKey = 'reason';
     LJNetwork.headers.addAll({
-      'Authorization': LoginManager.userInfoResult?.token,
+      'Authorization': LoginManager.userInfoResult?.token ?? "",
       'AppVersion': LJUtil.packageInfo.version,
       'AppBuildVersion': LJUtil.packageInfo.buildNumber,
     });
     if (Platform.isAndroid) {
-      Map<String, dynamic> androidInfo = {
-        'systemVersion': LJUtil.androidDeviceInfo.version, // 系统版本
-        'systemName': LJUtil.androidDeviceInfo.brand,
-        'deviceId': LJUtil.androidDeviceInfo.id,
-        'device': LJUtil.androidDeviceInfo.model,
+      Map<String, String> androidInfo = {
+        'systemVersion': LJUtil.androidDeviceInfo.version.baseOS ?? "", // 系统版本
+        'systemName': LJUtil.androidDeviceInfo.brand ?? "",
+        'deviceId': LJUtil.androidDeviceInfo.id ?? "",
+        'device': LJUtil.androidDeviceInfo.model ?? "",
       };
       LJNetwork.headers.addAll(androidInfo);
     }
 
     if (Platform.isIOS) {
-      Map<String, dynamic> iosInfo = {
-        'systemVersion': LJUtil.iosDeviceInfo.systemVersion, // 系统版本
+      Map<String, String> iosInfo = {
+        'systemVersion': LJUtil.iosDeviceInfo.systemVersion ?? "", // 系统版本
         'systemName': 'iOS',
-        'deviceId': LJUtil.iosDeviceInfo.identifierForVendor, // iOS广告标识符
-        'device': LJUtil.iosDeviceInfo.utsname.machine,
+        'deviceId': LJUtil.iosDeviceInfo.identifierForVendor ?? "", // iOS广告标识符
+        'device': LJUtil.iosDeviceInfo.utsname.machine ?? "",
       };
       LJNetwork.headers.addAll(iosInfo);
     }
