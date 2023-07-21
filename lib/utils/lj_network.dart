@@ -53,7 +53,7 @@ class LJNetwork {
   static LJNetworkJsonParse? jsonParse;
 
   /*请求CancelToken Map*/
-  static Map<String, CancelToken> _cancelTokens = Map();
+  static final Map<String, CancelToken> _cancelTokens = {};
 
   /*
   拦截请求参数，可对参数进行处理并返回给原位置
@@ -80,7 +80,7 @@ class LJNetwork {
       String path, Map<String, dynamic>? requestParams)? mockResponse;
 
   /*需要mock的请求路径数组*/
-  static Set<String> mockPathSet = Set<String>();
+  static Set<String> mockPathSet = <String>{};
 
   static Dio _createDio() {
     Dio dio = Dio(BaseOptions(
@@ -100,7 +100,8 @@ class LJNetwork {
   /*当前网络是否可用*/
   static bool? networkActive;
 
-  static Map<dynamic, StreamSubscription> _networkStatusSubscriptionMap = Map();
+  static final Map<dynamic, StreamSubscription> _networkStatusSubscriptionMap =
+      {};
 
   /*
   监控网络状态
@@ -109,7 +110,7 @@ class LJNetwork {
   static handleNetworkStatus(
       dynamic context, LJNetworkStatusCallback callback) {
     // ignore: cancel_subscriptions
-    StreamSubscription<ConnectivityResult> _connectivitySubscription =
+    StreamSubscription<ConnectivityResult> connectivitySubscription =
         Connectivity()
             .onConnectivityChanged
             .listen((ConnectivityResult result) {
@@ -130,7 +131,7 @@ class LJNetwork {
       }
     });
 
-    _networkStatusSubscriptionMap[context] = _connectivitySubscription;
+    _networkStatusSubscriptionMap[context] = connectivitySubscription;
   }
 
   /*取消监控网络状态*/
@@ -242,10 +243,10 @@ class LJNetwork {
 
     try {
       /*header*/
-      Map<String, dynamic> _headers = {};
-      _headers.addAll(headers);
-      if (addHeaders != null) _headers.addAll(addHeaders);
-      dio.options.headers = _headers;
+      Map<String, dynamic> headers = {};
+      headers.addAll(headers);
+      if (addHeaders != null) headers.addAll(addHeaders);
+      dio.options.headers = headers;
 
       /*添加默认请求参数*/
       if (isGet || isDelete) {
@@ -318,7 +319,7 @@ class LJNetwork {
       if (kDebugMode) {
         historyModel.title = path;
         historyModel.url = response.realUri.toString();
-        historyModel.headers = _headers;
+        historyModel.headers = headers;
         historyModel.params = params ?? (data is Map ? data : null);
         historyModel.responseHeaders = response.headers.map;
         historyModel.jsonResult = jsonEncode(response.data);
@@ -333,8 +334,9 @@ class LJNetwork {
         response.data = handleResponseData!(path, response.data);
       }
 
-      if (response.data is String)
+      if (response.data is String) {
         response.data = jsonDecode(response.data);
+      }
 
       int? code = response.data[codeKey];
 
@@ -461,7 +463,9 @@ class LJNetwork {
         }
       });
 
-      print('========取消了所有请求========');
+      if (kDebugMode) {
+        print('========取消了所有请求========');
+      }
       _cancelTokens.clear();
     }
   }
@@ -490,26 +494,6 @@ class NetworkHistoryModel {
 
   @override
   String toString() {
-    return '{' +
-        '"title":"' +
-        (title ?? '') +
-        '","url":"' +
-        (url ?? '') +
-        '","method":"' +
-        (method ?? '') +
-        '","headers":"' +
-        (headers?.toString() ?? '') +
-        '","params":"' +
-        (params?.toString() ?? '') +
-        '","responseHeaders":"' +
-        (responseHeaders?.toString() ?? '') +
-        '","jsonResult":' +
-        (jsonResult ?? '') +
-        ',"errorCode":"' +
-        (errorCode ?? '') +
-        '","errorMsg":"' +
-        (errorMsg ?? '') +
-        '"' +
-        '}';
+    return '{"title":"${title ?? ''}","url":"${url ?? ''}","method":"${method ?? ''}","headers":"${headers?.toString() ?? ''}","params":"${params?.toString() ?? ''}","responseHeaders":"${responseHeaders?.toString() ?? ''}","jsonResult":${jsonResult ?? ''},"errorCode":"${errorCode ?? ''}","errorMsg":"${errorMsg ?? ''}"}';
   }
 }
