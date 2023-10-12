@@ -44,12 +44,13 @@ class RouterManager {
         loginResult = await Navigator.pushNamed(context, loginPageName!) as bool?;
       }
 
-      if (loginResult == true)
+      if (loginResult == true) {
         Navigator.pushNamed(context, routeName, arguments: arguments)
             .then((value) {
           popCallback?.call(value as T);
           globalPopCallback?.call();
         });
+      }
     } else {
       Navigator.pushNamed(context, routeName, arguments: arguments)
           .then((value) {
@@ -70,11 +71,11 @@ class RouterManager {
 
 extension StateArguments on State {
   Object? get argument {
-    return ModalRoute.of(this.context)?.settings.arguments;
+    return ModalRoute.of(context)?.settings.arguments;
   }
 
   Map? get argumentMap {
-    return ModalRoute.of(this.context)?.settings.arguments as Map;
+    return ModalRoute.of(context)?.settings.arguments as Map;
   }
 }
 

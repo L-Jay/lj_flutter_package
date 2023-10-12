@@ -11,27 +11,32 @@ class FoldListPage extends StatefulWidget {
 class _FoldListPageState extends State<FoldListPage> {
   @override
   Widget build(BuildContext context) {
-
     List<Widget> children = [];
     for (int i = 0; i < 10; i++) {
       children.add(LJExpansionWidget(
         stickyHeader: true,
-        headerBuilder: (context, isExpand) {
+        headerBuilder: (context, isExpand, expandTap) {
           return FoldListHeaderView(
-            isExpand: isExpand,
+            isExpand: isExpand.value,
             title: i.toString(),
           );
         },
-        children: List.generate(
-          10,
-              (index) => Container(
-            height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            color: Colors.orange,
-            alignment: Alignment.centerLeft,
-            child: Text('Row——$index'),
-          ),
-        ),
+        childBuilder: (BuildContext context, ValueNotifier<bool> expandNotifier,
+            void Function() toggleExpand) {
+          return Column(
+            children: List.generate(
+              10,
+                  (index) =>
+                  Container(
+                    height: 44,
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    color: Colors.orange,
+                    alignment: Alignment.centerLeft,
+                    child: Text('Row——$index'),
+                  ),
+            ),
+          );
+        },
       ));
       children.add(const SizedBox(height: 15));
     }
@@ -98,8 +103,8 @@ class _FoldListHeaderViewState extends State<FoldListHeaderView>
 
   @override
   void initState() {
-    _animationController =
-        AnimationController(duration: const Duration(milliseconds: 250), vsync: this);
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 250), vsync: this);
     _animation = Tween(begin: .0, end: 0.5).animate(_animationController);
 
     super.initState();

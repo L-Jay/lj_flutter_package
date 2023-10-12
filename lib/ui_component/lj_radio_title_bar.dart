@@ -5,6 +5,7 @@ class LJRadioTitleBar extends StatefulWidget {
     Key? key,
     required this.count,
     this.selectedIndex,
+    this.itemWidth,
     this.height = 35,
     this.spacing = 10,
     this.padding,
@@ -14,12 +15,14 @@ class LJRadioTitleBar extends StatefulWidget {
     required this.selectedFontColor,
     this.fontSize = 16,
     this.radius = 4,
+    this.shrinkWrap = false,
     required this.getTitle,
     required this.selectedTap,
   }) : super(key: key);
 
   final int count;
   final int? selectedIndex;
+  final double? itemWidth;
   final double height;
   final double spacing;
   final EdgeInsets? padding;
@@ -29,6 +32,7 @@ class LJRadioTitleBar extends StatefulWidget {
   final Color selectedFontColor;
   final double fontSize;
   final double radius;
+  final bool shrinkWrap;
   final String Function(int index) getTitle;
   final Function(int index) selectedTap;
 
@@ -48,8 +52,9 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
   @override
   void didUpdateWidget(covariant LJRadioTitleBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedIndex != null)
+    if (widget.selectedIndex != null) {
       _currentSelectedIndex = widget.selectedIndex!;
+    }
   }
 
   @override
@@ -60,6 +65,7 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
         itemCount: widget.count,
         scrollDirection: Axis.horizontal,
         padding: widget.padding,
+        shrinkWrap: widget.shrinkWrap,
         itemBuilder: (context, index) {
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
@@ -70,6 +76,7 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
               widget.selectedTap(index);
             },
             child: Container(
+              width: widget.itemWidth,
               decoration: BoxDecoration(
                 color: index == _currentSelectedIndex
                     ? widget.selectedColor
@@ -77,7 +84,9 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
                 borderRadius: BorderRadius.circular(widget.radius),
               ),
               alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 17),
+              padding: widget.itemWidth == null
+                  ? const EdgeInsets.symmetric(horizontal: 17)
+                  : null,
               child: Text(
                 widget.getTitle(index),
                 style: TextStyle(
