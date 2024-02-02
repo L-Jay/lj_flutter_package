@@ -128,6 +128,8 @@ class LJNetwork {
         case ConnectivityResult.ethernet:
           callback(LJNetworkStatus.none);
           break;
+        case ConnectivityResult.vpn:
+          break;
       }
     });
 

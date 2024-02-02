@@ -119,6 +119,7 @@ class _TabLabelBarRenderer extends RenderFlex {
     assert(textDirection != null);
     switch (textDirection) {
       case TextDirection.rtl:
+      case null:
         xOffsets.insert(0, size.width);
         break;
       case TextDirection.ltr:
@@ -240,6 +241,7 @@ class _IndicatorPainter extends CustomPainter {
     double? tabLeft, tabRight;
     switch (_currentTextDirection) {
       case TextDirection.rtl:
+      case null:
         tabLeft = _currentTabOffsets![tabIndex + 1];
         tabRight = _currentTabOffsets![tabIndex];
         break;

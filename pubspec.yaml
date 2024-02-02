@@ -4,19 +4,19 @@ version: 0.1.0
 homepage: https://github.com/L-Jay/lj_flutter_package
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: '>=3.0.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  cached_network_image: ^3.2.1
+  cached_network_image: ^3.3.0
   flutter_swiper_null_safety_flutter3: ^2.0.0
   image_picker: ^0.8.5+3
   image_cropper: ^2.0.3
-  package_info_plus: 4.0.1
-  device_info_plus: 9.0.1
+  package_info_plus: ^4.0.0
+  device_info_plus: ^9.0.0
   shared_preferences: ^2.0.15
   permission_handler: ^10.0.0
   dio: ^4.0.6
