@@ -16,6 +16,7 @@ class LJRadioTitleBar extends StatefulWidget {
     this.fontSize = 16,
     this.radius = 4,
     this.shrinkWrap = false,
+    this.canTap = true,
     required this.getTitle,
     required this.selectedTap,
   }) : super(key: key);
@@ -33,6 +34,7 @@ class LJRadioTitleBar extends StatefulWidget {
   final double fontSize;
   final double radius;
   final bool shrinkWrap;
+  final bool canTap;
   final String Function(int index) getTitle;
   final Function(int index) selectedTap;
 
@@ -70,6 +72,8 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
+              if (!widget.canTap) return;
+
               setState(() {
                 _currentSelectedIndex = index;
               });
