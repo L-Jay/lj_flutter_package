@@ -130,6 +130,8 @@ class LJNetwork {
           break;
         case ConnectivityResult.vpn:
           break;
+        case ConnectivityResult.other:
+          break;
       }
     });
 

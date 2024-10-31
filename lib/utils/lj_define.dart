@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 const FontWeight ultralight = FontWeight.w100;
 const FontWeight thin = FontWeight.w200;
@@ -331,4 +332,14 @@ String countDownTime(nowTime, endTime) {
   str = '$str$second分钟';
 
   return str;
+}
+
+class NoChineseFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (RegExp(r'[\u4e00-\u9fa5]').hasMatch(newValue.text)) {
+      return oldValue;
+    }
+    return newValue;
+  }
 }
