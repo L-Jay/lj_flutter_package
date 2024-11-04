@@ -9,10 +9,10 @@ class RouterManager {
   static Map routes = <String, WidgetBuilder>{};
 
   /*需要验证登录态的路由*/
-  static List verifyLoginPageList = [];
+  static List<String> verifyLoginPageList = [];
 
   /*需要model形态的路由*/
-  static List fullscreenPageList = [];
+  static List<String> fullscreenPageList = [];
 
   /*全局pop callback，返回都会调用*/
   static VoidCallback? globalPopCallback;

@@ -29,7 +29,7 @@ class LJUtil {
     return true;
   }
 
-  static ImagePicker _picker = ImagePicker();
+  static final ImagePicker _picker = ImagePicker();
 
   static Future<String?> pickerImage({
     bool useCamera = true,
@@ -39,10 +39,11 @@ class LJUtil {
     bool permission = await LJPermissionUtils.checkStorage();
     if (!permission) return null;
 
-    if (useCamera)
+    if (useCamera) {
       permission = await LJPermissionUtils.checkCamera();
-    else
+    } else {
       permission = await LJPermissionUtils.checkPhotos();
+    }
 
     if (!permission) return null;
 
@@ -57,10 +58,11 @@ class LJUtil {
 
     if (file == null) return null;
 
-    if (crop == null || !crop)
+    if (crop == null || !crop) {
       return file.path;
-    else
+    } else {
       return await cropImage(file.path);
+    }
   }
 
   static Future<String?> cropImage(

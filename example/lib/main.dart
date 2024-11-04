@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/debug/lj_debug_config.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
+import 'package:lj_flutter_package/utils/lj_router_manager_get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'common/router.dart';
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
   MyApp({super.key}) {
     _configDebug();
     _configNetwork();
-    _configRouter();
+    // _configRouter();
+    _configGetRouter();
   }
 
   _configDebug() {
@@ -149,9 +151,9 @@ class MyApp extends StatelessWidget {
   }
 
   _configRouter() {
-    RouterManager.routes.addAll(LJRouter.routes);
-    RouterManager.verifyLoginPageList.addAll(LJRouter.verifyLoginPageList);
-    RouterManager.fullscreenPageList.addAll(LJRouter.fullscreenPageList);
+    RouterManager.routes = LJRouter.routes;
+    RouterManager.verifyLoginPageList = LJRouter.verifyLoginPageList;
+    RouterManager.fullscreenPageList = LJRouter.fullscreenPageList;
     RouterManager.doLogin = (BuildContext context) {
       return LoginManager.showLogin(context);
     };
@@ -161,6 +163,17 @@ class MyApp extends StatelessWidget {
     };
     RouterManager.globalPopCallback = () {
       EasyLoading.dismiss();
+    };
+  }
+
+  _configGetRouter() {
+    RouterManagerGet.verifyLoginPageList = LJRouter.verifyLoginPageList;
+    // RouterManagerGet.doLogin = () {
+    //   return LoginManager.showLogin();
+    // };
+    RouterManagerGet.loginPageName = LJRouter.loginPage;
+    RouterManagerGet.getLoginStatus = () {
+      return LoginManager.isLogin;
     };
   }
 
@@ -185,7 +198,8 @@ class MyApp extends StatelessWidget {
       enableLoadingWhenFailed: true,
       hideFooterWhenNotFull: true,
       enableBallisticLoad: true,
-      child: _buildMaterialApp(),
+      // child: _buildMaterialApp(),
+      child: _buildGetMaterialApp(),
     );
   }
 
@@ -217,7 +231,15 @@ class MyApp extends StatelessWidget {
       ),
       home: const BottomTabbar(),
       builder: EasyLoading.init(),
-      onGenerateRoute: RouterManager.onGenerateRoute,
+    );
+  }
+
+  GetMaterialApp _buildGetMaterialApp() {
+    return GetMaterialApp(
+      title: 'lj_package demo',
+      builder: EasyLoading.init(),
+      // initialRoute: '/',
+      getPages: LJRouter.pages,
     );
   }
 }
