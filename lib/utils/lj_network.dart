@@ -85,8 +85,8 @@ class LJNetwork {
   static Dio _createDio() {
     Dio dio = Dio(BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: 15 * 1000,
-      receiveTimeout: 15 * 1000,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
     ));
 
     if (kDebugMode) {
@@ -100,8 +100,10 @@ class LJNetwork {
   /*当前网络是否可用*/
   static bool? networkActive;
 
-  static final Map<dynamic, StreamSubscription> _networkStatusSubscriptionMap =
-      {};
+  static final List<LJNetworkStatusCallback> _networkStatusSubscriptionList =
+      [];
+  static StreamSubscription<List<ConnectivityResult>>?
+      _connectivitySubscription;
 
   /*
   监控网络状态
@@ -109,39 +111,29 @@ class LJNetwork {
   */
   static handleNetworkStatus(
       dynamic context, LJNetworkStatusCallback callback) {
-    // ignore: cancel_subscriptions
-    StreamSubscription<ConnectivityResult> connectivitySubscription =
-        Connectivity()
-            .onConnectivityChanged
-            .listen((ConnectivityResult result) {
-      networkActive = result != ConnectivityResult.none;
-
-      switch (result) {
-        case ConnectivityResult.wifi:
+    _connectivitySubscription ??=
+        Connectivity().onConnectivityChanged.listen((result) {
+      if (result.contains(ConnectivityResult.wifi)) {
+        for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.wifi);
-          break;
-        case ConnectivityResult.mobile:
+        }
+      } else if (result.contains(ConnectivityResult.mobile)) {
+        for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.mobile);
-          break;
-        case ConnectivityResult.none:
-        case ConnectivityResult.bluetooth:
-        case ConnectivityResult.ethernet:
+        }
+      } else {
+        for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.none);
-          break;
-        case ConnectivityResult.vpn:
-          break;
-        case ConnectivityResult.other:
-          break;
+        }
       }
     });
 
-    _networkStatusSubscriptionMap[context] = connectivitySubscription;
+    _networkStatusSubscriptionList.add(callback);
   }
 
   /*取消监控网络状态*/
-  static cancelHandleNetworkStatus(dynamic context) {
-    _networkStatusSubscriptionMap[context]?.cancel();
-    _networkStatusSubscriptionMap.remove(context);
+  static cancelHandleNetworkStatus(LJNetworkStatusCallback callback) {
+    _networkStatusSubscriptionList.remove(callback);
   }
 
   /*
@@ -374,7 +366,7 @@ class LJNetwork {
 
         completer.complete(error);
       }
-    } on DioError catch (error) {
+    } on DioException catch (error) {
       LJNetworkError finalError;
       int? errorCode =
           error.response?.data is Map ? error.response?.data[codeKey] : null;
@@ -392,27 +384,27 @@ class LJNetwork {
         handleAllFailureCallBack?.call(finalError);
       } else {
         switch (error.type) {
-          case DioErrorType.connectTimeout:
-          case DioErrorType.receiveTimeout:
-          case DioErrorType.sendTimeout:
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.receiveTimeout:
+          case DioExceptionType.sendTimeout:
             errorCode = 504;
             message = LJUtil.isEnglish ? 'Network exception' : '网络连接超时，请检查网络设置';
             break;
-          case DioErrorType.response:
+          case DioExceptionType.badResponse:
+          case DioExceptionType.badCertificate:
+          case DioExceptionType.connectionError:
             errorCode = 404;
             message = LJUtil.isEnglish ? 'Network exception' : '服务器异常，请稍后重试！';
             break;
-          case DioErrorType.other:
+          case DioExceptionType.unknown:
             errorCode = 500;
             message = LJUtil.isEnglish ? 'Network exception' : '网络异常，请稍后重试！';
             break;
-
-          case DioErrorType.cancel:
-            // TODO: Handle this case.
-            break;
+          case DioExceptionType.cancel:
+            return;
         }
         /*请求数据发生错误*/
-        finalError = LJNetworkError(errorCode!, message!);
+        finalError = LJNetworkError(errorCode, message);
 
         failureCallback?.call(finalError);
 
@@ -442,7 +434,7 @@ class LJNetwork {
           url,
           savePath,
           onReceiveProgress: onReceiveProgress,
-          options: Options(receiveTimeout: 5 * 60 * 1000),
+          options: Options(receiveTimeout: const Duration(minutes: 1)),
         )
         .catchError(error as Function);
   }
