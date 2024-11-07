@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:example/bottom_tabbar.dart';
+import 'package:example/common/api_url.dart';
 import 'package:example/common/lj_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -36,13 +35,13 @@ class MyApp extends StatelessWidget {
     LJDebugConfig.configList = [
       {
         'title': '正式',
-        'baseUrl': 'http://apis.juhe.cn',
+        'baseUrl': ApiUrl.productUrl,
         'pushKey': 'product_xxxxx',
         'wechat': 'product_xxxxx',
       },
       {
         'title': '测试',
-        'baseUrl': 'https://www.test.com',
+        'baseUrl': ApiUrl.devUrl,
         'pushKey': 'test_xxxxx',
         'wechat': 'product_xxxxx',
       },
@@ -98,55 +97,18 @@ class MyApp extends StatelessWidget {
       return JsonConvert.fromJsonAsT<T>(data) as T;
     };
 
-    // LJNetwork.handleResponseData = (String path, Map<String, dynamic> responseData) {
-    //
-    // };
+    // 拦截请求参数
+    LJNetwork.handleRequestParams =
+        (String path, Map<String, dynamic>? requestParams) {
+      EasyLoading.show();
+      return requestParams ?? {};
+    };
 
-    LJNetwork.mockResponse =
-        (String path, Map<String, dynamic>? requestParams) async {
-      await Future.delayed(const Duration(seconds: 1));
-
-      String jsonStr = '';
-      if (path == '/login/fetchCode') {
-        int randomCode = Random().nextInt(999999);
-        String code = randomCode.toString().padLeft(6, '0');
-
-        jsonStr = '''
-        {
-    "reason": "获取验证码成功\\n$code",
-    "error_code": 0,
-    "result": $code
-}
-''';
-      } else if (path == '/login') {
-        String phone = requestParams?['phone'];
-        String code = requestParams?['code'];
-
-        if (phone == LoginManager.loginPhone &&
-            code == LoginManager.loginCode) {
-          jsonStr = '''
-          {
-    "reason": "登录成功",
-    "error_code": 0,
-    "result": {
-        "userId": 5486,
-        "avatarUrl": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F13236652030%2F1000.jpg&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1661264259&t=702c01270384b8313c1b940ffec3946d",
-        "nikeName": "伍六七",
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-    }
-}
-''';
-        } else {
-          jsonStr = '''
-          {
-    "reason": "验证码错误",
-    "error_code": 400
-}
-''';
-        }
-      }
-
-      return json.decode(jsonStr);
+    // 拦截响应体
+    LJNetwork.handleResponseData =
+        (String path, Map<String, dynamic> responseData) {
+      EasyLoading.dismiss();
+      return responseData;
     };
   }
 

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:example/common/api_url.dart';
 import 'package:example/login/model/user_info_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,12 +27,23 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _codeController = TextEditingController();
 
   Future<bool> _fetchCode() async {
-    LJNetwork.mockPathSet.add('/login/fetchCode');
+    LJNetwork.mockMap[ApiUrl.sendCode] = (Map<String, dynamic>? requestParams) {
+      int randomCode = Random().nextInt(999999);
+      String code = randomCode.toString().padLeft(6, '0');
+
+      return '''
+        {
+    "reason": "获取验证码成功\\n$code",
+    "error_code": 0,
+    "result": $code
+}
+''';
+    };
 
     EasyLoading.show();
     Completer<bool> completer = Completer();
     LJNetwork.post(
-      '/login/fetchCode',
+      ApiUrl.sendCode,
       data: {
         'loginMobile': _phoneController.text,
       },
@@ -67,7 +80,34 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    LJNetwork.mockPathSet.add('/login');
+    LJNetwork.mockMap[ApiUrl.mobileLogin] =
+        (Map<String, dynamic>? requestParams) {
+      String phone = requestParams?['phone'];
+      String code = requestParams?['code'];
+
+      if (phone == LoginManager.loginPhone && code == LoginManager.loginCode) {
+        return '''
+          {
+    "reason": "登录成功",
+    "error_code": 0,
+    "result": {
+        "userId": 5486,
+        "avatarUrl": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F13236652030%2F1000.jpg&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1661264259&t=702c01270384b8313c1b940ffec3946d",
+        "nikeName": "伍六七",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+    }
+}
+''';
+      } else {
+        return '''
+          {
+    "reason": "验证码错误",
+    "error_code": 400
+}
+''';
+      }
+    };
+
     EasyLoading.show();
     LJNetwork.post<UserInfoModel>(
       '/login',
@@ -135,9 +175,7 @@ class _LoginPageState extends State<LoginPage> {
             isAgreeCheck
                 ? Icons.check_circle_sharp
                 : Icons.check_circle_outline_sharp,
-            color: isAgreeCheck
-                ? LJColor.mainColor
-                : LJColor.lightGaryColor,
+            color: isAgreeCheck ? LJColor.mainColor : LJColor.lightGaryColor,
             size: 20,
           );
         },

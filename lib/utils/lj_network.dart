@@ -17,6 +17,10 @@ typedef LJNetworkJsonParse<T> = T Function<T>(dynamic data);
 
 typedef LJNetworkStatusCallback = void Function(LJNetworkStatus status);
 
+/*requestParams：请求参数，可以判断请求参数返回对应的响应体*/
+typedef LJNetworkMockCallback = String Function(
+    Map<String, dynamic>? requestParams);
+
 enum LJNetworkStatus { wifi, mobile, none }
 
 class LJNetwork {
@@ -73,14 +77,10 @@ class LJNetwork {
 
   /*
   模拟响应，直接阻断真实网络请求并返回数据
-  path:请求路径
-  requestParams：请求参数，可以判断请求参数返回对应的响应体
+  key: path请求路径
+  value: 响应回调
   */
-  static Future<Map<String, dynamic>> Function(
-      String path, Map<String, dynamic>? requestParams)? mockResponse;
-
-  /*需要mock的请求路径数组*/
-  static Set<String> mockPathSet = <String>{};
+  static final Map<String, LJNetworkMockCallback> mockMap = {};
 
   static Dio _createDio() {
     Dio dio = Dio(BaseOptions(
@@ -267,9 +267,11 @@ class LJNetwork {
 
       // request
       late Response response;
-      if (kDebugMode && mockResponse != null && mockPathSet.contains(path)) {
-        Map<String, dynamic> responseData =
-            await mockResponse!(path, data ?? params);
+      if (kDebugMode && mockMap[path] != null) {
+        await Future.delayed(const Duration(seconds: 1));
+
+        String jsonStr = mockMap[path]!(data ?? params);
+        Map<String, dynamic> responseData = json.decode(jsonStr);
         response = Response(
           requestOptions: RequestOptions(path: path),
           data: responseData,
