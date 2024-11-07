@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lj_flutter_package/lj_flutter_package.dart';
 
 class LJNetworkImage extends StatelessWidget {
   final double? width;
   final double? height;
   final double radius;
+  final double borderWidth;
+  final Color? borderColor;
 
   final String? url;
   final Widget? placeholderWidget;
@@ -16,10 +19,12 @@ class LJNetworkImage extends StatelessWidget {
     Key? key,
     this.width,
     this.height,
+    this.radius = 0,
+    this.borderWidth = 0,
+    this.borderColor,
     required this.url,
     this.placeholderWidget,
     this.errorWidget,
-    this.radius = 0,
     this.fit = BoxFit.cover,
   }) : super(key: key);
 
@@ -33,26 +38,39 @@ class LJNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    Widget widget = ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: url?.isNotEmpty == true
           ? CachedNetworkImage(
-              imageUrl: url!,
-              fit: fit,
-              width: width,
-              height: height,
-              placeholder: (context, url) {
-                return placeholderWidget ?? defaultPlaceholderWidget;
-              },
-              errorWidget: (context, url, dynamic error) {
-                return errorWidget ?? defaultErrorWidget;
-              },
-            )
+        imageUrl: url!,
+        fit: fit,
+        width: borderWidth > 0 ? null : width,
+        height: borderWidth > 0 ? null : height,
+        placeholder: (context, url) {
+          return placeholderWidget ?? defaultPlaceholderWidget;
+        },
+        errorWidget: (context, url, dynamic error) {
+          return errorWidget ?? defaultErrorWidget;
+        },
+      )
           : SizedBox(
-              width: width,
-              height: height,
-              child: placeholderWidget ?? defaultPlaceholderWidget,
-            ),
+        width: width,
+        height: height,
+        child: placeholderWidget ?? defaultPlaceholderWidget,
+      ),
     );
+
+    if (borderWidth > 0) {
+      widget = quickContainer(
+        width: width,
+        height: height,
+        borderWidth: borderWidth,
+        borderColor: borderColor,
+        child: widget,
+        circular: radius,
+      );
+    }
+
+    return widget;
   }
 }
