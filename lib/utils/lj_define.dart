@@ -51,23 +51,23 @@ Container quickContainer({
       image: backgroundImage == null
           ? null
           : DecorationImage(
-        fit: BoxFit.fill,
-        image: AssetImage(
-          backgroundImage,
-        ),
-      ),
+              fit: BoxFit.fill,
+              image: AssetImage(
+                backgroundImage,
+              ),
+            ),
       borderRadius: circular == null ? null : BorderRadius.circular(circular),
       boxShadow: boxShadow != null
           ? [
-        boxShadow,
-      ]
+              boxShadow,
+            ]
           : null,
       gradient: gradientColors != null
           ? LinearGradient(
-        begin: gradientAlign.first,
-        end: gradientAlign.last,
-        colors: gradientColors,
-      )
+              begin: gradientAlign.first,
+              end: gradientAlign.last,
+              colors: gradientColors,
+            )
           : null,
       border: borderColor != null
           ? Border.all(color: borderColor, width: borderWidth)
@@ -78,13 +78,13 @@ Container quickContainer({
 }
 
 Text quickText(
-    String text,
-    double size,
-    Color color, {
-      FontWeight? fontWeight,
-      TextOverflow? overflow,
-      String? fontFamily,
-    }) {
+  String text,
+  double size,
+  Color color, {
+  FontWeight? fontWeight,
+  TextOverflow? overflow,
+  String? fontFamily,
+}) {
   return Text(
     text,
     overflow: overflow,
@@ -123,6 +123,7 @@ Widget roundButton({
       circular: height == null ? 0 : height * 0.5,
       borderWidth: borderWidth,
       borderColor: borderWidth > 0 ? color : null,
+
       /// 一般有背景颜色都是纯色按钮，文本一般居中显示
       /// 无颜色一般就是文本按钮，显示最小大小
       alignment: color != null ? Alignment.center : null,
@@ -194,34 +195,36 @@ Widget gradientButton({
 
 ButtonStyle buttonStyle(double fontSize, Color textColor,
     {Color? backgroundColor,
-      Color? borderColor,
-      double borderWidth = 0,
-      FontWeight? fontWeight,
-      shape}) {
+    Color? borderColor,
+    double borderWidth = 0,
+    FontWeight? fontWeight,
+    shape}) {
   return ButtonStyle(
-    textStyle: MaterialStateProperty.all(
+    textStyle: WidgetStateProperty.all(
         TextStyle(fontSize: fontSize, fontWeight: fontWeight)),
-    foregroundColor: MaterialStateProperty.all(textColor),
-    backgroundColor: MaterialStateProperty.all(backgroundColor),
+    foregroundColor: WidgetStateProperty.all(textColor),
+    backgroundColor: WidgetStateProperty.all(backgroundColor),
     side: borderColor != null
-        ? MaterialStateProperty.all(
-        BorderSide(color: borderColor, width: borderWidth))
+        ? WidgetStateProperty.all(
+            BorderSide(color: borderColor, width: borderWidth))
         : null,
-    shape: MaterialStateProperty.all(shape ?? const StadiumBorder()),
+    shape: WidgetStateProperty.all(shape ?? const StadiumBorder()),
   );
 }
 
 RichText quickRichText(
-    List<String> strings,
-    List<TextStyle> textStyles,
-    ) {
-  if (strings.length != textStyles.length) return RichText(text: const TextSpan());
+  List<String> strings,
+  List<TextStyle> textStyles,
+) {
+  if (strings.length != textStyles.length) {
+    return RichText(text: const TextSpan());
+  }
 
   return RichText(
     text: TextSpan(
       children: List.generate(
         strings.length,
-            (index) {
+        (index) {
           return TextSpan(
             text: strings[index],
             style: textStyles[index],
@@ -233,25 +236,29 @@ RichText quickRichText(
 }
 
 RichText quickRichTextTap(
-    double fontSize,
-    List<String> strings,
-    List<Color> textColors,
-    List<VoidCallback> tapCallback,
-    ) {
-  if (strings.length != textColors.length) return RichText(text: const TextSpan());
+  double fontSize,
+  List<String> strings,
+  List<Color> textColors,
+  List<VoidCallback?> tapCallback,
+) {
+  if (strings.length != textColors.length) {
+    return RichText(text: const TextSpan());
+  }
 
   return RichText(
     text: TextSpan(
       children: List.generate(
         strings.length,
-            (index) {
+        (index) {
           return TextSpan(
             text: strings[index],
             style: TextStyle(
               fontSize: fontSize,
               color: textColors[index],
             ),
-            recognizer: TapGestureRecognizer()..onTap = tapCallback[index],
+            recognizer: tapCallback[index] != null
+                ? (TapGestureRecognizer()..onTap = tapCallback[index])
+                : null,
           );
         },
       ),
@@ -272,12 +279,12 @@ Color randomColor() {
 }
 
 Future<int?> showActionSheet(
-    BuildContext context,
-    List<String> actionTitles, {
-      String? title,
-      String? message,
-      String cancelTitle = '取消',
-    }) {
+  BuildContext context,
+  List<String> actionTitles, {
+  String? title,
+  String? message,
+  String cancelTitle = '取消',
+}) {
   return showCupertinoModalPopup(
     context: context,
     builder: (context) {
@@ -287,13 +294,13 @@ Future<int?> showActionSheet(
         actions: actionTitles
             .map(
               (e) => CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.pop(context, actionTitles.indexOf(e));
-            },
-            isDefaultAction: true,
-            child: Text(e),
-          ),
-        )
+                onPressed: () {
+                  Navigator.pop(context, actionTitles.indexOf(e));
+                },
+                isDefaultAction: true,
+                child: Text(e),
+              ),
+            )
             .toList(),
         cancelButton: CupertinoActionSheetAction(
           child: Text(cancelTitle),
@@ -336,7 +343,8 @@ String countDownTime(nowTime, endTime) {
 
 class NoChineseFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     if (RegExp(r'[\u4e00-\u9fa5]').hasMatch(newValue.text)) {
       return oldValue;
     }
