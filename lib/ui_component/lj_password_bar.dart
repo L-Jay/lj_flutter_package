@@ -14,10 +14,14 @@ class LJPasswordBar extends StatefulWidget {
     required this.borderColor,
     this.borderWidth = 1,
     this.fillColor,
+    this.circular,
     this.obscureText = true,
     this.obscureTextString = '●',
     this.type = LJPasswordBarType.box,
     this.textStyle,
+    this.keyboardType,
+    this.autoFocus = false,
+    this.autoFinsh = false,
     required this.editComplete,
   }) : super(key: key);
 
@@ -26,10 +30,14 @@ class LJPasswordBar extends StatefulWidget {
   final Color borderColor;
   final double borderWidth;
   final Color? fillColor;
+  final double? circular;
   final bool obscureText;
   final String obscureTextString;
   final TextStyle? textStyle;
   final LJPasswordBarType type;
+  final TextInputType? keyboardType;
+  final bool autoFocus;
+  final bool autoFinsh;
   final void Function(String code) editComplete;
 
   @override
@@ -42,6 +50,8 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
 
   @override
   void initState() {
+    super.initState();
+
     _controllerList =
         List.generate(widget.length, (index) => TextEditingController());
 
@@ -55,7 +65,11 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
       }
     });
 
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.autoFocus) {
+        _focusNode.requestFocus();
+      }
+    });
   }
 
   @override
@@ -84,7 +98,8 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
         focusNode: _focusNode,
         cursorWidth: 0,
         cursorColor: Colors.transparent,
-        keyboardType: const TextInputType.numberWithOptions(signed: true),
+        keyboardType: widget.keyboardType ??
+            const TextInputType.numberWithOptions(signed: true),
         enableInteractiveSelection: false,
         style: const TextStyle(color: Colors.transparent),
         textInputAction: TextInputAction.done,
@@ -105,23 +120,32 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
             }
           }
           setState(() {});
-        },
-        onEditingComplete: () {
-          String code = '';
-          for (var controller in _controllerList) {
-            code += controller.text;
-          }
-          widget.editComplete(code);
 
-          _focusNode.unfocus();
+          if (list.length == widget.length) {
+            _editComplete();
+          }
         },
+        onEditingComplete: _editComplete,
       ),
     );
   }
 
+  _editComplete() {
+    String code = '';
+    for (var controller in _controllerList) {
+      code += controller.text;
+    }
+    widget.editComplete(code);
+
+    _focusNode.unfocus();
+  }
+
   GridView _buildGridView() {
     double surplus =
-        MediaQuery.of(context).size.width - widget.length * widget.width;
+        MediaQuery
+            .of(context)
+            .size
+            .width - widget.length * widget.width;
     double space = surplus > 0 ? surplus * 0.2 : 10;
 
     return GridView.builder(
@@ -140,15 +164,19 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
           height: widget.width,
           padding: const EdgeInsets.only(left: 3, bottom: 3),
           decoration: BoxDecoration(
+            color: widget.fillColor,
+            borderRadius: widget.circular != null
+                ? BorderRadius.circular(widget.circular!)
+                : null,
             border: widget.type == LJPasswordBarType.box
                 ? Border.all(
-                    color: widget.borderColor, width: widget.borderWidth)
+                color: widget.borderColor, width: widget.borderWidth)
                 : Border(
-                    bottom: BorderSide(
-                      width: widget.borderWidth,
-                      color: widget.borderColor,
-                    ),
-                  ),
+              bottom: BorderSide(
+                width: widget.borderWidth,
+                color: widget.borderColor,
+              ),
+            ),
           ),
           child: TextField(
             controller: _controllerList[index],
