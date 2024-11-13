@@ -239,10 +239,10 @@ class LJNetwork {
 
     try {
       /*header*/
-      Map<String, dynamic> headers = {};
-      headers.addAll(headers);
-      if (addHeaders != null) headers.addAll(addHeaders);
-      dio.options.headers = headers;
+      Map<String, dynamic> allHeaders = {};
+      allHeaders.addAll(headers);
+      if (addHeaders != null) allHeaders.addAll(addHeaders);
+      dio.options.headers = allHeaders;
 
       /*添加默认请求参数*/
       if (isGet || isDelete) {
