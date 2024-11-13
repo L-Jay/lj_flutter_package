@@ -21,7 +21,7 @@ class LJPasswordBar extends StatefulWidget {
     this.textStyle,
     this.keyboardType,
     this.autoFocus = false,
-    this.autoFinsh = false,
+    this.autoFinish = false,
     required this.editComplete,
   }) : super(key: key);
 
@@ -37,7 +37,7 @@ class LJPasswordBar extends StatefulWidget {
   final LJPasswordBarType type;
   final TextInputType? keyboardType;
   final bool autoFocus;
-  final bool autoFinsh;
+  final bool autoFinish;
   final void Function(String code) editComplete;
 
   @override

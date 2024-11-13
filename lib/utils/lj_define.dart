@@ -351,3 +351,20 @@ class NoChineseFormatter extends TextInputFormatter {
     return newValue;
   }
 }
+
+int fibonacci(int index) {
+  if (index < 0) {
+    throw ArgumentError('Index must be non-negative');
+  }
+  if (index == 0) return 0;
+  if (index == 1) return 1;
+
+  int a = 0;
+  int b = 1;
+  for (int i = 2; i <= index; i++) {
+    int c = a + b;
+    a = b;
+    b = c;
+  }
+  return b;
+}
