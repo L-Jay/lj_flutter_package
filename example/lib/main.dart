@@ -92,6 +92,8 @@ class MyApp extends StatelessWidget {
       if (error.errorCode == 401) {
         LoginManager.logout();
       }
+
+      EasyLoading.showError(error.errorMessage);
     };
     LJNetwork.jsonParse = <T>(data) {
       return JsonConvert.fromJsonAsT<T>(data) as T;

@@ -366,7 +366,7 @@ class LJNetwork {
 
         handleAllFailureCallBack?.call(error);
 
-        completer.complete(error);
+        // completer.complete(error);
       }
     } on DioException catch (error) {
       LJNetworkError finalError;
@@ -419,7 +419,7 @@ class LJNetwork {
         if (kDebugMode) historyList.insert(0, historyModel);
       }
 
-      completer.complete(finalError);
+      // completer.complete(finalError);
     }
 
     return completer.future;
