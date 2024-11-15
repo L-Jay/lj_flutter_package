@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../ui_component/lj_drag_container.dart';
 import '../utils/lj_define.dart';
 import '../utils/lj_router_manager.dart';
@@ -40,7 +41,7 @@ class LJDebugConfig {
     if (!kDebugMode) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var finalContext = context ?? RouterManager.navigatorKey.currentState?.overlay?.context;
+      var finalContext = context ?? RouterManager.navigatorKey.currentState?.overlay?.context ?? Get.overlayContext;
       if (finalContext != null) _insertOverlay(finalContext, 'LJ');
     });
   }
