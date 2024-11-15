@@ -81,7 +81,7 @@ Text quickText(
   String text,
   double size,
   Color color, {
-  FontWeight? fontWeight,
+  FontWeight? fontWeight = medium, //因为设计安装iOS设计的字重Flutter实现出来会稍微细一点
   TextOverflow? overflow,
   String? fontFamily,
 }) {
