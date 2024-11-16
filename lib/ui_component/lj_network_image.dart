@@ -8,6 +8,7 @@ class LJNetworkImage extends StatelessWidget {
   final double radius;
   final double borderWidth;
   final Color? borderColor;
+  final Color? color;
 
   final String? url;
   final Widget? placeholderWidget;
@@ -22,6 +23,7 @@ class LJNetworkImage extends StatelessWidget {
     this.radius = 0,
     this.borderWidth = 0,
     this.borderColor,
+    this.color,
     required this.url,
     this.placeholderWidget,
     this.errorWidget,
@@ -60,16 +62,16 @@ class LJNetworkImage extends StatelessWidget {
       ),
     );
 
-    if (borderWidth > 0) {
-      widget = quickContainer(
-        width: width,
-        height: height,
-        borderWidth: borderWidth,
-        borderColor: borderColor,
-        child: widget,
-        circular: radius,
-      );
-    }
+    widget = quickContainer(
+      width: width,
+      height: height,
+      borderWidth: borderWidth,
+      borderColor: borderColor,
+      color: color,
+      child: widget,
+      circular: radius,
+    );
+
 
     return widget;
   }
