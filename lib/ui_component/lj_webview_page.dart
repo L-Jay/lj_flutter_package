@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -7,12 +6,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LJWebViewPage extends StatefulWidget {
   final String url;
+  final String? title;
+  final Color progressColor;
   final List<String>? jsMethods;
   final Function(String method, JavaScriptMessage message)? jsCallback;
 
   const LJWebViewPage({
     Key? key,
     required this.url,
+    this.title,
+    this.progressColor = Colors.blue,
     this.jsMethods,
     this.jsCallback,
   }) : super(key: key);
@@ -22,17 +25,27 @@ class LJWebViewPage extends StatefulWidget {
 }
 
 class _LJWebViewPageState extends State<LJWebViewPage> {
-  String? _title;
   bool _canBack = false;
   bool _canForward = false;
 
   late WebViewController _webViewController;
 
+  late ValueNotifier<String> _titleNotifier;
+  final ValueNotifier<double> _progressNotifier = ValueNotifier(0.0);
+
   @override
   void initState() {
     super.initState();
 
+    _titleNotifier = ValueNotifier(widget.title ?? '');
+
     _configWebView();
+
+    if (widget.url.startsWith('http')) {
+      _webViewController.loadRequest(Uri.parse(widget.url));
+    } else {
+      _webViewController.loadHtmlString(widget.url);
+    }
   }
 
   void _configWebView() {
@@ -52,8 +65,12 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
     _webViewController.enableZoom(false);
     _webViewController.setNavigationDelegate(
       NavigationDelegate(
+        onProgress: (int progress) {
+          _progressNotifier.value = progress * 0.01;
+        },
         onPageFinished: (String url) async {
-          _title = await _webViewController.getTitle() ?? _title;
+          _titleNotifier.value =
+              await _webViewController.getTitle() ?? widget.title ?? '';
           _canBack = await _webViewController.canGoBack();
           _canForward = await _webViewController.canGoForward();
 
@@ -77,7 +94,7 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
       (_webViewController.platform as AndroidWebViewController)
           .setTextZoom(100);
     }
-    
+
     widget.jsMethods?.forEach((method) {
       _webViewController.addJavaScriptChannel(
         method,
@@ -91,7 +108,27 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_title ?? '')),
+      appBar: AppBar(
+        title: ValueListenableBuilder(
+            valueListenable: _titleNotifier,
+            builder: (BuildContext context, String title, Widget? child) {
+              return Text(title);
+            }),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3.0), // 设置PreferredSize的高度
+          child: ValueListenableBuilder(
+              valueListenable: _progressNotifier,
+              builder: (BuildContext context, double progress, Widget? child) {
+                if (progress >= 1) return const SizedBox();
+
+                return LinearProgressIndicator(
+                  value: progress,
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(widget.progressColor),
+                );
+              }),
+        ),
+      ),
       body: WebViewWidget(controller: _webViewController),
     );
   }
