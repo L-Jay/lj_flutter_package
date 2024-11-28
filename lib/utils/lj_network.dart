@@ -5,13 +5,14 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import 'lj_error.dart';
 import 'lj_util.dart';
 
 /*请求成功回调*/
 typedef LJNetworkSuccessCallback<T> = void Function(T data);
 
 /*请求失败回调*/
-typedef LJNetworkFailureCallback = void Function(LJNetworkError error);
+typedef LJNetworkFailureCallback = void Function(LJError error);
 
 typedef LJNetworkJsonParse<T> = T Function<T>(dynamic data);
 
@@ -229,7 +230,7 @@ class LJNetwork {
     // }
     //
     // if (!networkActive) {
-    //   failureCallback?.call((LJNetworkError(444, '网络异常，请检查网络设置')));
+    //   failureCallback?.call((LJError(444, '网络异常，请检查网络设置')));
     //   return;
     // }
 
@@ -360,7 +361,7 @@ class LJNetwork {
         }
       } else {
         /*请求数据发生错误*/
-        LJNetworkError error = LJNetworkError(code, response.data[messageKey]);
+        LJError error = LJError(code, response.data[messageKey]);
 
         failureCallback?.call(error);
 
@@ -369,7 +370,7 @@ class LJNetwork {
         // completer.complete(error);
       }
     } on DioException catch (error) {
-      LJNetworkError finalError;
+      LJError finalError;
       int? errorCode =
           error.response?.data is Map ? error.response?.data[codeKey] : null;
       String? message =
@@ -379,7 +380,7 @@ class LJNetwork {
         historyModel.errorCode = errorCode.toString();
         historyModel.errorMsg = message;
 
-        finalError = LJNetworkError(errorCode, message);
+        finalError = LJError(errorCode, message);
 
         failureCallback?.call(finalError);
 
@@ -406,7 +407,7 @@ class LJNetwork {
             return;
         }
         /*请求数据发生错误*/
-        finalError = LJNetworkError(errorCode, message);
+        finalError = LJError(errorCode, message);
 
         failureCallback?.call(finalError);
 
@@ -470,13 +471,6 @@ class LJNetwork {
 
   /*------ Debug -------*/
   static List<NetworkHistoryModel> historyList = [];
-}
-
-class LJNetworkError {
-  LJNetworkError(this.errorCode, this.errorMessage);
-
-  int errorCode;
-  String errorMessage;
 }
 
 class NetworkHistoryModel {
