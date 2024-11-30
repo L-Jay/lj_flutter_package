@@ -38,6 +38,7 @@ Container quickContainer({
   ],
   Color? borderColor,
   double borderWidth = 0,
+  Clip clipBehavior = Clip.hardEdge,
 }) {
   return Container(
     width: width,
@@ -45,7 +46,7 @@ Container quickContainer({
     margin: margin,
     padding: padding,
     alignment: alignment,
-    clipBehavior: Clip.hardEdge,
+    clipBehavior: clipBehavior,
     decoration: BoxDecoration(
       color: color,
       image: backgroundImage == null

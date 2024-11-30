@@ -30,13 +30,9 @@ class LJNetworkImage extends StatelessWidget {
     this.fit = BoxFit.cover,
   }) : super(key: key);
 
-  static Widget defaultPlaceholderWidget = Container(
-    color: const Color(0xFFF5F6F6),
-  );
+  static Widget defaultPlaceholderWidget = const SizedBox();
 
-  static Widget defaultErrorWidget = Container(
-    color: const Color(0xFFF5F6F6),
-  );
+  static Widget defaultErrorWidget = const SizedBox();
 
   @override
   Widget build(BuildContext context) {
