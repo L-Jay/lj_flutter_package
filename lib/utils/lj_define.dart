@@ -52,23 +52,17 @@ Container quickContainer({
       image: backgroundImage == null
           ? null
           : DecorationImage(
-        fit: BoxFit.fill,
-        image: AssetImage(
-          backgroundImage,
-        ),
-      ),
+              fit: BoxFit.fill,
+              image: AssetImage(backgroundImage),
+            ),
       borderRadius: circular == null ? null : BorderRadius.circular(circular),
-      boxShadow: boxShadow != null
-          ? [
-        boxShadow,
-      ]
-          : null,
+      boxShadow: boxShadow != null ? [boxShadow] : null,
       gradient: gradientColors != null
           ? LinearGradient(
-        begin: gradientAlign.first,
-        end: gradientAlign.last,
-        colors: gradientColors,
-      )
+              begin: gradientAlign.first,
+              end: gradientAlign.last,
+              colors: gradientColors,
+            )
           : null,
       border: borderColor != null
           ? Border.all(color: borderColor, width: borderWidth)
@@ -78,13 +72,14 @@ Container quickContainer({
   );
 }
 
-Text quickText(String text,
-    double size,
-    Color color, {
-      FontWeight? fontWeight = medium, //因为设计安装iOS设计的字重Flutter实现出来会稍微细一点
-      TextOverflow? overflow,
-      String? fontFamily,
-    }) {
+Text quickText(
+  String text,
+  double size,
+  Color color, {
+  FontWeight? fontWeight = medium, //因为设计安装iOS设计的字重Flutter实现出来会稍微细一点
+  TextOverflow? overflow,
+  String? fontFamily,
+}) {
   return Text(
     text,
     overflow: overflow,
@@ -195,10 +190,10 @@ Widget gradientButton({
 
 ButtonStyle buttonStyle(double fontSize, Color textColor,
     {Color? backgroundColor,
-      Color? borderColor,
-      double borderWidth = 0,
-      FontWeight? fontWeight,
-      shape}) {
+    Color? borderColor,
+    double borderWidth = 0,
+    FontWeight? fontWeight,
+    shape}) {
   return ButtonStyle(
     textStyle: WidgetStateProperty.all(
         TextStyle(fontSize: fontSize, fontWeight: fontWeight)),
@@ -206,14 +201,16 @@ ButtonStyle buttonStyle(double fontSize, Color textColor,
     backgroundColor: WidgetStateProperty.all(backgroundColor),
     side: borderColor != null
         ? WidgetStateProperty.all(
-        BorderSide(color: borderColor, width: borderWidth))
+            BorderSide(color: borderColor, width: borderWidth))
         : null,
     shape: WidgetStateProperty.all(shape ?? const StadiumBorder()),
   );
 }
 
-RichText quickRichText(List<String> strings,
-    List<TextStyle> textStyles,) {
+RichText quickRichText(
+  List<String> strings,
+  List<TextStyle> textStyles,
+) {
   if (strings.length != textStyles.length) {
     return RichText(text: const TextSpan());
   }
@@ -222,7 +219,7 @@ RichText quickRichText(List<String> strings,
     text: TextSpan(
       children: List.generate(
         strings.length,
-            (index) {
+        (index) {
           return TextSpan(
             text: strings[index],
             style: textStyles[index],
@@ -233,10 +230,12 @@ RichText quickRichText(List<String> strings,
   );
 }
 
-RichText quickRichTextTap(double fontSize,
-    List<String> strings,
-    List<Color> textColors,
-    List<VoidCallback?> tapCallback,) {
+RichText quickRichTextTap(
+  double fontSize,
+  List<String> strings,
+  List<Color> textColors,
+  List<VoidCallback?> tapCallback,
+) {
   if (strings.length != textColors.length) {
     return RichText(text: const TextSpan());
   }
@@ -245,7 +244,7 @@ RichText quickRichTextTap(double fontSize,
     text: TextSpan(
       children: List.generate(
         strings.length,
-            (index) {
+        (index) {
           return TextSpan(
             text: strings[index],
             style: TextStyle(
@@ -253,12 +252,40 @@ RichText quickRichTextTap(double fontSize,
               color: textColors[index],
             ),
             recognizer: tapCallback[index] != null
-                ? (TapGestureRecognizer()
-              ..onTap = tapCallback[index])
+                ? (TapGestureRecognizer()..onTap = tapCallback[index])
                 : null,
           );
         },
       ),
+    ),
+  );
+}
+
+Widget quickGradientText(
+  String text,
+  List<Color> colors,
+  double fontSize, {
+  List<AlignmentGeometry> gradientAlign = const [
+    Alignment.centerLeft,
+    Alignment.centerRight,
+  ],
+  FontWeight fontWeight = medium,
+}) {
+  return ShaderMask(
+    shaderCallback: (Rect bounds) {
+      return LinearGradient(
+        colors: colors,
+        tileMode: TileMode.mirror,
+        begin: gradientAlign.first,
+        end: gradientAlign.last,
+      ).createShader(bounds);
+    },
+    blendMode: BlendMode.srcATop,
+    child: quickText(
+      text,
+      fontSize,
+      Colors.white,
+      fontWeight: fontWeight,
     ),
   );
 }
@@ -275,12 +302,13 @@ Color randomColor() {
       Random().nextInt(256) + 0, Random().nextInt(256) + 0);
 }
 
-Future<int?> showActionSheet(BuildContext context,
-    List<String> actionTitles, {
-      String? title,
-      String? message,
-      String cancelTitle = '取消',
-    }) {
+Future<int?> showActionSheet(
+  BuildContext context,
+  List<String> actionTitles, {
+  String? title,
+  String? message,
+  String cancelTitle = '取消',
+}) {
   return showCupertinoModalPopup(
     context: context,
     builder: (context) {
@@ -289,15 +317,14 @@ Future<int?> showActionSheet(BuildContext context,
         message: message == null ? null : Text(message),
         actions: actionTitles
             .map(
-              (e) =>
-              CupertinoActionSheetAction(
+              (e) => CupertinoActionSheetAction(
                 onPressed: () {
                   Navigator.pop(context, actionTitles.indexOf(e));
                 },
                 isDefaultAction: true,
                 child: Text(e),
               ),
-        )
+            )
             .toList(),
         cancelButton: CupertinoActionSheetAction(
           child: Text(cancelTitle),
@@ -340,8 +367,8 @@ String countDownTime(nowTime, endTime) {
 
 class NoChineseFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue,
-      TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     if (RegExp(r'[\u4e00-\u9fa5]').hasMatch(newValue.text)) {
       return oldValue;
     }
