@@ -65,6 +65,7 @@ class LJNetworkImage extends StatelessWidget {
       borderColor: borderColor,
       color: color,
       child: widget,
+      alignment: null,
       circular: radius,
     );
 

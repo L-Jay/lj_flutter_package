@@ -106,6 +106,7 @@ class _LJTileAreaViewState extends State<LJTileAreaView> {
             height: widget.imageSize,
             color: widget.imageBackgroundColor,
             circular: widget.imageCornerRadius,
+            alignment: null,
             child: imageWidget,
           ),
           SizedBox(height: widget.space),
