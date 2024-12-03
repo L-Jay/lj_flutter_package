@@ -12,7 +12,9 @@ class WeChatUtil {
 
   static Future<bool> get isWeChatInstalled => fluwx.isWeChatInstalled;
 
-  static final Completer<Map<String, dynamic>> _completer = Completer();
+  static Completer _completer = Completer();
+
+  static String _errorMessage = '失败';
 
   static register({
     required String appId,
@@ -30,13 +32,15 @@ class WeChatUtil {
         if (!response.isSuccessful) {
           errorCallback(LJError(
             response.errCode ?? 600,
-            response.errStr?.isNotEmpty == true ? response.errStr! : '失败',
+            response.errStr?.isNotEmpty == true
+                ? response.errStr!
+                : _errorMessage,
           ));
           return;
         }
         if (response is WeChatPaymentResponse) {
           /// 支付
-          _completer.complete({});
+          _completer.complete();
         } else if (response is WeChatAuthResponse) {
           /// 登录
           _completer.complete({
@@ -45,13 +49,18 @@ class WeChatUtil {
           });
         } else if (response is WeChatShareResponse) {
           /// 分享
-          _completer.complete({});
+          _completer.complete();
         }
       });
     }
   }
 
   static Future<Map<String, dynamic>> login() {
+    var completer = Completer<Map<String, dynamic>>();
+    _completer = completer;
+
+    _errorMessage = '登录失败';
+
     var scope = 'snsapi_userinfo';
     var state = LJUtil.packageInfo.appName;
     var authType = Platform.isIOS
@@ -59,10 +68,11 @@ class WeChatUtil {
         : NormalAuth(scope: scope, state: state);
     fluwx.authBy(which: authType);
 
-    return _completer.future;
+    return completer.future;
   }
 
-  static Future<Map<String, dynamic>> pay({
+  ///只有成功才返回
+  static Future pay({
     required String appId,
     required String partnerId,
     required String prepayId,
@@ -71,6 +81,9 @@ class WeChatUtil {
     required int timestamp,
     required String sign,
   }) {
+    _completer = Completer();
+    _errorMessage = '支付失败';
+
     fluwx.pay(
       which: Payment(
         appId: appId,
@@ -87,14 +100,21 @@ class WeChatUtil {
   }
 
   static Future shareText(String text, [bool session = true]) {
+    _completer = Completer();
+    _errorMessage = '分享失败';
+
     fluwx.share(WeChatShareTextModel(
       text,
       scene: session ? WeChatScene.session : WeChatScene.timeline,
     ));
+
     return _completer.future;
   }
 
   static Future shareImage(Uint8List image, [bool session = true]) {
+    _completer = Completer();
+    _errorMessage = '分享失败';
+
     fluwx.share(WeChatShareImageModel(
       WeChatImageToShare(uint8List: image),
       scene: session ? WeChatScene.session : WeChatScene.timeline,
@@ -108,6 +128,9 @@ class WeChatUtil {
     Uint8List? thumbData,
     bool session = true,
   }) {
+    _completer = Completer();
+    _errorMessage = '分享失败';
+
     fluwx.share(WeChatShareWebPageModel(
       url,
       title: title,
@@ -124,6 +147,9 @@ class WeChatUtil {
     Uint8List? thumbData,
     bool isTest = false,
   }) {
+    _completer = Completer();
+    _errorMessage = '分享失败';
+
     fluwx.share(WeChatShareMiniProgramModel(
       webPageUrl: webpageUrl,
       userName: userName,

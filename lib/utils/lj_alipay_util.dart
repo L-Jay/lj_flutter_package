@@ -1,44 +1,34 @@
-import 'package:tobias/tobias.dart';
+import 'dart:async';
+
+import 'package:alipay_kit/alipay_kit.dart';
 
 import 'lj_error.dart';
 
-enum PayEvn { online, sandbox }
-
-typedef AlipayErrorCallback = void Function(LJError error);
 
 class AlipayUtil {
-  static final Tobias tobias = Tobias();
+  static final instance = AlipayKitPlatform.instance;
 
-  static Future<bool> get isAliPayInstalled => tobias.isAliPayInstalled;
-
-  static String? _universalLink;
-  static late AlipayErrorCallback _errorCallback;
-  static late PayEvn _payEvn;
+  static Future<bool> get isAliPayInstalled => instance.isInstalled();
+  static Completer _completer = Completer();
 
   static register({
-    required String universalLink,
-    required AlipayErrorCallback errorCallback,
-    PayEvn payEvn = PayEvn.sandbox,
+    required Function(LJError error) errorCallback,
   }) async {
-    _universalLink = universalLink;
-    _errorCallback = errorCallback;
-    _payEvn = payEvn;
+    instance.payResp().listen((AlipayResp resp) {
+      if (resp.resultStatus == 9000) {
+        _completer.complete();
+      } else {
+        errorCallback(LJError(
+          resp.resultStatus ?? 600,
+          resp.memo?.isNotEmpty == true ? resp.memo! : '支付失败',
+        ));
+      }
+    });
   }
 
-  static Future<bool> pay(String? order) async {
-    if (order?.isNotEmpty != true) {
-      _errorCallback(LJError(
-        600,
-        '失败',
-      ));
-      return false;
-    }
-    var map = await tobias.pay(
-      order!,
-      evn: _payEvn == PayEvn.online ? AliPayEvn.online : AliPayEvn.sandbox,
-      universalLink: _universalLink,
-    );
-    print(map);
-    return true;
+  static Future pay(String order) {
+    _completer = Completer();
+    instance.pay(orderInfo: order);
+    return _completer.future;
   }
 }
