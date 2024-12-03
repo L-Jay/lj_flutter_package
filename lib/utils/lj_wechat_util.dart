@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:fluwx/fluwx.dart';
-import 'package:lj_flutter_package/lj_flutter_package.dart';
+
+import 'lj_error.dart';
+import 'lj_util.dart';
 
 class WeChatUtil {
   static final Fluwx fluwx = Fluwx();
@@ -27,8 +29,8 @@ class WeChatUtil {
       fluwx.addSubscriber((response) {
         if (!response.isSuccessful) {
           errorCallback(LJError(
-            response.errCode ?? 500,
-            response.errStr ?? '操作识别',
+            response.errCode ?? 600,
+            response.errStr?.isNotEmpty == true ? response.errStr! : '失败',
           ));
           return;
         }
