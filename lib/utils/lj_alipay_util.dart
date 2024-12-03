@@ -4,7 +4,8 @@ import 'package:alipay_kit/alipay_kit.dart';
 
 import 'lj_error.dart';
 
-
+///所有方法只有成功才返回
+///所有错误使用register的errorCallback处理
 class AlipayUtil {
   static final instance = AlipayKitPlatform.instance;
 

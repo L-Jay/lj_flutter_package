@@ -7,6 +7,8 @@ import 'package:fluwx/fluwx.dart';
 import 'lj_error.dart';
 import 'lj_util.dart';
 
+///所有方法只有成功才返回
+///所有错误使用register的errorCallback处理
 class WeChatUtil {
   static final Fluwx fluwx = Fluwx();
 
@@ -71,7 +73,6 @@ class WeChatUtil {
     return completer.future;
   }
 
-  ///只有成功才返回
   static Future pay({
     required String appId,
     required String partnerId,
