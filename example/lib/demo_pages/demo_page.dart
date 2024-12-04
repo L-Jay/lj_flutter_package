@@ -1,5 +1,6 @@
 
 import 'package:example/demo_pages/pages/fold_list_page.dart';
+import 'package:example/demo_pages/pages/password_input_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
@@ -25,6 +26,7 @@ class _DemoPageState extends State<DemoPage>
     '自动根据高度切半圆角',
     '全屏拖拽视图',
     '折叠List',
+    '密码/验证码输入框',
   ];
 
   final List<Widget?> _pages = [
@@ -34,6 +36,7 @@ class _DemoPageState extends State<DemoPage>
     const CornerHalfOfHeightPage(),
     const DragDemoPage(),
     const FoldListPage(),
+    const PasswordInputPage(),
   ];
 
   @override

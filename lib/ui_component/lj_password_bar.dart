@@ -21,7 +21,7 @@ class LJPasswordBar extends StatefulWidget {
     this.textStyle,
     this.keyboardType,
     this.autoFocus = false,
-    this.autoFinish = false,
+    this.autoFinish = true,
     required this.editComplete,
   }) : super(key: key);
 
@@ -55,15 +55,11 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
     _controllerList =
         List.generate(widget.length, (index) => TextEditingController());
 
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
-        String code = '';
-        for (var controller in _controllerList) {
-          code += controller.text;
-        }
-        widget.editComplete(code);
-      }
-    });
+    // _focusNode.addListener(() {
+    //   if (!_focusNode.hasFocus) {
+    //     _editComplete();
+    //   }
+    // });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.autoFocus) {
@@ -98,8 +94,8 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
         focusNode: _focusNode,
         cursorWidth: 0,
         cursorColor: Colors.transparent,
-        keyboardType: widget.keyboardType ??
-            const TextInputType.numberWithOptions(signed: true),
+        // keyboardType: widget.keyboardType ??
+        //     const TextInputType.numberWithOptions(signed: true),
         enableInteractiveSelection: false,
         style: const TextStyle(color: Colors.transparent),
         textInputAction: TextInputAction.done,
@@ -121,7 +117,7 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
           }
           setState(() {});
 
-          if (list.length == widget.length) {
+          if (widget.autoFinish && list.length == widget.length) {
             _editComplete();
           }
         },
@@ -162,7 +158,6 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
         return Container(
           width: widget.width,
           height: widget.width,
-          padding: const EdgeInsets.only(left: 3, bottom: 3),
           decoration: BoxDecoration(
             color: widget.fillColor,
             borderRadius: widget.circular != null
@@ -178,6 +173,7 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
               ),
             ),
           ),
+          alignment: Alignment.center,
           child: TextField(
             controller: _controllerList[index],
             cursorColor: Colors.transparent,
@@ -189,8 +185,10 @@ class _LJPasswordBarState extends State<LJPasswordBar> {
                 TextStyle(
                   fontSize: widget.width * 0.5,
                   height: 1,
+                  fontWeight: FontWeight.w500,
                 ),
             decoration: const InputDecoration(
+              isDense: true,
               border: InputBorder.none,
             ),
           ),

@@ -30,9 +30,9 @@ class LJNetworkImage extends StatelessWidget {
     this.fit = BoxFit.cover,
   }) : super(key: key);
 
-  static Widget defaultPlaceholderWidget = const SizedBox();
+  static Widget defaultPlaceholderWidget = Container(color: Colors.grey.shade200);
 
-  static Widget defaultErrorWidget = const SizedBox();
+  static Widget defaultErrorWidget = Container(color: Colors.grey.shade200);
 
   @override
   Widget build(BuildContext context) {
@@ -40,22 +40,22 @@ class LJNetworkImage extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       child: url?.isNotEmpty == true
           ? CachedNetworkImage(
-        imageUrl: url!,
-        fit: fit,
-        width: borderWidth > 0 ? null : width,
-        height: borderWidth > 0 ? null : height,
-        placeholder: (context, url) {
-          return placeholderWidget ?? defaultPlaceholderWidget;
-        },
-        errorWidget: (context, url, dynamic error) {
-          return errorWidget ?? defaultErrorWidget;
-        },
-      )
+              imageUrl: url!,
+              fit: fit,
+              width: borderWidth > 0 ? null : width,
+              height: borderWidth > 0 ? null : height,
+              placeholder: (context, url) {
+                return placeholderWidget ?? defaultPlaceholderWidget;
+              },
+              errorWidget: (context, url, dynamic error) {
+                return errorWidget ?? defaultErrorWidget;
+              },
+            )
           : SizedBox(
-        width: width,
-        height: height,
-        child: placeholderWidget ?? defaultPlaceholderWidget,
-      ),
+              width: width,
+              height: height,
+              child: placeholderWidget ?? defaultPlaceholderWidget,
+            ),
     );
 
     widget = quickContainer(
@@ -68,7 +68,6 @@ class LJNetworkImage extends StatelessWidget {
       alignment: null,
       circular: radius,
     );
-
 
     return widget;
   }
