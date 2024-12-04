@@ -1,6 +1,8 @@
 library lj_flutter_package;
 
 export 'ui_component/lj_network_image.dart';
+export 'ui_component/lj_bottom_container.dart';
+export 'ui_component/lj_close_bar.dart';
 
 export 'utils/lj_define.dart';
 export 'utils/lj_event_bus.dart';

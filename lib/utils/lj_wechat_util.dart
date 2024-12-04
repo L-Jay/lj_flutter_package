@@ -12,7 +12,7 @@ import 'lj_util.dart';
 class WeChatUtil {
   static final Fluwx fluwx = Fluwx();
 
-  static Future<bool> get isWeChatInstalled => fluwx.isWeChatInstalled;
+  static Future<bool> get installed => fluwx.isWeChatInstalled;
 
   static Completer _completer = Completer();
 

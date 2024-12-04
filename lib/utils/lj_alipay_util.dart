@@ -9,7 +9,7 @@ import 'lj_error.dart';
 class AlipayUtil {
   static final instance = AlipayKitPlatform.instance;
 
-  static Future<bool> get isAliPayInstalled => instance.isInstalled();
+  static Future<bool> get installed => instance.isInstalled();
   static Completer _completer = Completer();
 
   static register({
