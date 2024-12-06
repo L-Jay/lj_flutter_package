@@ -10,14 +10,10 @@ class PasswordInputPage extends StatefulWidget {
 }
 
 class _PasswordInputPageState extends State<PasswordInputPage> {
-  LJPasswordBarType _type = LJPasswordBarType.box;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Demo'),
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -26,20 +22,15 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
               width: 50,
               borderColor: Colors.orange,
               editComplete: (String code) {},
-              type: _type,
+              type: LJPasswordBarType.box,
             ),
             const SizedBox(height: 10),
-            quickButton(
-              text: '切换样式',
-              onPressed: () {
-                setState(() {
-                  _type = _type == LJPasswordBarType.line
-                      ? LJPasswordBarType.box
-                      : LJPasswordBarType.line;
-                });
-              },
-              fontColor: Colors.blue,
-              fontSize: 16,
+            LJPasswordBar(
+              width: 50,
+              obscureText: false,
+              borderColor: Colors.orange,
+              editComplete: (String code) {},
+              type: LJPasswordBarType.line,
             ),
           ],
         ),

@@ -65,6 +65,7 @@ class _DropdownPageState extends State<DropdownPage> {
               width: 150,
               height: 44,
               color: Colors.orange,
+              alignment: Alignment.center,
               child: const Text('show'),
             )
           : null,
@@ -72,7 +73,9 @@ class _DropdownPageState extends State<DropdownPage> {
       itemBuilder: (index) {
         return Text(index.toString());
       },
-      onSelected: (int index) {},
+      onSelected: (int index) {
+        print(index);
+      },
     );
   }
 }
