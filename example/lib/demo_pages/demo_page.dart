@@ -1,4 +1,5 @@
 
+import 'package:example/demo_pages/pages/dropdown_page.dart';
 import 'package:example/demo_pages/pages/fold_list_page.dart';
 import 'package:example/demo_pages/pages/password_input_page.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class _DemoPageState extends State<DemoPage>
     '全屏拖拽视图',
     '折叠List',
     '密码/验证码输入框',
+    '下拉菜单',
   ];
 
   final List<Widget?> _pages = [
@@ -37,6 +39,7 @@ class _DemoPageState extends State<DemoPage>
     const DragDemoPage(),
     const FoldListPage(),
     const PasswordInputPage(),
+    const DropdownPage(),
   ];
 
   @override
