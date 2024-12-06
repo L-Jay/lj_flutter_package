@@ -106,14 +106,14 @@ class _LJDropdownListState extends State<LJDropdownList> {
     return PopupMenuButton(
       key: _globalKey,
       color: widget.backgroundColor,
-      offset: _offset,
+      offset: widget.targetWidget == null ? Offset(_offset.dx, -20) : _offset,
       iconColor: widget.dotColor,
       position: PopupMenuPosition.under,
+      padding: EdgeInsets.zero,
       menuPadding: EdgeInsets.zero,
       constraints: _constraints,
       shadowColor: widget.shadowColor,
       elevation: widget.elevation,
-      padding: EdgeInsets.zero,
       onSelected: widget.onSelected,
       shape: showShape
           ? RoundedRectangleBorder(
@@ -130,7 +130,9 @@ class _LJDropdownListState extends State<LJDropdownList> {
       itemBuilder: (BuildContext context) {
         return List.generate(widget.length, (index) {
           return PopupMenuItem(
+            height: 20,
             value: index,
+            padding: EdgeInsets.zero,
             child: widget.itemBuilder(index),
           );
         }).toList();
