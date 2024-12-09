@@ -9,6 +9,7 @@ class LJRadioTitleBar extends StatefulWidget {
     this.height = 35,
     this.spacing = 10,
     this.padding,
+    this.innerPadding,
     required this.color,
     required this.selectedColor,
     required this.fontColor,
@@ -25,8 +26,12 @@ class LJRadioTitleBar extends StatefulWidget {
   final int? selectedIndex;
   final double? itemWidth;
   final double height;
+  /// item之间的间隙
   final double spacing;
+  /// bar padding
   final EdgeInsets? padding;
+  /// item内的文字padding,只有itemWidth为null的时候生效
+  final EdgeInsets? innerPadding;
   final Color color;
   final Color selectedColor;
   final Color fontColor;
@@ -89,7 +94,7 @@ class _LJRadioTitleBarState extends State<LJRadioTitleBar> {
               ),
               alignment: Alignment.center,
               padding: widget.itemWidth == null
-                  ? const EdgeInsets.symmetric(horizontal: 17)
+                  ? widget.innerPadding ?? const EdgeInsets.symmetric(horizontal: 17)
                   : null,
               child: Text(
                 widget.getTitle(index),
