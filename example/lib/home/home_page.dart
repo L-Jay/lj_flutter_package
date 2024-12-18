@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage>
         'https:www.baidu.com'),
     ImageModel(
         'https://img2.baidu.com/it/u=3157650194,2969546188&fm=253&fmt=auto&app=120&f=JPEG?w=650&h=433',
-        'https:www.baidu.com'),
+        '''<span>这是一段HTML文本</span>'''),
     ImageModel(
         'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com'
             '%2Fimages%2F20180920%2Fccc39d430a574d198d404608489419c0.jpeg'

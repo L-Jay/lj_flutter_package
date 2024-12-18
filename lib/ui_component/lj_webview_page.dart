@@ -27,6 +27,7 @@ class LJWebViewPage extends StatefulWidget {
 class _LJWebViewPageState extends State<LJWebViewPage> {
   bool _canBack = false;
   bool _canForward = false;
+  bool _isHTML = false;
 
   late WebViewController _webViewController;
 
@@ -41,10 +42,10 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
 
     _configWebView();
 
-    if (widget.url.startsWith('http')) {
-      _webViewController.loadRequest(Uri.parse(widget.url));
-    } else {
+    if (_isHTML = !widget.url.startsWith('http')) {
       _webViewController.loadHtmlString(widget.url);
+    } else {
+      _webViewController.loadRequest(Uri.parse(widget.url));
     }
   }
 
@@ -77,11 +78,25 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
           setState(() {});
         },
         onNavigationRequest: (NavigationRequest request) async {
-          if (!(request.url.startsWith("http:") ||
+          if (_isHTML) {
+            return NavigationDecision.navigate;
+          } else if (!(request.url.startsWith("http:") ||
               request.url.startsWith("https:"))) {
             await launchUrl(Uri.parse(request.url));
             return NavigationDecision.prevent;
           }
+          // else if (request.url.contains('#')) {
+          //   var oldUrl = await _webViewController.currentUrl();
+          //   var oldList = oldUrl?.split('#') ?? [];
+          //   var list = request.url.split('#');
+          //   if (oldList.isNotEmpty &&
+          //       list.isNotEmpty &&
+          //       oldList.length == list.length &&
+          //       oldList.first == list.first && oldList.last != list.last) {
+          //     _webViewController.reload();
+          //     return NavigationDecision.prevent;
+          //   }
+          // }
           return NavigationDecision.navigate;
         },
       ),
@@ -109,25 +124,30 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: ValueListenableBuilder(
-            valueListenable: _titleNotifier,
-            builder: (BuildContext context, String title, Widget? child) {
-              return Text(title);
-            }),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3.0), // 设置PreferredSize的高度
-          child: ValueListenableBuilder(
-              valueListenable: _progressNotifier,
-              builder: (BuildContext context, double progress, Widget? child) {
-                if (progress >= 1) return const SizedBox();
+        title: _isHTML
+            ? null
+            : ValueListenableBuilder(
+                valueListenable: _titleNotifier,
+                builder: (BuildContext context, String title, Widget? child) {
+                  return Text(title);
+                }),
+        bottom: _isHTML
+            ? null
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(3.0), // 设置PreferredSize的高度
+                child: ValueListenableBuilder(
+                    valueListenable: _progressNotifier,
+                    builder:
+                        (BuildContext context, double progress, Widget? child) {
+                      if (progress >= 1) return const SizedBox();
 
-                return LinearProgressIndicator(
-                  value: progress,
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(widget.progressColor),
-                );
-              }),
-        ),
+                      return LinearProgressIndicator(
+                        value: progress,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(widget.progressColor),
+                      );
+                    }),
+              ),
       ),
       body: WebViewWidget(controller: _webViewController),
     );
