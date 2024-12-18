@@ -142,17 +142,21 @@ class LJNetwork {
   path如果包含http/https,忽略baseUrl
   path作为取消网络请求的标识，如果为空，使用全局取消cancelToken
   * */
-  static Future<dynamic> get<T>(String path,
-      {Map<String, dynamic>? params,
-      Map<String, dynamic>? addHeaders,
-      LJNetworkSuccessCallback<T>? successCallback,
-      LJNetworkFailureCallback? failureCallback}) async {
-    return _request<T>(path,
-        isGet: true,
-        params: params,
-        addHeaders: addHeaders,
-        successCallback: successCallback,
-        failureCallback: failureCallback);
+  static Future<dynamic> get<T>(
+    String path, {
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? addHeaders,
+    LJNetworkSuccessCallback<T>? successCallback,
+    LJNetworkFailureCallback? failureCallback,
+  }) async {
+    return _request<T>(
+      path,
+      isGet: true,
+      params: params,
+      addHeaders: addHeaders,
+      successCallback: successCallback,
+      failureCallback: failureCallback,
+    );
   }
 
   /*
@@ -160,34 +164,42 @@ class LJNetwork {
   path如果包含http/https,忽略baseUrl
   path作为取消网络请求的标识，如果为空，使用全局取消cancelToken
   * */
-  static Future<dynamic> post<T>(String path,
-      {Map<String, dynamic>? params,
-      Map<String, dynamic>? data,
-      Map<String, dynamic>? addHeaders,
-      LJNetworkSuccessCallback<T>? successCallback,
-      LJNetworkFailureCallback? failureCallback}) async {
-    return _request<T>(path,
-        isPost: true,
-        params: params,
-        data: data,
-        addHeaders: addHeaders,
-        successCallback: successCallback,
-        failureCallback: failureCallback);
+  static Future<dynamic> post<T>(
+    String path, {
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? data,
+    Map<String, dynamic>? addHeaders,
+    LJNetworkSuccessCallback<T>? successCallback,
+    LJNetworkFailureCallback? failureCallback,
+  }) async {
+    return _request<T>(
+      path,
+      isPost: true,
+      params: params,
+      data: data,
+      addHeaders: addHeaders,
+      successCallback: successCallback,
+      failureCallback: failureCallback,
+    );
   }
 
-  static Future<dynamic> put<T>(String path,
-      {Map<String, dynamic>? params,
-      Map<String, dynamic>? data,
-      Map<String, dynamic>? addHeaders,
-      LJNetworkSuccessCallback<T>? successCallback,
-      LJNetworkFailureCallback? failureCallback}) async {
-    return _request<T>(path,
-        isPut: true,
-        params: params,
-        data: data,
-        addHeaders: addHeaders,
-        successCallback: successCallback,
-        failureCallback: failureCallback);
+  static Future<dynamic> put<T>(
+    String path, {
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? data,
+    Map<String, dynamic>? addHeaders,
+    LJNetworkSuccessCallback<T>? successCallback,
+    LJNetworkFailureCallback? failureCallback,
+  }) async {
+    return _request<T>(
+      path,
+      isPut: true,
+      params: params,
+      data: data,
+      addHeaders: addHeaders,
+      successCallback: successCallback,
+      failureCallback: failureCallback,
+    );
   }
 
   /*
@@ -195,11 +207,13 @@ class LJNetwork {
   path如果包含http/https,忽略baseUrl
   path作为取消网络请求的标识，如果为空，使用全局取消cancelToken
   * */
-  static Future<dynamic> delete<T>(String path,
-      {Map<String, dynamic>? params,
-      Map<String, dynamic>? addHeaders,
-      LJNetworkSuccessCallback<T>? successCallback,
-      LJNetworkFailureCallback? failureCallback}) async {
+  static Future<dynamic> delete<T>(
+    String path, {
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? addHeaders,
+    LJNetworkSuccessCallback<T>? successCallback,
+    LJNetworkFailureCallback? failureCallback,
+  }) async {
     return _request<T>(
       path,
       params: params,
@@ -218,7 +232,7 @@ class LJNetwork {
     bool isDelete = false,
     bool isPut = false,
     Map<String, dynamic>? params,
-    Map<String, dynamic>? data,
+    dynamic data,
     Map<String, dynamic>? addHeaders,
     LJNetworkSuccessCallback<T>? successCallback,
     LJNetworkFailureCallback? failureCallback,
@@ -254,10 +268,12 @@ class LJNetwork {
           params = handleRequestParams!(path, params);
         }
       } else {
-        data?.addAll(defaultParams);
+        if (data is Map<String, dynamic>) {
+          data.addAll(defaultParams);
+        }
 
         /*拦截请求参数*/
-        if (handleRequestParams != null) {
+        if (handleRequestParams != null && data is Map<String, dynamic>) {
           data = handleRequestParams!(path, data);
         }
       }
@@ -271,7 +287,10 @@ class LJNetwork {
       if (kDebugMode && mockMap[path] != null) {
         await Future.delayed(const Duration(seconds: 1));
 
-        String jsonStr = mockMap[path]!(data ?? params);
+        String jsonStr = '';
+        if (data is Map<String, dynamic>?) {
+          jsonStr = mockMap[path]!(data ?? params);
+        }
         Map<String, dynamic> responseData = json.decode(jsonStr);
         response = Response(
           requestOptions: RequestOptions(path: path),
@@ -424,6 +443,25 @@ class LJNetwork {
     }
 
     return completer.future;
+  }
+
+  static Future<dynamic> upload<T>(
+    String path, {
+    Map<String, dynamic>? params,
+    dynamic data,
+    Map<String, dynamic>? addHeaders,
+    LJNetworkSuccessCallback<T>? successCallback,
+    LJNetworkFailureCallback? failureCallback,
+  }) async {
+    return _request<T>(
+      path,
+      isPost: true,
+      params: params,
+      data: data,
+      addHeaders: addHeaders,
+      successCallback: successCallback,
+      failureCallback: failureCallback,
+    );
   }
 
   static Future download({
