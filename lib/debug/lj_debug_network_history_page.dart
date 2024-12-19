@@ -1,13 +1,16 @@
-
 import 'package:flutter/material.dart';
+import 'package:lj_flutter_package/debug/lj_debug_config.dart';
+import 'package:lj_flutter_package/debug/lj_debug_page.dart';
 import '../utils/lj_network.dart';
 import 'lj_debug_network_history_detail_page.dart';
+import 'lj_debug_service_list_page.dart';
 
 class DebugNetworkHistoryPage extends StatefulWidget {
   const DebugNetworkHistoryPage({Key? key}) : super(key: key);
 
   @override
-  State<DebugNetworkHistoryPage> createState() => _DebugNetworkHistoryPageState();
+  State<DebugNetworkHistoryPage> createState() =>
+      _DebugNetworkHistoryPageState();
 }
 
 class _DebugNetworkHistoryPageState extends State<DebugNetworkHistoryPage> {
@@ -16,17 +19,31 @@ class _DebugNetworkHistoryPageState extends State<DebugNetworkHistoryPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8F9),
       appBar: AppBar(
-        title: const Text('网络请求列表'),
+        title: const Text('请求历史'),
         actions: <Widget>[
           IconButton(
-              icon: const Icon(
-                Icons.delete,
-              ),
-              onPressed: () {
-                setState(() {
-                  LJNetwork.historyList.clear();
-                });
-              }),
+            icon: const Icon(
+              Icons.settings,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DebugServiceListPage(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.delete,
+            ),
+            onPressed: () {
+              setState(() {
+                LJNetwork.historyList.clear();
+              });
+            },
+          ),
         ],
       ),
       body: _buildListView(),

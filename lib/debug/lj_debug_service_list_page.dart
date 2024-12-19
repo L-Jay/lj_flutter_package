@@ -24,7 +24,7 @@ class _DebugServiceListPageState extends State<DebugServiceListPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8F9),
       appBar: AppBar(
-        title: const Text('服务器列表'),
+        title: const Text('环境列表'),
       ),
       body: ListView.separated(
         itemCount: LJDebugConfig.configList.length,

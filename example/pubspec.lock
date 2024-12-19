@@ -274,10 +274,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_json_view
-      sha256: "22d843ece5b16be227c4bebff2dab6f20c60bc8fdd85d8e6b83db7156cd85e83"
+      sha256: "7acbb6768eccfbc4081bf87bb7ffbe628d6ccfcbdd51b1e713030c44aa3daf49"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.1"
+    version: "1.1.5"
   flutter_lints:
     dependency: "direct dev"
     description:

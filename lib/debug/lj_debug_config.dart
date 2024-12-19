@@ -5,6 +5,7 @@ import '../ui_component/lj_drag_container.dart';
 import '../utils/lj_define.dart';
 import '../utils/lj_router_manager.dart';
 import '../utils/lj_util.dart';
+import 'lj_debug_network_history_page.dart';
 import 'lj_debug_page.dart';
 
 typedef LJServiceChangeCallback = void Function(Map<String, String> map);
@@ -21,6 +22,7 @@ class LJDebugConfig {
 
   // 显示debug控件context，如果在MaterialApp中指定了navigatorKey，则不需要赋值
   static BuildContext? context;
+
   // static set context(context) {
   //   _context = context;
   //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -41,7 +43,9 @@ class LJDebugConfig {
     if (!kDebugMode) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var finalContext = context ?? RouterManager.navigatorKey.currentState?.overlay?.context ?? Get.overlayContext;
+      var finalContext = context ??
+          RouterManager.navigatorKey.currentState?.overlay?.context ??
+          Get.overlayContext;
       if (finalContext != null) _insertOverlay(finalContext, 'LJ');
     });
   }
@@ -56,11 +60,16 @@ class LJDebugConfig {
       final size = MediaQuery.of(context).size;
       final bottom = MediaQuery.of(context).padding.bottom;
       return LJDragContainer(
-        offset: Offset(size.width-56-10, size.height-56-56-10-bottom),
+        offset:
+            Offset(size.width - 56 - 10, size.height - 56 - 56 - 10 - bottom),
         adsorption: LJDragAdsorption.all,
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const LJDebugPage()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DebugNetworkHistoryPage(),
+            ),
+          );
         },
         child: quickText(title, 18, Colors.white),
       );

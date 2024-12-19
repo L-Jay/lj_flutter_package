@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
@@ -12,11 +11,22 @@ class DebugNetworkHistoryDetailPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<DebugNetworkHistoryDetailPage> createState() => _DebugNetworkHistoryDetailPageState();
+  State<DebugNetworkHistoryDetailPage> createState() =>
+      _DebugNetworkHistoryDetailPageState();
 }
 
 class _DebugNetworkHistoryDetailPageState
     extends State<DebugNetworkHistoryDetailPage> {
+
+  _showSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(
+      content: Center(child: Text(message)),
+      duration: const Duration(seconds: 1), // 显示时长
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,15 +34,29 @@ class _DebugNetworkHistoryDetailPageState
       appBar: AppBar(
         title: Text(widget.historyModel.title ?? ''),
         actions: [
+          GestureDetector(
+            onTap: () {
+              String value = widget.historyModel.toString();
+              Clipboard.setData(ClipboardData(text: value));
+
+              _showSnackBar(context, '复制成功');
+            },
+            child: const Text('Copy All'),
+          ),
           IconButton(
               icon: const Icon(
-                Icons.file_copy,
+                Icons.copy,
               ),
               onPressed: () {
-                setState(() {
-                  String value = widget.historyModel.toString();
-                  Clipboard.setData(ClipboardData(text: value));
-                });
+                String message = '复制失败';
+                if (widget.historyModel.jsonResult?.isNotEmpty == true) {
+                  Clipboard.setData(
+                    ClipboardData(text: widget.historyModel.jsonResult!),
+                  );
+                  message = '复制成功';
+                }
+
+                _showSnackBar(context, message);
               }),
         ],
       ),
