@@ -17,10 +17,9 @@ class DebugNetworkHistoryDetailPage extends StatefulWidget {
 
 class _DebugNetworkHistoryDetailPageState
     extends State<DebugNetworkHistoryDetailPage> {
-
   _showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(
-      content: Center(child: Text(message)),
+      content: Text(message),
       duration: const Duration(seconds: 1), // 显示时长
     );
 
@@ -41,7 +40,7 @@ class _DebugNetworkHistoryDetailPageState
 
               _showSnackBar(context, '复制成功');
             },
-            child: const Text('Copy All'),
+            child: const Center(child: Text('Copy All')),
           ),
           IconButton(
               icon: const Icon(
