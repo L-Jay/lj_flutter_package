@@ -2,7 +2,9 @@
 import 'package:example/home/home_page.dart';
 import 'package:example/mine/mine_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/debug/lj_debug_config.dart';
+import 'package:lj_flutter_package/widgets/double_pop_widget.dart';
 
 import 'demo_pages/demo_page.dart';
 
@@ -33,47 +35,52 @@ class _BottomTabbarState extends State<BottomTabbar> {
   @override
   Widget build(BuildContext context) {
     LJDebugConfig.context = context;
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _pages,
-      ),
-      bottomNavigationBar: Theme(
-        data: ThemeData(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
+    return DoublePopWidget(
+      firstCallBack: () {
+        EasyLoading.showToast('再按一次退出');
+      },
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _pages,
         ),
-        child: ValueListenableBuilder(
-          valueListenable: _indexValueNotifier,
-          builder: (BuildContext context, int value, Widget? child) {
-            return BottomNavigationBar(
-              currentIndex: value,
-              selectedFontSize: 14,
-              unselectedFontSize: 14,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: '首页',
-                  tooltip: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.list),
-                  label: 'Demo',
-                  tooltip: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.people),
-                  label: '我的',
-                  tooltip: '',
-                ),
-              ],
-              onTap: (index) {
-                _pageController.jumpToPage(index);
-                _indexValueNotifier.value = index;
-              },
-            );
-          },
+        bottomNavigationBar: Theme(
+          data: ThemeData(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+          ),
+          child: ValueListenableBuilder(
+            valueListenable: _indexValueNotifier,
+            builder: (BuildContext context, int value, Widget? child) {
+              return BottomNavigationBar(
+                currentIndex: value,
+                selectedFontSize: 14,
+                unselectedFontSize: 14,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: '首页',
+                    tooltip: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.list),
+                    label: 'Demo',
+                    tooltip: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.people),
+                    label: '我的',
+                    tooltip: '',
+                  ),
+                ],
+                onTap: (index) {
+                  _pageController.jumpToPage(index);
+                  _indexValueNotifier.value = index;
+                },
+              );
+            },
+          ),
         ),
       ),
     );
