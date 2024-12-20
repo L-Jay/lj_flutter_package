@@ -19,7 +19,7 @@ class _DebugNetworkHistoryDetailPageState
     extends State<DebugNetworkHistoryDetailPage> {
   _showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(
-      content: Text(message),
+      content: Center(child: Text(message)),
       duration: const Duration(seconds: 1), // 显示时长
     );
 
