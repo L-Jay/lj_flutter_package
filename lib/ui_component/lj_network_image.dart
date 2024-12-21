@@ -27,7 +27,7 @@ class LJNetworkImage extends StatelessWidget {
     required this.url,
     this.placeholderWidget,
     this.errorWidget,
-    this.fit = BoxFit.cover,
+    this.fit = BoxFit.contain,
   }) : super(key: key);
 
   static Widget defaultPlaceholderWidget = Container(color: Colors.grey.shade200);

@@ -30,9 +30,11 @@ class LJDebugConfig {
   //   });
   // }
 
+  static bool show = false;
+
   static set serviceChangeCallback(LJServiceChangeCallback callback) {
     int index;
-    if (kDebugMode) {
+    if (kDebugMode || show) {
       index = LJUtil.preferences.getInt('LJDebugIndex') ?? 0;
     } else {
       index = 0;
