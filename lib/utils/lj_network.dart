@@ -273,7 +273,7 @@ class LJNetwork {
         }
 
         /*拦截请求参数*/
-        if (handleRequestParams != null && data is Map<String, dynamic>) {
+        if (handleRequestParams != null) {
           data = handleRequestParams!(path, data);
         }
       }
