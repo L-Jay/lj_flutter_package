@@ -26,10 +26,12 @@ class LJTileAreaView extends StatefulWidget {
   /// 组件背景
   final Color backgroundColor;
 
-  /// 字体style
+  /// 字体style,指定getTitleWidget此属性不生效
   final TextStyle textStyle;
-  final String Function(int index) getImageUrl;
-  final String Function(int index) getTitle;
+  final String Function(int index)? getImageUrl;
+  final Widget Function(int index)? getImageWidget;
+  final String Function(int index)? getTitle;
+  final Widget Function(int index)? getTitleWidget;
   final Function(int index) clickCallback;
 
   const LJTileAreaView({
@@ -43,12 +45,14 @@ class LJTileAreaView extends StatefulWidget {
     this.space = 5,
     this.backgroundColor = Colors.white,
     this.textStyle = const TextStyle(
-      color: const Color(0xFF333333),
+      color: Color(0xFF333333),
       fontSize: 14,
       fontWeight: FontWeight.w500,
     ),
-    required this.getImageUrl,
-    required this.getTitle,
+    this.getImageUrl,
+    this.getImageWidget,
+    this.getTitle,
+    this.getTitleWidget,
     required this.clickCallback,
   }) : super(key: key);
 
@@ -81,16 +85,29 @@ class _LJTileAreaViewState extends State<LJTileAreaView> {
   }
 
   Widget _buildItem(int index) {
-    String imgUrl = widget.getImageUrl(index);
-    Widget imageWidget;
-    if (imgUrl.contains('assets')) {
-      imageWidget = Image.asset(imgUrl);
-    } else {
-      imageWidget = LJNetworkImage(
-        url: imgUrl,
-        width: widget.imageSize,
-        height: widget.imageSize,
-      );
+    Widget imageWidget = const SizedBox();
+
+    if (widget.getImageWidget != null) {
+      imageWidget = widget.getImageWidget!(index);
+    } else if (widget.getImageUrl != null) {
+      String imgUrl = widget.getImageUrl!(index);
+      if (imgUrl.contains('assets')) {
+        imageWidget = Image.asset(imgUrl);
+      } else {
+        imageWidget = LJNetworkImage(
+          url: imgUrl,
+          width: widget.imageSize,
+          height: widget.imageSize,
+        );
+      }
+    }
+
+    Widget titleWidget = const SizedBox();
+
+    if (widget.getTitleWidget != null) {
+      titleWidget = widget.getTitleWidget!(index);
+    } else if (widget.getTitle != null) {
+      titleWidget = Text(widget.getTitle!(index), style: widget.textStyle);
     }
 
     return GestureDetector(
@@ -110,10 +127,7 @@ class _LJTileAreaViewState extends State<LJTileAreaView> {
             child: imageWidget,
           ),
           SizedBox(height: widget.space),
-          Text(
-            widget.getTitle(index),
-            style: widget.textStyle,
-          ),
+          titleWidget,
         ],
       ),
     );
