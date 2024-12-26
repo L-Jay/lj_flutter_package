@@ -26,6 +26,9 @@ class LJTileAreaView extends StatefulWidget {
   /// 组件背景
   final Color backgroundColor;
 
+  /// 内容默认居中显示,指定为false居上显示
+  final bool contentCenter;
+
   /// 字体style,指定getTitleWidget此属性不生效
   final TextStyle textStyle;
   final String Function(int index)? getImageUrl;
@@ -44,6 +47,7 @@ class LJTileAreaView extends StatefulWidget {
     this.imageCornerRadius,
     this.space = 5,
     this.backgroundColor = Colors.white,
+    this.contentCenter = true,
     this.textStyle = const TextStyle(
       color: Color(0xFF333333),
       fontSize: 14,
@@ -63,8 +67,14 @@ class LJTileAreaView extends StatefulWidget {
 class _LJTileAreaViewState extends State<LJTileAreaView> {
   @override
   Widget build(BuildContext context) {
-    double? width = context.findRenderObject()?.paintBounds.width;
-    width ??= MediaQuery.of(context).size.width - 30;
+    double? width = context
+        .findRenderObject()
+        ?.paintBounds
+        .width;
+    width ??= MediaQuery
+        .of(context)
+        .size
+        .width - 30;
 
     double itemWidth = width / widget.crossAxisCount;
 
@@ -116,7 +126,9 @@ class _LJTileAreaViewState extends State<LJTileAreaView> {
         widget.clickCallback(index);
       },
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: widget.contentCenter
+            ? MainAxisAlignment.center
+            : MainAxisAlignment.start,
         children: [
           quickContainer(
             width: widget.imageSize,
