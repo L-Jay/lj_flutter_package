@@ -18,8 +18,7 @@ class RouterManagerGet {
   */
   static String? loginPageName;
 
-  static pushNamed<T>(
-    String routeName, {
+  static pushNamed<T>(String routeName, {
     Object? arguments,
     ObjectCallback<T?>? popCallback,
   }) async {
@@ -34,12 +33,12 @@ class RouterManagerGet {
       }
 
       if (loginResult == true) {
-        Get.toNamed(routeName, arguments: arguments)?.then((value) {
+        return Get.toNamed(routeName, arguments: arguments)?.then((value) {
           popCallback?.call(value as T);
         });
       }
     } else {
-      Get.toNamed(routeName, arguments: arguments)?.then((value) {
+      return Get.toNamed(routeName, arguments: arguments)?.then((value) {
         popCallback?.call(value as T);
       });
     }

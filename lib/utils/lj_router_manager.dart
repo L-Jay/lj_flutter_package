@@ -22,37 +22,38 @@ class RouterManager {
 
   /*登录回调，返回true表示登录成功，继续进行后续动作*/
   static Future<bool> Function(BuildContext context)? doLogin;
+
   /*
   登录页路由名称loginPageName，doLogin同时实现的话优先使用doLogin
   登录页完成登录后，pop的时候返回true
   */
   static String? loginPageName;
 
-  static pushNamed<T>(
-    BuildContext context,
-    String routeName, {
-    Object? arguments,
-    ObjectCallback<T?>? popCallback,
-  }) async {
+  static pushNamed<T>(BuildContext context,
+      String routeName, {
+        Object? arguments,
+        ObjectCallback<T?>? popCallback,
+      }) async {
     bool loginStatus = false;
     if (getLoginStatus != null) loginStatus = getLoginStatus!();
     if (verifyLoginPageList.contains(routeName) && !loginStatus) {
       bool? loginResult = false;
       if (doLogin != null) {
         loginResult = await doLogin!(context);
-      }else if (loginPageName != null) {
-        loginResult = await Navigator.pushNamed(context, loginPageName!) as bool?;
+      } else if (loginPageName != null) {
+        loginResult =
+        await Navigator.pushNamed(context, loginPageName!) as bool?;
       }
 
       if (loginResult == true) {
-        Navigator.pushNamed(context, routeName, arguments: arguments)
+        return Navigator.pushNamed(context, routeName, arguments: arguments)
             .then((value) {
           popCallback?.call(value as T);
           globalPopCallback?.call();
         });
       }
     } else {
-      Navigator.pushNamed(context, routeName, arguments: arguments)
+      return Navigator.pushNamed(context, routeName, arguments: arguments)
           .then((value) {
         popCallback?.call(value as T);
         globalPopCallback?.call();
@@ -65,27 +66,40 @@ class RouterManager {
 
     bool fullScreen = fullscreenPageList.contains(settings.name);
 
-    return MaterialPageRoute(builder: builder, settings: settings, fullscreenDialog: fullScreen);
+    return MaterialPageRoute(
+        builder: builder, settings: settings, fullscreenDialog: fullScreen);
   }
 }
 
 extension StateArguments on State {
   Object? get argument {
-    return ModalRoute.of(context)?.settings.arguments;
+    return ModalRoute
+        .of(context)
+        ?.settings
+        .arguments;
   }
 
   Map? get argumentMap {
-    return ModalRoute.of(context)?.settings.arguments as Map;
+    return ModalRoute
+        .of(context)
+        ?.settings
+        .arguments as Map;
   }
 }
 
 extension StatelessWidgetArguments on StatelessWidget {
   Object? argument(BuildContext context) {
-    return ModalRoute.of(context)?.settings.arguments;
+    return ModalRoute
+        .of(context)
+        ?.settings
+        .arguments;
   }
 
   Map? argumentMap(BuildContext context) {
-    return ModalRoute.of(context)?.settings.arguments as Map;
+    return ModalRoute
+        .of(context)
+        ?.settings
+        .arguments as Map;
   }
 }
 
