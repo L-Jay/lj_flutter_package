@@ -10,6 +10,7 @@ class LJWebViewPage extends StatefulWidget {
   final Color progressColor;
   final List<String>? jsMethods;
   final Function(String method, JavaScriptMessage message)? jsCallback;
+  final bool onlyView;
 
   const LJWebViewPage({
     Key? key,
@@ -18,6 +19,7 @@ class LJWebViewPage extends StatefulWidget {
     this.progressColor = Colors.blue,
     this.jsMethods,
     this.jsCallback,
+    this.onlyView = false,
   }) : super(key: key);
 
   @override
@@ -122,32 +124,35 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.onlyView)
+      return WebViewWidget(controller: _webViewController);
+
     return Scaffold(
       appBar: AppBar(
         title: _isHTML
             ? null
             : ValueListenableBuilder(
-                valueListenable: _titleNotifier,
-                builder: (BuildContext context, String title, Widget? child) {
-                  return Text(title);
-                }),
+            valueListenable: _titleNotifier,
+            builder: (BuildContext context, String title, Widget? child) {
+              return Text(title);
+            }),
         bottom: _isHTML
             ? null
             : PreferredSize(
-                preferredSize: const Size.fromHeight(3.0), // 设置PreferredSize的高度
-                child: ValueListenableBuilder(
-                    valueListenable: _progressNotifier,
-                    builder:
-                        (BuildContext context, double progress, Widget? child) {
-                      if (progress >= 1) return const SizedBox();
+          preferredSize: const Size.fromHeight(3.0), // 设置PreferredSize的高度
+          child: ValueListenableBuilder(
+              valueListenable: _progressNotifier,
+              builder:
+                  (BuildContext context, double progress, Widget? child) {
+                if (progress >= 1) return const SizedBox();
 
-                      return LinearProgressIndicator(
-                        value: progress,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(widget.progressColor),
-                      );
-                    }),
-              ),
+                return LinearProgressIndicator(
+                  value: progress,
+                  valueColor:
+                  AlwaysStoppedAnimation<Color>(widget.progressColor),
+                );
+              }),
+        ),
       ),
       body: WebViewWidget(controller: _webViewController),
     );
