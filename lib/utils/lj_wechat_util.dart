@@ -126,6 +126,7 @@ class WeChatUtil {
   static Future shareWeb({
     required String url,
     String? title,
+    String? description,
     Uint8List? thumbData,
     bool session = true,
   }) {
@@ -135,6 +136,7 @@ class WeChatUtil {
     fluwx.share(WeChatShareWebPageModel(
       url,
       title: title,
+      description: description,
       thumbData: thumbData,
       scene: session ? WeChatScene.session : WeChatScene.timeline,
     ));
