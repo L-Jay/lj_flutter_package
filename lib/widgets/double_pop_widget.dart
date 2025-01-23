@@ -27,7 +27,10 @@ class _DoublePopWidgetState extends State<DoublePopWidget> {
         } else {
           int diff = DateTime.now().difference(_lastTime!).inMilliseconds;
           _lastTime = DateTime.now();
-          if (diff > 1000) widget.firstCallBack?.call();
+          if (diff > 1000) {
+            widget.firstCallBack?.call();
+            return false;
+          }
           return diff <= 1000;
         }
       },
