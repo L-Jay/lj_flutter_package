@@ -28,14 +28,14 @@ class LJNetwork {
   static final Dio dio = _createDio();
 
   /*baseUrl*/
-  static late String _baseUrl;
+  static String? _baseUrl;
 
   static set baseUrl(url) {
     _baseUrl = url;
     dio.options.baseUrl = url;
   }
 
-  static String get baseUrl => _baseUrl;
+  static String? get baseUrl => _baseUrl;
 
   /*headers*/
   static Map<String, String> headers = {};
@@ -85,10 +85,14 @@ class LJNetwork {
 
   static Dio _createDio() {
     Dio dio = Dio(BaseOptions(
-      baseUrl: baseUrl,
+      baseUrl: baseUrl ?? '',
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
     ));
+
+    handleNetworkStatus((LJNetworkStatus status) {
+      networkActive = status != LJNetworkStatus.none;
+    });
 
     if (kDebugMode) {
       dio.interceptors
@@ -98,8 +102,23 @@ class LJNetwork {
     return dio;
   }
 
-  /*当前网络是否可用*/
-  static bool? networkActive;
+  /*当前网络是否可用,跟随网络变化*/
+  static bool networkActive = false;
+
+  /*实时获取当前网络状态*/
+  static Future<bool> get networkActiveImmediately async {
+    var result = await Connectivity().checkConnectivity();
+    if (result.contains(ConnectivityResult.wifi)) {
+      networkActive = true;
+      return true;
+    } else if (result.contains(ConnectivityResult.mobile)) {
+      networkActive = true;
+      return true;
+    } else {
+      networkActive = false;
+      return false;
+    }
+  }
 
   static final List<LJNetworkStatusCallback> _networkStatusSubscriptionList =
       [];
@@ -108,21 +127,22 @@ class LJNetwork {
 
   /*
   监控网络状态
-  context为key，取消监控使用
   */
-  static handleNetworkStatus(
-      dynamic context, LJNetworkStatusCallback callback) {
+  static handleNetworkStatus(LJNetworkStatusCallback callback) {
     _connectivitySubscription ??=
         Connectivity().onConnectivityChanged.listen((result) {
       if (result.contains(ConnectivityResult.wifi)) {
+        networkActive = true;
         for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.wifi);
         }
       } else if (result.contains(ConnectivityResult.mobile)) {
+        networkActive = true;
         for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.mobile);
         }
       } else {
+        networkActive = false;
         for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.none);
         }
@@ -237,17 +257,6 @@ class LJNetwork {
     LJNetworkSuccessCallback<T>? successCallback,
     LJNetworkFailureCallback? failureCallback,
   }) async {
-    // 未获取网络状态初次获取
-    // if (networkActive == null) {
-    //   var result = await Connectivity().checkConnectivity();
-    //   networkActive = result != ConnectivityResult.none;
-    // }
-    //
-    // if (!networkActive) {
-    //   failureCallback?.call((LJError(444, '网络异常，请检查网络设置')));
-    //   return;
-    // }
-
     Completer completer = Completer<dynamic>();
 
     NetworkHistoryModel historyModel = NetworkHistoryModel();
