@@ -8,6 +8,7 @@ class LJWebViewPage extends StatefulWidget {
   final String url;
   final String? title;
   final Color progressColor;
+  final Color backgroundColor;
   final List<String>? jsMethods;
   final Function(String method, JavaScriptMessage message)? jsCallback;
   final bool onlyView;
@@ -17,6 +18,7 @@ class LJWebViewPage extends StatefulWidget {
     required this.url,
     this.title,
     this.progressColor = Colors.blue,
+    this.backgroundColor = Colors.white,
     this.jsMethods,
     this.jsCallback,
     this.onlyView = false,
@@ -63,7 +65,7 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
     }
 
     _webViewController = WebViewController.fromPlatformCreationParams(params);
-    _webViewController.setBackgroundColor(Colors.transparent);
+    _webViewController.setBackgroundColor(widget.backgroundColor);
     _webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
     _webViewController.enableZoom(false);
     _webViewController.setNavigationDelegate(
