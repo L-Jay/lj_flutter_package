@@ -22,11 +22,12 @@ class WeChatUtil {
     required String appId,
     required String universalLink,
     required Function(LJError error) errorCallback,
+    bool check = kDebugMode,
   }) async {
     var result =
         await fluwx.registerApi(appId: appId, universalLink: universalLink);
     if (result) {
-      if (kDebugMode) {
+      if (check) {
         fluwx.selfCheck();
       }
 
