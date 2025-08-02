@@ -1,4 +1,3 @@
-
 import 'package:flutter/widgets.dart';
 import 'package:date_format/date_format.dart' as dataFormat;
 
@@ -70,5 +69,14 @@ extension StateExtension on State {
 
   double get height {
     return MediaQuery.of(context).size.height;
+  }
+}
+
+extension JionExtension on List {
+  List joinObject(dynamic object) {
+    var list = expand((element) => [element, object]).toList();
+    list.removeLast();
+
+    return list;
   }
 }
