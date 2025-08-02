@@ -72,8 +72,8 @@ extension StateExtension on State {
   }
 }
 
-extension JionExtension on List {
-  List joinObject(dynamic object) {
+extension JionExtension<T> on List<T> {
+  List<T> joinObject(T object) {
     var list = expand((element) => [element, object]).toList();
     list.removeLast();
 
