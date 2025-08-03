@@ -67,29 +67,24 @@ class LJTileAreaView extends StatefulWidget {
 class _LJTileAreaViewState extends State<LJTileAreaView> {
   @override
   Widget build(BuildContext context) {
-    double? width = context
-        .findRenderObject()
-        ?.paintBounds
-        .width;
-    width ??= MediaQuery
-        .of(context)
-        .size
-        .width - 30;
-
-    double itemWidth = width / widget.crossAxisCount;
-
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7.5),
         color: widget.backgroundColor,
       ),
-      child: GridView.count(
-        padding: const EdgeInsets.all(0),
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        crossAxisCount: widget.crossAxisCount,
-        childAspectRatio: itemWidth / widget.itemHeight,
-        children: List.generate(widget.count, (index) => _buildItem(index)),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double itemWidth = constraints.maxWidth / widget.crossAxisCount;
+
+          return GridView.count(
+            padding: const EdgeInsets.all(0),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            crossAxisCount: widget.crossAxisCount,
+            childAspectRatio: itemWidth / widget.itemHeight,
+            children: List.generate(widget.count, (index) => _buildItem(index)),
+          );
+        }
       ),
     );
   }
