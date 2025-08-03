@@ -3,7 +3,6 @@ import 'package:example/home/home_page.dart';
 import 'package:example/mine/mine_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:lj_flutter_package/debug/lj_debug_config.dart';
 import 'package:lj_flutter_package/widgets/double_pop_widget.dart';
 
 import 'demo_pages/demo_page.dart';
@@ -34,7 +33,6 @@ class _BottomTabbarState extends State<BottomTabbar> {
 
   @override
   Widget build(BuildContext context) {
-    LJDebugConfig.context = context;
     return DoublePopWidget(
       firstCallBack: () {
         EasyLoading.showToast('再按一次退出');

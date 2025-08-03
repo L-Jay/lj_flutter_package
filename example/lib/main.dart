@@ -5,9 +5,7 @@ import 'package:example/common/api_url.dart';
 import 'package:example/common/lj_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:lj_flutter_package/debug/lj_debug_config.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
-import 'package:lj_flutter_package/utils/lj_router_manager_get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'common/router.dart';
@@ -17,45 +15,15 @@ import 'login/login_manager.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await LJUtil.initInstance();
-
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   MyApp({super.key}) {
-    _configDebug();
     _configNetwork();
     // _configRouter();
     _configGetRouter();
-  }
-
-  _configDebug() {
-    LJDebugConfig.configList = [
-      {
-        'title': '正式',
-        'baseUrl': ApiUrl.productUrl,
-        'pushKey': 'product_xxxxx',
-        'wechat': 'product_xxxxx',
-      },
-      {
-        'title': '测试',
-        'baseUrl': ApiUrl.devUrl,
-        'pushKey': 'test_xxxxx',
-        'wechat': 'product_xxxxx',
-      },
-    ];
-
-    LJDebugConfig.serviceChangeCallback = (map) async {
-      // 切换环境重新登录
-      if (LoginManager.isLogin) {
-        LoginManager.logout();
-      }
-
-      LJNetwork.baseUrl = map['baseUrl'] ?? '';
-      //push.key = map['pushKey'];
-    };
   }
 
   void _configNetwork() {
@@ -65,28 +33,8 @@ class MyApp extends StatelessWidget {
     LJNetwork.messageKey = 'reason';
     LJNetwork.headers.addAll({
       'Authorization': LoginManager.userInfoResult?.token ?? "",
-      'AppVersion': LJUtil.packageInfo.version,
-      'AppBuildVersion': LJUtil.packageInfo.buildNumber,
     });
-    if (Platform.isAndroid) {
-      Map<String, String> androidInfo = {
-        'systemVersion': LJUtil.androidDeviceInfo.version.baseOS ?? "", // 系统版本
-        'systemName': LJUtil.androidDeviceInfo.brand ?? "",
-        'deviceId': LJUtil.androidDeviceInfo.id ?? "",
-        'device': LJUtil.androidDeviceInfo.model ?? "",
-      };
-      LJNetwork.headers.addAll(androidInfo);
-    }
 
-    if (Platform.isIOS) {
-      Map<String, String> iosInfo = {
-        'systemVersion': LJUtil.iosDeviceInfo.systemVersion ?? "", // 系统版本
-        'systemName': 'iOS',
-        'deviceId': LJUtil.iosDeviceInfo.identifierForVendor ?? "", // iOS广告标识符
-        'device': LJUtil.iosDeviceInfo.utsname.machine ?? "",
-      };
-      LJNetwork.headers.addAll(iosInfo);
-    }
     LJNetwork.handleAllFailureCallBack = (error) {
       // 登录过期
       if (error.errorCode == 401) {

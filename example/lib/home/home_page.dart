@@ -5,7 +5,6 @@ import 'package:lj_flutter_package/lj_flutter_package.dart';
 import 'package:lj_flutter_package/ui_component/lj_radio_title_bar.dart';
 import 'package:lj_flutter_package/ui_component/lj_swiper.dart';
 import 'package:lj_flutter_package/ui_component/lj_tile_area_view.dart';
-import 'package:lj_flutter_package/ui_component/lj_webview_page.dart';
 
 import '../gen_a/A.dart';
 
@@ -141,14 +140,7 @@ class _HomePageState extends State<HomePage>
                 return model.imageUrl;
               },
               onTap: (model) {
-                Navigator.push(
-                  context,
-                  pageRoute(
-                    LJWebViewPage(
-                      url: model.contentUrl,
-                    ),
-                  ),
-                );
+
               },
             ),
             LJTileAreaView(

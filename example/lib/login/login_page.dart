@@ -9,7 +9,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
 import 'package:lj_flutter_package/ui_component/lj_imagebutton.dart';
 import 'package:lj_flutter_package/ui_component/lj_send_code_button.dart';
-import 'package:lj_flutter_package/ui_component/lj_webview_page.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/lj_colors.dart';
@@ -192,21 +191,11 @@ class _LoginPageState extends State<LoginPage> {
         [
           () {},
           () {
-            Navigator.push(
-              context,
-              pageRoute(
-                const LJWebViewPage(url: 'https://www.baidu.com'),
-              ),
-            );
+
           },
           () {},
           () {
-            Navigator.push(
-              context,
-              pageRoute(
-                const LJWebViewPage(url: 'https://www.baidu.com'),
-              ),
-            );
+
           },
         ],
       ),

@@ -74,8 +74,6 @@ class _SettingPageState extends State<SettingPage> {
               children: [
                 quickText(_titles[index], 14, LJColor.mainColor),
                 const Spacer(),
-                if (page == null)
-                  quickText(LJUtil.packageInfo.version, 14, LJColor.mainColor),
                 if (page == null) const SizedBox(width: 10),
                 const Icon(Icons.arrow_forward_ios,
                     size: 15, color: LJColor.mainColor),

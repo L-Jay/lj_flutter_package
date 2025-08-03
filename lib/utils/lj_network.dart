@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import 'lj_error.dart';
-import 'lj_util.dart';
 
 /*请求成功回调*/
 typedef LJNetworkSuccessCallback<T> = void Function(T data);
@@ -419,17 +418,17 @@ class LJNetwork {
           case DioExceptionType.receiveTimeout:
           case DioExceptionType.sendTimeout:
             errorCode = 504;
-            message = LJUtil.isEnglish ? 'Network exception' : '网络连接超时，请检查网络设置';
+            message = '网络连接超时，请检查网络设置';
             break;
           case DioExceptionType.badResponse:
           case DioExceptionType.badCertificate:
           case DioExceptionType.connectionError:
             errorCode = 404;
-            message = LJUtil.isEnglish ? 'Network exception' : '服务器异常，请稍后重试！';
+            message = '服务器异常，请稍后重试！';
             break;
           case DioExceptionType.unknown:
             errorCode = 500;
-            message = LJUtil.isEnglish ? 'Network exception' : '网络异常，请稍后重试！';
+            message = '网络异常，请稍后重试！';
             break;
           case DioExceptionType.cancel:
             return;
