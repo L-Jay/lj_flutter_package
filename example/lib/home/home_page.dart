@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage>
         ),
         centerTitle: false,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
