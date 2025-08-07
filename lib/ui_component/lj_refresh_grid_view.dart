@@ -3,18 +3,22 @@ import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'lj_refresh_view_controller.dart';
 
-class LJRefreshListView<T> extends StatelessWidget {
+class LJRefreshGridView<T> extends StatelessWidget {
   final String? viewTag;
   final EdgeInsetsGeometry? padding;
+  final double innerSpace;
+  final double itemRatio;
   final int pageSize;
   final Future<List<T>> Function(int page) networkCallback;
   final Widget Function(T model, LJRefreshListViewController controller) itemBuilder;
   final Widget separator;
 
-  const LJRefreshListView({
+  const LJRefreshGridView({
     super.key,
     this.viewTag,
     this.padding,
+    this.innerSpace = 10,
+    required this.itemRatio,
     this.pageSize = 10,
     required this.networkCallback,
     required this.itemBuilder,
@@ -41,13 +45,18 @@ class LJRefreshListView<T> extends StatelessWidget {
           enablePullUp: true,
           onRefresh: () => controller.fetchData(true),
           onLoading: () => controller.fetchData(false),
-          child: ListView.separated(
+          child: GridView.builder(
             padding: padding,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: innerSpace,
+              crossAxisSpacing: innerSpace,
+              childAspectRatio: itemRatio,
+            ),
             itemCount: controller.list.length,
             itemBuilder: (context, index) {
               return itemBuilder(controller.list[index], controller);
             },
-            separatorBuilder: (BuildContext context, int index) => separator,
           ),
         );
       },
