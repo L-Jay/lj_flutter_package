@@ -3,8 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
 
-import 'lj_custom_clipper.dart';
-
 class LJWrapRadio extends StatefulWidget {
   final int count;
   final Widget Function(BuildContext context, int index, bool selected)
