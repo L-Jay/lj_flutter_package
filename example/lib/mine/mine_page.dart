@@ -14,8 +14,14 @@ class MinePage extends StatefulWidget {
 
 class _MinePageState extends State<MinePage>
     with AutomaticKeepAliveClientMixin {
+  final List<IconData> _icons = [
+    Icons.list,
+    Icons.info_outline,
+  ];
+
   final List<String> _titles = [
     '我的订单',
+    '关于',
   ];
 
   final List<String> _pages = [
@@ -62,7 +68,7 @@ class _MinePageState extends State<MinePage>
       ),
       body: Column(
         children: [
-          _buildUserInfo(context),
+          _buildUserInfo(),
           _buildListView(),
         ],
       ),
@@ -81,11 +87,10 @@ class _MinePageState extends State<MinePage>
           },
           child: Container(
             height: 50,
-            color: LJColor.lightBgColor,
             padding: const EdgeInsets.only(left: 20, right: 10),
             child: Row(
               children: [
-                const Icon(Icons.list, size: 30, color: LJColor.mainColor),
+                Icon(_icons[index], size: 30, color: LJColor.mainColor),
                 const SizedBox(width: 10),
                 quickText(_titles[index], 14, LJColor.mainColor),
                 const Spacer(),
@@ -103,7 +108,7 @@ class _MinePageState extends State<MinePage>
     );
   }
 
-  _buildUserInfo(BuildContext context) {
+  _buildUserInfo() {
     return GestureDetector(
       onTap: () async {
         if (!LoginManager.isLogin) {

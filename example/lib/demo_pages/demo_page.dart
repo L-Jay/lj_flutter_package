@@ -91,7 +91,6 @@ class _DemoPageState extends State<DemoPage>
             },
             child: Container(
               height: 50,
-              color: LJColor.lightBgColor,
               padding: const EdgeInsets.only(left: 20, right: 10),
               child: Row(
                 children: [
