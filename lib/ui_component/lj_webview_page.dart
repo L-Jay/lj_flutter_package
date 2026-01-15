@@ -126,8 +126,9 @@ class _LJWebViewPageState extends State<LJWebViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.onlyView)
+    if (widget.onlyView) {
       return WebViewWidget(controller: _webViewController);
+    }
 
     return Scaffold(
       appBar: AppBar(

@@ -270,7 +270,8 @@ class LJNetwork {
 
       /*添加默认请求参数*/
       if (isGet || isDelete) {
-        params?.addAll(defaultParams);
+        params ??= {};
+        params.addAll(defaultParams);
 
         /*拦截请求参数*/
         if (handleRequestParams != null) {
@@ -347,7 +348,7 @@ class LJNetwork {
         historyModel.title = path;
         historyModel.url = response.realUri.toString();
         historyModel.headers = headers;
-        historyModel.params = params ?? (data is Map ? data : null);
+        historyModel.params = {...?params, ...(data is Map ? data : {})};
         historyModel.responseHeaders = response.headers.map;
         historyModel.jsonResult = jsonEncode(response.data);
 
