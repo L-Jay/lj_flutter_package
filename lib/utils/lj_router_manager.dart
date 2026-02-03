@@ -29,11 +29,12 @@ class RouterManager {
   */
   static String? loginPageName;
 
-  static pushNamed<T>(BuildContext context,
-      String routeName, {
-        Object? arguments,
-        ObjectCallback<T?>? popCallback,
-      }) async {
+  static pushNamed<T>(
+    BuildContext context,
+    String routeName, {
+    Object? arguments,
+    ObjectCallback<T?>? popCallback,
+  }) async {
     bool loginStatus = false;
     if (getLoginStatus != null) loginStatus = getLoginStatus!();
     if (verifyLoginPageList.contains(routeName) && !loginStatus) {
@@ -42,7 +43,7 @@ class RouterManager {
         loginResult = await doLogin!(context);
       } else if (loginPageName != null) {
         loginResult =
-        await Navigator.pushNamed(context, loginPageName!) as bool?;
+            await Navigator.pushNamed(context, loginPageName!) as bool?;
       }
 
       if (loginResult == true) {
@@ -64,7 +65,10 @@ class RouterManager {
   static MaterialPageRoute onGenerateRoute(RouteSettings settings) {
     WidgetBuilder builder = routes[settings.name];
 
-    bool fullScreen = fullscreenPageList.contains(settings.name);
+    bool fullScreen = false;
+    if (isIOS || isAndroid) {
+      fullScreen = fullscreenPageList.contains(settings.name);
+    }
 
     return MaterialPageRoute(
         builder: builder, settings: settings, fullscreenDialog: fullScreen);
@@ -73,33 +77,21 @@ class RouterManager {
 
 extension StateArguments on State {
   Object? get argument {
-    return ModalRoute
-        .of(context)
-        ?.settings
-        .arguments;
+    return ModalRoute.of(context)?.settings.arguments;
   }
 
   Map? get argumentMap {
-    return ModalRoute
-        .of(context)
-        ?.settings
-        .arguments as Map;
+    return ModalRoute.of(context)?.settings.arguments as Map;
   }
 }
 
 extension StatelessWidgetArguments on StatelessWidget {
   Object? argument(BuildContext context) {
-    return ModalRoute
-        .of(context)
-        ?.settings
-        .arguments;
+    return ModalRoute.of(context)?.settings.arguments;
   }
 
   Map? argumentMap(BuildContext context) {
-    return ModalRoute
-        .of(context)
-        ?.settings
-        .arguments as Map;
+    return ModalRoute.of(context)?.settings.arguments as Map;
   }
 }
 

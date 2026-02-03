@@ -3,6 +3,13 @@ import 'package:get/get.dart';
 import 'lj_define.dart';
 
 class RouterManagerGet {
+  /*非必传,仅onGenerateRoute使用*/
+  static List<GetPage>? getPages;
+
+  /*所有页面都需要登录才能访问,比如后台管理,优先级最高*/
+  static bool allPageNeedLogin = false;
+  /*白名单页面,不需要验证登录,与下面的verifyLoginPageList二选一,哪个有值用哪个*/
+  static List<String> whitePageList = [];
   /*需要验证登录态的路由*/
   static List<String> verifyLoginPageList = [];
 
@@ -18,13 +25,32 @@ class RouterManagerGet {
   */
   static String? loginPageName;
 
-  static pushNamed<T>(String routeName, {
+  /*not found page*/
+  static String? unknownPageName;
+
+  static bool _needLogin(String routeName) {
+    bool loginStatus = false;
+    if (getLoginStatus != null) loginStatus = getLoginStatus!();
+    // 已经是登录状态
+    if (loginStatus) return false;
+
+    if (allPageNeedLogin) {
+      return true;
+    }else if (whitePageList.isNotEmpty) {
+      return !whitePageList.contains(routeName);
+    }else if (verifyLoginPageList.isNotEmpty) {
+      return verifyLoginPageList.contains(routeName);
+    }
+
+    return false;
+  }
+
+  static pushNamed<T>(
+    String routeName, {
     Object? arguments,
     ObjectCallback<T?>? popCallback,
   }) async {
-    bool loginStatus = false;
-    if (getLoginStatus != null) loginStatus = getLoginStatus!();
-    if (verifyLoginPageList.contains(routeName) && !loginStatus) {
+    if (_needLogin(routeName)) {
       bool? loginResult = false;
       if (doLogin != null) {
         loginResult = await doLogin!();
@@ -42,5 +68,61 @@ class RouterManagerGet {
         popCallback?.call(value as T);
       });
     }
+  }
+
+  /*
+  建议只有web端使用
+  其他端只使用上面的pushNamed就能支持全部场景
+  这个监听主要是处理在浏览器直接输入地址跳转这种情况
+  */
+  static Route onGenerateRoute(RouteSettings settings) {
+    if (settings.name?.isNotEmpty != true) {
+      return GetPageRoute(
+        settings: settings,
+        page: () => _unknownPage(),
+      );
+    }
+
+    if (_needLogin(settings.name!)) {
+      if (loginPageName?.isNotEmpty == true) {
+        GetPage? loginGetPage =
+            getPages!.firstWhereOrNull((page) => page.name == loginPageName);
+        return GetPageRoute(
+          settings: settings,
+          page: loginGetPage?.page ?? () => _unknownPage(),
+        );
+      }else {
+        return GetPageRoute(
+          settings: settings,
+          page: () => _unknownPage(),
+        );
+      }
+    }
+
+    GetPage? getPage;
+    if (getPages?.isNotEmpty == true) {
+      getPage =
+          getPages!.firstWhereOrNull((page) => page.name == settings.name);
+    }
+
+    GetPage? unknownGetPage;
+    if (unknownPageName?.isNotEmpty == true) {
+      unknownGetPage =
+          getPages!.firstWhereOrNull((page) => page.name == unknownPageName);
+    }
+
+    return GetPageRoute(
+      settings: settings,
+      page: getPage?.page ?? unknownGetPage?.page ?? () => _unknownPage(),
+    );
+  }
+
+  static Widget _unknownPage() {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: quickText('你找到了一片荒芜之地~~', 16, const Color(0xFF666666)),
+      ),
+    );
   }
 }

@@ -26,6 +26,7 @@ class _MinePageState extends State<MinePage>
 
   final List<String> _pages = [
     LJRouter.orderPage,
+    LJRouter.aboutPage,
   ];
 
   @override

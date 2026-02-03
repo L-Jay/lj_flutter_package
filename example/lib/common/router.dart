@@ -1,4 +1,5 @@
 import 'package:example/bottom_tabbar.dart';
+import 'package:example/mine/about_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
 
@@ -22,6 +23,7 @@ class LJRouter {
     GetPage(name: dragDemoPage, page: () => const DragDemoPage()),
     GetPage(name: loginPage, page: () => const LoginPage(), fullscreenDialog: true),
     GetPage(name: settingPage, page: () => const SettingPage()),
+    GetPage(name: aboutPage, page: () => const AboutPage()),
   ];
 
   static List<String> verifyLoginPageList = [
@@ -37,4 +39,5 @@ class LJRouter {
   static String dragDemoPage = '/dragDemoPage';
   static String loginPage = '/loginPage';
   static String settingPage = '/settingPage';
+  static String aboutPage = '/aboutPage';
 }

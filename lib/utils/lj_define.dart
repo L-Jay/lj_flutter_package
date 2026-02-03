@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,16 @@ typedef BoolCallback = void Function(bool value);
 
 typedef ObjectCallbackResultN<T, N> = N Function(T value);
 typedef CallbackResultN<N> = N Function();
+
+bool get isAndroid {
+  if (kIsWeb) return false;
+  return defaultTargetPlatform == TargetPlatform.android;
+}
+
+bool get isIOS {
+  if (kIsWeb) return false;
+  return defaultTargetPlatform == TargetPlatform.iOS;
+}
 
 Container quickContainer({
   double? width,

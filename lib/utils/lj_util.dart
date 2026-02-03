@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'lj_define.dart';
 import 'lj_event_bus.dart';
 import 'lj_permission.dart';
 
@@ -23,8 +23,8 @@ class LJUtil {
     packageInfo = await PackageInfo.fromPlatform();
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if (Platform.isAndroid) androidDeviceInfo = await deviceInfo.androidInfo;
-    if (Platform.isIOS) iosDeviceInfo = await deviceInfo.iosInfo;
+    if (isAndroid) androidDeviceInfo = await deviceInfo.androidInfo;
+    if (isIOS) iosDeviceInfo = await deviceInfo.iosInfo;
     eventBus = LJEventBus();
     return true;
   }
@@ -97,7 +97,6 @@ class LJUtil {
         ),
       ],
       compressQuality: 100,
-      cropStyle: CropStyle.rectangle,
     );
 
     return croppedFile?.path;

@@ -340,10 +340,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.13.6"
+    version: "1.6.0"
   http_parser:
     dependency: transitive
     description:
@@ -356,34 +356,34 @@ packages:
     dependency: transitive
     description:
       name: image_cropper
-      sha256: "542c3453109d16bcc388e43ae2276044d2cd6a6d20c68bdcff2c94ab9363ea15"
+      sha256: d31be025c744ac1bf52d1f49cfdd92fd421e7e45ddadaaac0b39901f67c2a7e3
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.0.1"
+    version: "7.1.0"
   image_cropper_for_web:
     dependency: transitive
     description:
       name: image_cropper_for_web
-      sha256: "89c936aa772a35b69ca67b78049ae9fa163a4fb8da2f6dee3893db8883fb49d2"
+      sha256: "6386e64908ce5d5df404e01c750a99b633dfcea88da69b3efcd3b3811d639760"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.0"
+    version: "5.1.0"
   image_cropper_platform_interface:
     dependency: transitive
     description:
       name: image_cropper_platform_interface
-      sha256: b232175c132b2f7ede3e1f101652bcd635cb4079a77c6dded8e6d32e6578d685
+      sha256: "39c6539571bda7ce666e0a2f450246a5d42187406eef8f486a3d64f1d9381637"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.0.0"
+    version: "6.1.0"
   image_picker:
     dependency: transitive
     description:
       name: image_picker
-      sha256: b6951e25b795d053a6ba03af5f710069c99349de9341af95155d52665cb4607c
+      sha256: "021834d9c0c3de46bf0fe40341fa07168407f694d9b2bb18d532dc1261867f7a"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.8.9"
+    version: "1.1.2"
   image_picker_android:
     dependency: transitive
     description:
@@ -440,14 +440,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.1+1"
-  js:
-    dependency: transitive
-    description:
-      name: js
-      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.6.7"
   json_annotation:
     dependency: transitive
     description:

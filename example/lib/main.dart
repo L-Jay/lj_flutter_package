@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:example/bottom_tabbar.dart';
 import 'package:example/common/api_url.dart';
 import 'package:example/common/lj_colors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/debug/lj_debug_config.dart';
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
       'AppVersion': LJUtil.packageInfo.version,
       'AppBuildVersion': LJUtil.packageInfo.buildNumber,
     });
-    if (Platform.isAndroid) {
+    if (isAndroid) {
       Map<String, String> androidInfo = {
         'systemVersion': LJUtil.androidDeviceInfo.version.baseOS ?? "", // 系统版本
         'systemName': LJUtil.androidDeviceInfo.brand ?? "",
@@ -78,7 +79,7 @@ class MyApp extends StatelessWidget {
       LJNetwork.headers.addAll(androidInfo);
     }
 
-    if (Platform.isIOS) {
+    if (isIOS) {
       Map<String, String> iosInfo = {
         'systemVersion': LJUtil.iosDeviceInfo.systemVersion ?? "", // 系统版本
         'systemName': 'iOS',
@@ -135,6 +136,7 @@ class MyApp extends StatelessWidget {
     // RouterManagerGet.doLogin = () {
     //   return LoginManager.showLogin();
     // };
+    RouterManagerGet.getPages = LJRouter.pages;
     RouterManagerGet.loginPageName = LJRouter.loginPage;
     RouterManagerGet.getLoginStatus = () {
       return LoginManager.isLogin;
@@ -203,7 +205,8 @@ class MyApp extends StatelessWidget {
       title: 'lj_package demo',
       builder: EasyLoading.init(),
       // initialRoute: '/',
-      getPages: LJRouter.pages,
+      getPages: kIsWeb ? null : LJRouter.pages,
+      onGenerateRoute: kIsWeb ? RouterManagerGet.onGenerateRoute : null,
     );
   }
 }
