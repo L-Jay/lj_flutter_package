@@ -8,8 +8,10 @@ class RouterManagerGet {
 
   /*所有页面都需要登录才能访问,比如后台管理,优先级最高*/
   static bool allPageNeedLogin = false;
+
   /*白名单页面,不需要验证登录,与下面的verifyLoginPageList二选一,哪个有值用哪个*/
   static List<String> whitePageList = [];
+
   /*需要验证登录态的路由*/
   static List<String> verifyLoginPageList = [];
 
@@ -36,9 +38,9 @@ class RouterManagerGet {
 
     if (allPageNeedLogin) {
       return true;
-    }else if (whitePageList.isNotEmpty) {
+    } else if (whitePageList.isNotEmpty) {
       return !whitePageList.contains(routeName);
-    }else if (verifyLoginPageList.isNotEmpty) {
+    } else if (verifyLoginPageList.isNotEmpty) {
       return verifyLoginPageList.contains(routeName);
     }
 
@@ -76,6 +78,13 @@ class RouterManagerGet {
   这个监听主要是处理在浏览器直接输入地址跳转这种情况
   */
   static Route onGenerateRoute(RouteSettings settings) {
+    if (getPages?.isEmpty == true) {
+      return GetPageRoute(
+        settings: settings,
+        page: () => _unknownPage(title: '使用onGenerateRoute请配置getPages'),
+      );
+    }
+
     if (settings.name?.isNotEmpty != true) {
       return GetPageRoute(
         settings: settings,
@@ -89,12 +98,14 @@ class RouterManagerGet {
             getPages!.firstWhereOrNull((page) => page.name == loginPageName);
         return GetPageRoute(
           settings: settings,
-          page: loginGetPage?.page ?? () => _unknownPage(),
+          page: loginGetPage?.page ??
+              () => _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页'),
         );
-      }else {
+      } else {
         return GetPageRoute(
           settings: settings,
-          page: () => _unknownPage(),
+          page: () =>
+              _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页'),
         );
       }
     }
@@ -117,11 +128,15 @@ class RouterManagerGet {
     );
   }
 
-  static Widget _unknownPage() {
+  static Widget _unknownPage({String? title}) {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: quickText('你找到了一片荒芜之地~~', 16, const Color(0xFF666666)),
+        child: quickText(
+          title ?? '你找到了一片荒芜之地~~',
+          16,
+          const Color(0xFF666666),
+        ),
       ),
     );
   }
