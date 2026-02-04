@@ -8,6 +8,12 @@ class RouterManager {
   /*路由表*/
   static Map routes = <String, WidgetBuilder>{};
 
+  /*所有页面都需要登录才能访问,比如后台管理,优先级最高*/
+  static bool allPageNeedLogin = false;
+
+  /*白名单页面,不需要验证登录,与下面的verifyLoginPageList二选一,哪个有值用哪个*/
+  static List<String> whitePageList = [];
+
   /*需要验证登录态的路由*/
   static List<String> verifyLoginPageList = [];
 
@@ -29,15 +35,33 @@ class RouterManager {
   */
   static String? loginPageName;
 
+  /*not found page*/
+  static String? unknownPageName;
+
+  static bool _needLogin(String routeName) {
+    bool loginStatus = false;
+    if (getLoginStatus != null) loginStatus = getLoginStatus!();
+    // 已经是登录状态
+    if (loginStatus) return false;
+
+    if (allPageNeedLogin) {
+      return true;
+    } else if (whitePageList.isNotEmpty) {
+      return !whitePageList.contains(routeName);
+    } else if (verifyLoginPageList.isNotEmpty) {
+      return verifyLoginPageList.contains(routeName);
+    }
+
+    return false;
+  }
+
   static pushNamed<T>(
     BuildContext context,
     String routeName, {
     Object? arguments,
     ObjectCallback<T?>? popCallback,
   }) async {
-    bool loginStatus = false;
-    if (getLoginStatus != null) loginStatus = getLoginStatus!();
-    if (verifyLoginPageList.contains(routeName) && !loginStatus) {
+    if (_needLogin(routeName)) {
       bool? loginResult = false;
       if (doLogin != null) {
         loginResult = await doLogin!(context);
@@ -63,7 +87,33 @@ class RouterManager {
   }
 
   static MaterialPageRoute onGenerateRoute(RouteSettings settings) {
-    WidgetBuilder builder = routes[settings.name];
+    if (routes.isEmpty == true) {
+      return _unknownPage(title: '使用onGenerateRoute请配置routes');
+    }
+
+    if (settings.name?.isNotEmpty != true) {
+      return _unknownPage();
+    }
+
+    if (_needLogin(settings.name!)) {
+      var loginBuilder = routes[loginPageName];
+      if (loginPageName?.isNotEmpty != true || loginBuilder == null) {
+        return _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页');
+      } else {
+        return MaterialPageRoute(
+          builder: loginBuilder,
+          settings: settings,
+          fullscreenDialog: isAndroid || isIOS,
+        );
+      }
+    }
+
+    WidgetBuilder? builder = routes[settings.name];
+
+    WidgetBuilder? unknownGetBuilder;
+    if (unknownPageName?.isNotEmpty == true) {
+      unknownGetBuilder = routes[unknownPageName];
+    }
 
     bool fullScreen = false;
     if (isIOS || isAndroid) {
@@ -71,7 +121,27 @@ class RouterManager {
     }
 
     return MaterialPageRoute(
-        builder: builder, settings: settings, fullscreenDialog: fullScreen);
+      builder: builder ?? unknownGetBuilder ?? _unknownPage().builder,
+      settings: settings,
+      fullscreenDialog: fullScreen,
+    );
+  }
+
+  static MaterialPageRoute _unknownPage({String? title}) {
+    return MaterialPageRoute(
+      builder: (context) {
+        return Scaffold(
+          appBar: AppBar(),
+          body: Center(
+            child: quickText(
+              title ?? '你找到了一片荒芜之地~~',
+              16,
+              const Color(0xFF666666),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

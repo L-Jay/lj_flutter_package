@@ -79,34 +79,20 @@ class RouterManagerGet {
   */
   static Route onGenerateRoute(RouteSettings settings) {
     if (getPages?.isEmpty == true) {
-      return GetPageRoute(
-        settings: settings,
-        page: () => _unknownPage(title: '使用onGenerateRoute请配置getPages'),
-      );
+      return _unknownPage(title: '使用onGenerateRoute请配置getPages');
     }
 
     if (settings.name?.isNotEmpty != true) {
-      return GetPageRoute(
-        settings: settings,
-        page: () => _unknownPage(),
-      );
+      return _unknownPage();
     }
 
     if (_needLogin(settings.name!)) {
-      if (loginPageName?.isNotEmpty == true) {
-        GetPage? loginGetPage =
-            getPages!.firstWhereOrNull((page) => page.name == loginPageName);
-        return GetPageRoute(
-          settings: settings,
-          page: loginGetPage?.page ??
-              () => _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页'),
-        );
+      GetPage? loginGetPage =
+          getPages!.firstWhereOrNull((page) => page.name == loginPageName);
+      if (loginPageName?.isNotEmpty == true && loginGetPage != null) {
+        return GetPageRoute(settings: settings, page: loginGetPage.page);
       } else {
-        return GetPageRoute(
-          settings: settings,
-          page: () =>
-              _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页'),
-        );
+        return _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页');
       }
     }
 
@@ -124,20 +110,22 @@ class RouterManagerGet {
 
     return GetPageRoute(
       settings: settings,
-      page: getPage?.page ?? unknownGetPage?.page ?? () => _unknownPage(),
+      page: getPage?.page ?? unknownGetPage?.page ?? _unknownPage().page,
     );
   }
 
-  static Widget _unknownPage({String? title}) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: quickText(
-          title ?? '你找到了一片荒芜之地~~',
-          16,
-          const Color(0xFF666666),
+  static GetPageRoute _unknownPage({String? title}) {
+    return GetPageRoute(page: () {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(
+          child: quickText(
+            title ?? '你找到了一片荒芜之地~~',
+            16,
+            const Color(0xFF666666),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
