@@ -787,7 +787,7 @@ class _TabBarCustomState extends State<TabBarCustom> {
   Decoration? get _indicator {
     if (widget.indicator != null)
       return widget.indicator;
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     if (tabBarTheme.indicator != null)
       return tabBarTheme.indicator;
 
@@ -1022,7 +1022,7 @@ class _TabBarCustomState extends State<TabBarCustom> {
       );
     }
 
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
 
     final List<Widget> wrappedTabs = <Widget>[
       for (int i = 0; i < widget.tabs.length; i += 1)
