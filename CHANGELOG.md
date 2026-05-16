@@ -1,3 +1,6 @@
-## 0.0.1
+## 0.1.0
+1. 持续优化改进package功能,初步稳定
 
-* TODO: Describe initial release.
+## 1.1.0
+
+1. 升级插件到最新版本,适配flutter高版本
