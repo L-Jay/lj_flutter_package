@@ -31,6 +31,7 @@ class LJDebugConfig {
   // }
 
   static bool show = false;
+  static bool _isGet = false;
 
   static set serviceChangeCallback(LJServiceChangeCallback callback) {
     int index;
@@ -45,9 +46,15 @@ class LJDebugConfig {
     if (!kDebugMode) return;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var finalContext = context ??
-          RouterManager.navigatorKey.currentState?.overlay?.context ??
-          Get.overlayContext;
+      BuildContext? finalContext;
+      if (Get.overlayContext != null) {
+        finalContext = Get.overlayContext;
+        _isGet = true;
+      } else {
+        finalContext = context ??
+            RouterManager.navigatorKey.currentState?.overlay?.context;
+      }
+
       if (finalContext != null) _insertOverlay(finalContext, 'LJ');
     });
   }
@@ -66,12 +73,16 @@ class LJDebugConfig {
             Offset(size.width - 56 - 10, size.height - 56 - 56 - 10 - bottom),
         adsorption: LJDragAdsorption.all,
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const DebugNetworkHistoryPage(),
-            ),
-          );
+          if (_isGet) {
+            Get.to(() => const DebugNetworkHistoryPage());
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DebugNetworkHistoryPage(),
+              ),
+            );
+          }
         },
         child: quickText(title, 18, Colors.white),
       );

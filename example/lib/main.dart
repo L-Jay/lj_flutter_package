@@ -28,8 +28,8 @@ class MyApp extends StatelessWidget {
   MyApp({super.key}) {
     _configDebug();
     _configNetwork();
-    // _configRouter();
-    _configGetRouter();
+    _configRouter();
+    // _configGetRouter();
   }
 
   _configDebug() {
@@ -164,8 +164,8 @@ class MyApp extends StatelessWidget {
       enableLoadingWhenFailed: true,
       hideFooterWhenNotFull: true,
       enableBallisticLoad: true,
-      // child: _buildMaterialApp(),
-      child: _buildGetMaterialApp(),
+      child: _buildMaterialApp(),
+      // child: _buildGetMaterialApp(),
     );
   }
 
