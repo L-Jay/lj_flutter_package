@@ -22,7 +22,7 @@ typedef LJNetworkStatusCallback = void Function(LJNetworkStatus status);
 typedef LJNetworkMockCallback = String Function(
     Map<String, dynamic>? requestParams);
 
-enum LJNetworkStatus { wifi, mobile, none }
+enum LJNetworkStatus { wifi, mobile, other, none }
 
 class LJNetwork {
   static final Dio dio = _createDio();
@@ -108,15 +108,12 @@ class LJNetwork {
   /*实时获取当前网络状态*/
   static Future<bool> get networkActiveImmediately async {
     var result = await Connectivity().checkConnectivity();
-    if (result.contains(ConnectivityResult.wifi)) {
-      networkActive = true;
-      return true;
-    } else if (result.contains(ConnectivityResult.mobile)) {
-      networkActive = true;
-      return true;
-    } else {
+    if (result.contains(ConnectivityResult.none)) {
       networkActive = false;
       return false;
+    } else {
+      networkActive = true;
+      return true;
     }
   }
 
@@ -141,10 +138,15 @@ class LJNetwork {
         for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.mobile);
         }
-      } else {
+      } else if (result.contains(ConnectivityResult.none)) {
         networkActive = false;
         for (var callback in _networkStatusSubscriptionList) {
           callback(LJNetworkStatus.none);
+        }
+      } else {
+        networkActive = true;
+        for (var callback in _networkStatusSubscriptionList) {
+          callback(LJNetworkStatus.other);
         }
       }
     });
