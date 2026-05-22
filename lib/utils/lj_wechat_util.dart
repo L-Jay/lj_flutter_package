@@ -9,7 +9,7 @@ import 'lj_util.dart';
 
 ///所有方法只有成功才返回
 ///所有错误使用register的errorCallback处理
-class WeChatUtil {
+class WechatUtil {
   static final Fluwx fluwx = Fluwx();
 
   static Future<bool> get installed => fluwx.isWeChatInstalled;
