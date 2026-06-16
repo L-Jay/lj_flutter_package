@@ -1,4 +1,3 @@
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -35,6 +34,7 @@ class LJUtil {
     bool useCamera = true,
     bool? crop,
     bool userFront = false,
+    int compressQuality = 60,
   }) async {
     bool permission = await LJPermissionUtils.checkStorage();
     if (!permission) return null;
@@ -61,7 +61,7 @@ class LJUtil {
     if (crop == null || !crop) {
       return file.path;
     } else {
-      return await cropImage(file.path);
+      return await cropImage(file.path, compressQuality: compressQuality);
     }
   }
 
@@ -69,6 +69,7 @@ class LJUtil {
     String imagePath, {
     double ratioX = 1,
     double ratioY = 1,
+    int compressQuality = 60,
   }) async {
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: imagePath,
@@ -96,7 +97,7 @@ class LJUtil {
           doneButtonTitle: isEnglish ? 'Done' : '完成',
         ),
       ],
-      compressQuality: 100,
+      compressQuality: compressQuality,
     );
 
     return croppedFile?.path;

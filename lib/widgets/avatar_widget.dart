@@ -15,6 +15,7 @@ class AvatarWidget extends StatefulWidget {
   final Widget? cameraWidget;
   final bool userFront;
   final bool crop;
+  final int compressQuality;
   final Function(String? imagePath)? pickFinish;
 
   const AvatarWidget({
@@ -28,6 +29,7 @@ class AvatarWidget extends StatefulWidget {
     this.crop = false,
     this.cameraWidget,
     this.pickFinish,
+    this.compressQuality = 60,
   });
 
   @override
@@ -47,6 +49,7 @@ class _AvatarWidgetState extends State<AvatarWidget> {
               useCamera: index == 0,
               userFront: widget.userFront,
               crop: widget.crop,
+              compressQuality: widget.compressQuality,
             );
             widget.pickFinish!(imagePath);
           }
