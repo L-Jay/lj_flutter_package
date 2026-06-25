@@ -103,16 +103,25 @@ class MyApp extends StatelessWidget {
     // 拦截请求参数
     LJNetwork.handleRequestParams =
         (String path, Map<String, dynamic>? requestParams) {
-      EasyLoading.show();
-      return requestParams ?? {};
-    };
+          EasyLoading.show();
+          return requestParams ?? {};
+        };
 
     // 拦截响应体
     LJNetwork.handleResponseData =
         (String path, Map<String, dynamic> responseData) {
-      EasyLoading.dismiss();
-      return responseData;
-    };
+          EasyLoading.dismiss();
+          return responseData;
+        };
+
+    // 监控网络状态
+    LJNetwork.handleNetworkStatus(() {
+      if (kDebugMode) {
+        print(
+        'networkActive: ${LJNetwork.networkActive}, networkType: ${LJNetwork.networkType}',
+      );
+      }
+    });
   }
 
   _configRouter() {
@@ -146,10 +155,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshConfiguration(
-      headerBuilder: () => const WaterDropHeader(
-        refresh: Text("正在刷新"),
-        complete: Text("刷新完成"),
-      ),
+      headerBuilder: () =>
+          const WaterDropHeader(refresh: Text("正在刷新"), complete: Text("刷新完成")),
       // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
       footerBuilder: () => const ClassicFooter(
         loadStyle: LoadStyle.ShowWhenLoading,

@@ -16,13 +16,11 @@ typedef LJNetworkFailureCallback = void Function(LJError error);
 
 typedef LJNetworkJsonParse<T> = T Function<T>(dynamic data);
 
-typedef LJNetworkStatusCallback = void Function(LJNetworkStatus status);
-
 /*requestParams：请求参数，可以判断请求参数返回对应的响应体*/
 typedef LJNetworkMockCallback = String Function(
     Map<String, dynamic>? requestParams);
 
-enum LJNetworkStatus { wifi, mobile, other, none }
+enum LJNetworkType { wifi, mobile, other, none }
 
 class LJNetwork {
   static final Dio dio = _createDio();
@@ -83,27 +81,9 @@ class LJNetwork {
   */
   static final Map<String, LJNetworkMockCallback> mockMap = {};
 
-  static Dio _createDio() {
-    Dio dio = Dio(BaseOptions(
-      baseUrl: baseUrl ?? '',
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
-    ));
-
-    handleNetworkStatus((LJNetworkStatus status) {
-      networkActive = status != LJNetworkStatus.none;
-    });
-
-    if (kDebugMode) {
-      dio.interceptors
-          .add(LogInterceptor(requestBody: true, responseBody: true));
-    }
-
-    return dio;
-  }
-
   /*当前网络是否可用,跟随网络变化*/
   static bool networkActive = false;
+  static LJNetworkType networkType = LJNetworkType.none;
 
   /*实时获取当前网络状态*/
   static Future<bool> get networkActiveImmediately async {
@@ -117,46 +97,58 @@ class LJNetwork {
     }
   }
 
-  static final List<LJNetworkStatusCallback> _networkStatusSubscriptionList =
-      [];
+  static final List<VoidCallback> _networkStatusSubscriptionList = [];
   static StreamSubscription<List<ConnectivityResult>>?
       _connectivitySubscription;
 
   /*
   监控网络状态
   */
-  static handleNetworkStatus(LJNetworkStatusCallback callback) {
+  static handleNetworkStatus(VoidCallback callback) {
+    _networkStatusSubscriptionList.add(callback);
+
     _connectivitySubscription ??=
         Connectivity().onConnectivityChanged.listen((result) {
       if (result.contains(ConnectivityResult.wifi)) {
         networkActive = true;
-        for (var callback in _networkStatusSubscriptionList) {
-          callback(LJNetworkStatus.wifi);
-        }
+        networkType = LJNetworkType.wifi;
       } else if (result.contains(ConnectivityResult.mobile)) {
         networkActive = true;
-        for (var callback in _networkStatusSubscriptionList) {
-          callback(LJNetworkStatus.mobile);
-        }
+        networkType = LJNetworkType.mobile;
       } else if (result.contains(ConnectivityResult.none)) {
         networkActive = false;
-        for (var callback in _networkStatusSubscriptionList) {
-          callback(LJNetworkStatus.none);
-        }
+        networkType = LJNetworkType.none;
       } else {
         networkActive = true;
-        for (var callback in _networkStatusSubscriptionList) {
-          callback(LJNetworkStatus.other);
-        }
+        networkType = LJNetworkType.other;
+      }
+
+      for (var callback in _networkStatusSubscriptionList) {
+        callback();
       }
     });
-
-    _networkStatusSubscriptionList.add(callback);
   }
 
   /*取消监控网络状态*/
-  static cancelHandleNetworkStatus(LJNetworkStatusCallback callback) {
+  static cancelHandleNetworkStatus(VoidCallback callback) {
     _networkStatusSubscriptionList.remove(callback);
+  }
+
+  static Dio _createDio() {
+    Dio dio = Dio(BaseOptions(
+      baseUrl: baseUrl ?? '',
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
+    ));
+
+    handleNetworkStatus(() {});
+
+    if (kDebugMode) {
+      dio.interceptors
+          .add(LogInterceptor(requestBody: true, responseBody: true));
+    }
+
+    return dio;
   }
 
   /*
