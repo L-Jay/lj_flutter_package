@@ -12,8 +12,9 @@ import 'lj_permission.dart';
 class LJUtil {
   static late SharedPreferences preferences;
   static late PackageInfo packageInfo;
-  static late AndroidDeviceInfo androidDeviceInfo;
+  static late DeviceInfoPlugin deviceInfo;
   static late IosDeviceInfo iosDeviceInfo;
+  static late AndroidDeviceInfo androidDeviceInfo;
   static late LJEventBus eventBus;
   static bool isEnglish = false;
 
@@ -21,7 +22,7 @@ class LJUtil {
     preferences = await SharedPreferences.getInstance();
     packageInfo = await PackageInfo.fromPlatform();
 
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    deviceInfo = DeviceInfoPlugin();
     if (isAndroid) androidDeviceInfo = await deviceInfo.androidInfo;
     if (isIOS) iosDeviceInfo = await deviceInfo.iosInfo;
     eventBus = LJEventBus();
