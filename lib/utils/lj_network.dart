@@ -428,6 +428,8 @@ class LJNetwork {
             break;
           case DioExceptionType.cancel:
             return;
+          default:
+            return;
         }
         /*请求数据发生错误*/
         finalError = LJError(errorCode, message);
