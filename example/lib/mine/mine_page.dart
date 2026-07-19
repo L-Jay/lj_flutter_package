@@ -56,8 +56,7 @@ class _MinePageState extends State<MinePage>
         actions: [
           GestureDetector(
             onTap: () {
-              RouterManagerGet.pushNamed(LJRouter.settingPage);
-              // RouterManager.pushNamed(context, LJRouter.settingPage);
+              RouterManager.pushNamed(LJRouter.settingPage);
             },
             child: const SizedBox(
               width: 44,
@@ -83,8 +82,7 @@ class _MinePageState extends State<MinePage>
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            // RouterManager.pushNamed(context, _pages[index]);
-            RouterManagerGet.pushNamed(_pages[index]);
+            RouterManager.pushNamed(_pages[index]);
           },
           child: Container(
             height: 50,
@@ -113,7 +111,7 @@ class _MinePageState extends State<MinePage>
     return GestureDetector(
       onTap: () async {
         if (!LoginManager.isLogin) {
-          bool result = await LoginManager.showLogin(context);
+          bool result = await LoginManager.showLogin();
           if (result) {
             setState(() {});
           }

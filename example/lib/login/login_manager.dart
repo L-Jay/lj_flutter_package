@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
 import '../common/router.dart';
 import 'model/user_info_model.dart';
@@ -13,7 +12,7 @@ class LoginManager {
     return userInfoResult != null;
   }
 
-  static logout() {
+  static void logout() {
     // 清理数据
     userInfoResult = null;
 
@@ -21,13 +20,10 @@ class LoginManager {
     LJEventBus().emit(kLogoutEvent);
   }
 
-  static Future<bool> showLogin(BuildContext context) async {
+  static Future<bool> showLogin() async {
     if (isLogin) return Future.value(true);
 
-    bool? result = await Navigator.pushNamed(
-      context,
-      LJRouter.loginPage,
-    ) as bool?;
+    bool? result = await RouterManager.pushNamed(LJRouter.loginPage);
 
     if (result == true) {
       LJNetwork.headers.addAll({'Authorization': userInfoResult?.token ?? ""});

@@ -63,7 +63,7 @@ class _SettingPageState extends State<SettingPage> {
         return GestureDetector(
           onTap: () {
             if (page != null) {
-              Navigator.push(context, pageRoute(page));
+              RouterManager.pushPage(page);
             }
           },
           child: Container(

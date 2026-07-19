@@ -53,8 +53,8 @@ class _LJImageChooseWidgetState extends State<LJImageChooseWidget> {
   Widget build(BuildContext context) {
     var images = _imagePaths.map((path) {
       return GestureDetector(
-        onTap: () => Navigator.of(context)
-            .push(pageRoute(LJImagePreviewPage(images: _imagePaths))),
+        onTap: () =>
+            RouterManager.pushPage(LJImagePreviewPage(images: _imagePaths)),
         onLongPress: () async {
           int? index = await showActionSheet(context, ['删除']);
           if (index != null) {
@@ -97,7 +97,7 @@ class _LJImageChooseWidgetState extends State<LJImageChooseWidget> {
               circular: widget.corner,
               child: Icon(
                 Icons.add,
-                color: widget.backgroundColor.withOpacity(0.5),
+                color: widget.backgroundColor.withValues(alpha: 0.5),
                 size: widget.size * 0.5,
               ),
             ),

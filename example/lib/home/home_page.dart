@@ -1,5 +1,4 @@
 import 'package:example/home/model/weather_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
@@ -11,7 +10,7 @@ import 'package:lj_flutter_package/ui_component/lj_webview_page.dart';
 import '../gen_a/A.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -28,30 +27,35 @@ class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   List<ImageModel> imageList = [
     ImageModel(
-        'https://img1.baidu.com/it/u=2093859625,3420507245&fm=253&fmt=auto&app=138&f=JPEG?w=649&h=437',
-        'https:www.baidu.com'),
+      'https://img1.baidu.com/it/u=2093859625,3420507245&fm=253&fmt=auto&app=138&f=JPEG?w=649&h=437',
+      'https:www.baidu.com',
+    ),
     ImageModel(
-        'https://img2.baidu.com/it/u=3157650194,2969546188&fm=253&fmt=auto&app=120&f=JPEG?w=650&h=433',
-        '''<span>这是一段HTML文本</span>'''),
+      'https://img2.baidu.com/it/u=3157650194,2969546188&fm=253&fmt=auto&app=120&f=JPEG?w=650&h=433',
+      '''<span>这是一段HTML文本</span>''',
+    ),
     ImageModel(
-        'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com'
-            '%2Fimages%2F20180920%2Fccc39d430a574d198d404608489419c0.jpeg'
-            '&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com'
-            '&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto'
-            '?sec=1662275947&t=0a1c0fc072daf1a5356982789489de9f',
-        'https:www.baidu.com'),
+      'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com'
+          '%2Fimages%2F20180920%2Fccc39d430a574d198d404608489419c0.jpeg'
+          '&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com'
+          '&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto'
+          '?sec=1662275947&t=0a1c0fc072daf1a5356982789489de9f',
+      'https:www.baidu.com',
+    ),
     ImageModel(
-        'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.zcyy8.com'
-            '%2Fuploadimg%2Fimage%2F20211104%2F20211104134820_29104.jpg'
-            '&refer=http%3A%2F%2Fimg.zcyy8.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto'
-            '?sec=1662275946&t=2fdece60028eb53f165f7a90a0370cad',
-        'https:www.baidu.com'),
+      'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.zcyy8.com'
+          '%2Fuploadimg%2Fimage%2F20211104%2F20211104134820_29104.jpg'
+          '&refer=http%3A%2F%2Fimg.zcyy8.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto'
+          '?sec=1662275946&t=2fdece60028eb53f165f7a90a0370cad',
+      'https:www.baidu.com',
+    ),
     ImageModel(
-        'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fi-7.vcimg.com'
-            '%2Ftrim%2F0ac056a1f8d11ca085769c49e41523651497503%2Ftrim.jpg&refer=http%3A%2F%2Fi-7.vcimg.com'
-            '&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto'
-            '?sec=1662275946&t=14ecf3f816e25b9561578e74bc53c8e7',
-        'https:www.baidu.com'),
+      'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fi-7.vcimg.com'
+          '%2Ftrim%2F0ac056a1f8d11ca085769c49e41523651497503%2Ftrim.jpg&refer=http%3A%2F%2Fi-7.vcimg.com'
+          '&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto'
+          '?sec=1662275946&t=14ecf3f816e25b9561578e74bc53c8e7',
+      'https:www.baidu.com',
+    ),
   ];
 
   final String _city = '石家庄';
@@ -91,19 +95,21 @@ class _HomePageState extends State<HomePage>
 
   _fetchWeather() {
     EasyLoading.show();
-    LJNetwork.post<WeatherModel>('/simpleWeather/query', params: {
-      'key': 'f359141d6b74e818a1bfc813b0e3fcb6',
-      'city': _city,
-    }, successCallback: (WeatherModel model) {
-      EasyLoading.showSuccess(model.reason ?? '请求成功');
-      print(model);
-      setState(() {
-        _weatherResult = model.result;
-      });
-    }, failureCallback: (error) {
-      print(error);
-      EasyLoading.showSuccess(error.errorMessage);
-    });
+    LJNetwork.post<WeatherModel>(
+      '/simpleWeather/query',
+      params: {'key': 'f359141d6b74e818a1bfc813b0e3fcb6', 'city': _city},
+      successCallback: (WeatherModel model) {
+        EasyLoading.showSuccess(model.reason ?? '请求成功');
+        print(model);
+        setState(() {
+          _weatherResult = model.result;
+        });
+      },
+      failureCallback: (error) {
+        print(error);
+        EasyLoading.showSuccess(error.errorMessage);
+      },
+    );
   }
 
   @override
@@ -142,14 +148,7 @@ class _HomePageState extends State<HomePage>
                 return model.imageUrl;
               },
               onTap: (model) {
-                Navigator.push(
-                  context,
-                  pageRoute(
-                    LJWebViewPage(
-                      url: model.contentUrl,
-                    ),
-                  ),
-                );
+                RouterManager.pushPage(LJWebViewPage(url: model.contentUrl));
               },
             ),
             LJTileAreaView(

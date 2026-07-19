@@ -44,9 +44,7 @@ class _LoginPageState extends State<LoginPage> {
     Completer<bool> completer = Completer();
     LJNetwork.post(
       ApiUrl.sendCode,
-      data: {
-        'loginMobile': _phoneController.text,
-      },
+      data: {'loginMobile': _phoneController.text},
       successCallback: (Map data) {
         int? code = data['result'];
         LoginManager.loginPhone = _phoneController.text;
@@ -80,8 +78,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    LJNetwork.mockMap[ApiUrl.mobileLogin] =
-        (Map<String, dynamic>? requestParams) {
+    LJNetwork.mockMap[ApiUrl
+        .mobileLogin] = (Map<String, dynamic>? requestParams) {
       String phone = requestParams?['phone'];
       String code = requestParams?['code'];
 
@@ -111,14 +109,12 @@ class _LoginPageState extends State<LoginPage> {
     EasyLoading.show();
     LJNetwork.post<UserInfoModel>(
       '/login',
-      data: {
-        'phone': _phoneController.text,
-        'code': _codeController.text,
-      },
+      data: {'phone': _phoneController.text, 'code': _codeController.text},
       successCallback: (UserInfoModel model) {
         LoginManager.userInfoResult = model.result;
+        LJEventBus().emit(kLoginEvent);
         EasyLoading.showSuccess(model.reason!);
-        Navigator.pop(context, true);
+        RouterManager.pop(true);
       },
       failureCallback: (error) {
         EasyLoading.showError(error.errorMessage);
@@ -134,9 +130,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('登录'),
-      ),
+      appBar: AppBar(title: const Text('登录')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 44.0),
@@ -187,25 +181,19 @@ class _LoginPageState extends State<LoginPage> {
           LJColor.lightGaryColor,
           LJColor.garyColor,
           LJColor.lightGaryColor,
-          LJColor.garyColor
+          LJColor.garyColor,
         ],
         [
           () {},
           () {
-            Navigator.push(
-              context,
-              pageRoute(
-                const LJWebViewPage(url: 'https://www.baidu.com'),
-              ),
+            RouterManager.pushPage(
+              const LJWebViewPage(url: 'https://www.baidu.com'),
             );
           },
           () {},
           () {
-            Navigator.push(
-              context,
-              pageRoute(
-                const LJWebViewPage(url: 'https://www.baidu.com'),
-              ),
+            RouterManager.pushPage(
+              const LJWebViewPage(url: 'https://www.baidu.com'),
             );
           },
         ],

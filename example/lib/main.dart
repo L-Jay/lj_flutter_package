@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:example/bottom_tabbar.dart';
 import 'package:example/common/api_url.dart';
 import 'package:example/common/lj_colors.dart';
@@ -8,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/debug/lj_debug_config.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
-import 'package:lj_flutter_package/utils/lj_router_manager_get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'common/router.dart';
@@ -26,25 +23,24 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   MyApp({super.key}) {
-    _configDebug();
+    if (!kIsWeb) _configDebug();
     _configNetwork();
     _configRouter();
-    // _configGetRouter();
   }
 
-  _configDebug() {
+  void _configDebug() {
     LJDebugConfig.configList = [
       {
         'title': '正式',
         'baseUrl': ApiUrl.productUrl,
-        'pushKey': 'product_xxxxx',
-        'wechat': 'product_xxxxx',
+        'pushKey': 'product_key',
+        'wechat': 'product_id',
       },
       {
         'title': '测试',
         'baseUrl': ApiUrl.devUrl,
-        'pushKey': 'test_xxxxx',
-        'wechat': 'product_xxxxx',
+        'pushKey': 'test_key',
+        'wechat': 'product_id',
       },
     ];
 
@@ -72,19 +68,19 @@ class MyApp extends StatelessWidget {
     if (isAndroid) {
       Map<String, String> androidInfo = {
         'systemVersion': LJUtil.androidDeviceInfo.version.baseOS ?? "", // 系统版本
-        'systemName': LJUtil.androidDeviceInfo.brand ?? "",
-        'deviceId': LJUtil.androidDeviceInfo.id ?? "",
-        'device': LJUtil.androidDeviceInfo.model ?? "",
+        'systemName': LJUtil.androidDeviceInfo.brand,
+        'deviceId': LJUtil.androidDeviceInfo.id,
+        'device': LJUtil.androidDeviceInfo.model,
       };
       LJNetwork.headers.addAll(androidInfo);
     }
 
     if (isIOS) {
       Map<String, String> iosInfo = {
-        'systemVersion': LJUtil.iosDeviceInfo.systemVersion ?? "", // 系统版本
+        'systemVersion': LJUtil.iosDeviceInfo.systemVersion, // 系统版本
         'systemName': 'iOS',
         'deviceId': LJUtil.iosDeviceInfo.identifierForVendor ?? "", // iOS广告标识符
-        'device': LJUtil.iosDeviceInfo.utsname.machine ?? "",
+        'device': LJUtil.iosDeviceInfo.utsname.machine,
       };
       LJNetwork.headers.addAll(iosInfo);
     }
@@ -118,19 +114,20 @@ class MyApp extends StatelessWidget {
     LJNetwork.handleNetworkStatus(() {
       if (kDebugMode) {
         print(
-        'networkActive: ${LJNetwork.networkActive}, networkType: ${LJNetwork.networkType}',
-      );
+          'networkActive: ${LJNetwork.networkActive}, networkType: ${LJNetwork.networkType}',
+        );
       }
     });
   }
 
-  _configRouter() {
+  void _configRouter() {
+    // RouterManager.routerType = RouterType.get;
     RouterManager.routes = LJRouter.routes;
     RouterManager.verifyLoginPageList = LJRouter.verifyLoginPageList;
     RouterManager.fullscreenPageList = LJRouter.fullscreenPageList;
-    RouterManager.doLogin = (BuildContext context) {
-      return LoginManager.showLogin(context);
-    };
+    // RouterManager.doLogin = () {
+    //   return LoginManager.showLogin();
+    // };
     RouterManager.loginPageName = LJRouter.loginPage;
     RouterManager.getLoginStatus = () {
       return LoginManager.isLogin;
@@ -140,24 +137,11 @@ class MyApp extends StatelessWidget {
     };
   }
 
-  _configGetRouter() {
-    RouterManagerGet.verifyLoginPageList = LJRouter.verifyLoginPageList;
-    // RouterManagerGet.doLogin = () {
-    //   return LoginManager.showLogin();
-    // };
-    RouterManagerGet.getPages = LJRouter.pages;
-    RouterManagerGet.loginPageName = LJRouter.loginPage;
-    RouterManagerGet.getLoginStatus = () {
-      return LoginManager.isLogin;
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     return RefreshConfiguration(
       headerBuilder: () =>
           const WaterDropHeader(refresh: Text("正在刷新"), complete: Text("刷新完成")),
-      // 配置默认头部指示器,假如你每个页面的头部指示器都一样的话,你需要设置这个
       footerBuilder: () => const ClassicFooter(
         loadStyle: LoadStyle.ShowWhenLoading,
         loadingText: "正在加载",
@@ -171,49 +155,72 @@ class MyApp extends StatelessWidget {
       enableLoadingWhenFailed: true,
       hideFooterWhenNotFull: true,
       enableBallisticLoad: true,
-      child: _buildMaterialApp(),
-      // child: _buildGetMaterialApp(),
+      child: () {
+        switch (RouterManager.routerType) {
+          case RouterType.goRouter:
+            return _buildGoRouterMaterialApp();
+          case RouterType.get:
+            return _buildGetMaterialApp();
+          case RouterType.navigator1:
+            return _buildMaterialApp();
+        }
+      }(),
+    );
+  }
+
+  MaterialApp _buildGoRouterMaterialApp() {
+    return MaterialApp.router(
+      title: 'lj_package demo',
+      theme: _themeData(),
+      routerConfig: RouterManager.goRouter,
+      builder: EasyLoading.init(),
     );
   }
 
   MaterialApp _buildMaterialApp() {
     return MaterialApp(
       title: 'lj_package demo',
-      // navigatorKey: RouterManager.navigatorKey,
-      theme: ThemeData(
-        fontFamily: "PingFang",
-        brightness: Brightness.light,
-        primaryColor: Colors.white,
-        highlightColor: Colors.transparent,
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          elevation: 0,
-          centerTitle: true,
-          toolbarTextStyle: TextStyle(
-            fontSize: 18,
-            color: LJColor.textColor,
-            fontWeight: semibold,
-          ),
-        ),
-        dividerTheme: const DividerThemeData(
-          color: LJColor.dividerColor,
-          thickness: 1,
-          space: 1,
-        ),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: _themeData(),
       home: const BottomTabbar(),
       builder: EasyLoading.init(),
+      navigatorKey: RouterManager.navigatorKey,
+      onGenerateRoute: RouterManager.onGenerateRoute,
     );
   }
 
   GetMaterialApp _buildGetMaterialApp() {
     return GetMaterialApp(
       title: 'lj_package demo',
+      theme: _themeData(),
       builder: EasyLoading.init(),
-      // initialRoute: '/',
-      getPages: kIsWeb ? null : LJRouter.pages,
-      onGenerateRoute: kIsWeb ? RouterManagerGet.onGenerateRoute : null,
+      // 在web端防止直接输入网址进入需要登录的界面,使用onGenerateRoute进行拦截
+      getPages: kIsWeb ? null : RouterManager.getPages,
+      onGenerateRoute: kIsWeb ? RouterManager.onGenerateRoute : null,
+    );
+  }
+
+  ThemeData _themeData() {
+    return ThemeData(
+      fontFamily: "PingFang",
+      brightness: Brightness.light,
+      primaryColor: Colors.white,
+      highlightColor: Colors.transparent,
+      scaffoldBackgroundColor: Colors.white,
+      appBarTheme: const AppBarTheme(
+        elevation: 0,
+        centerTitle: true,
+        toolbarTextStyle: TextStyle(
+          fontSize: 18,
+          color: LJColor.textColor,
+          fontWeight: semibold,
+        ),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: LJColor.dividerColor,
+        thickness: 1,
+        space: 1,
+      ),
+      visualDensity: VisualDensity.adaptivePlatformDensity,
     );
   }
 }

@@ -13,7 +13,6 @@ export 'utils/lj_extensions.dart';
 export 'utils/lj_network.dart';
 export 'utils/lj_permission.dart';
 export 'utils/lj_router_manager.dart';
-export 'utils/lj_router_manager_get.dart';
 export 'utils/lj_util.dart';
 export 'utils/lj_error.dart';
 

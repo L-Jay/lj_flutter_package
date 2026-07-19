@@ -1,30 +1,26 @@
-import 'package:example/bottom_tabbar.dart';
+
+import 'package:example/demo_pages/pages/router_argument_page.dart';
 import 'package:example/mine/about_page.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lj_flutter_package/lj_flutter_package.dart';
-
+import '../bottom_tabbar.dart';
 import '../demo_pages/pages/drag_demo_page.dart';
 import '../login/login_page.dart';
 import '../order/order_page.dart';
 import '../setting/setting_page.dart';
 
 class LJRouter {
-  static Map<String, WidgetBuilder> routes = {
-    orderPage: (context) => const OrderPage(),
-    dragDemoPage: (context) => const DragDemoPage(),
-    loginPage: (context) => const LoginPage(),
-    settingPage: (context) => const SettingPage(),
+  static Map<String, Widget> routes = {
+    root: BottomTabbar(),
+    loginPage: LoginPage(),
 
+    dragDemoPage: DragDemoPage(),
+    argumentPage: RouterArgumentPage(),
+    argumentDetailPage: RouterArgumentDetailPage(),
+
+    orderPage: OrderPage(),
+    aboutPage: AboutPage(),
+    settingPage: SettingPage(),
   };
-
-  static List<GetPage> pages = [
-    GetPage(name: root, page: () => const BottomTabbar()),
-    GetPage(name: orderPage, page: () => const OrderPage()),
-    GetPage(name: dragDemoPage, page: () => const DragDemoPage()),
-    GetPage(name: loginPage, page: () => const LoginPage(), fullscreenDialog: true),
-    GetPage(name: settingPage, page: () => const SettingPage()),
-    GetPage(name: aboutPage, page: () => const AboutPage()),
-  ];
 
   static List<String> verifyLoginPageList = [
     orderPage,
@@ -35,9 +31,15 @@ class LJRouter {
   ];
 
   static String root = '/';
-  static String orderPage = '/orderPage';
-  static String dragDemoPage = '/dragDemoPage';
   static String loginPage = '/loginPage';
+
+  static String dragDemoPage = '/dragDemoPage';
+
+  //GoRouter跳转必须注册到路由
+  static String argumentPage = '/argumentPage';
+  static String argumentDetailPage = '/argumentDetailPage';
+
+  static String orderPage = '/orderPage';
   static String settingPage = '/settingPage';
   static String aboutPage = '/aboutPage';
 }

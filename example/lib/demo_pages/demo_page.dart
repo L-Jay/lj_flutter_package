@@ -1,8 +1,9 @@
-
+import 'package:example/common/router.dart';
 import 'package:example/demo_pages/pages/dashed_line_page.dart';
 import 'package:example/demo_pages/pages/dropdown_page.dart';
 import 'package:example/demo_pages/pages/fold_list_page.dart';
 import 'package:example/demo_pages/pages/password_input_page.dart';
+import 'package:example/demo_pages/pages/router_argument_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
@@ -31,9 +32,10 @@ class _DemoPageState extends State<DemoPage>
     '密码/验证码输入框',
     '下拉菜单',
     '虚线',
+    '路由传参',
   ];
 
-  final List<Widget?> _pages = [
+  final List _pages = [
     null,
     null,
     null,
@@ -43,6 +45,7 @@ class _DemoPageState extends State<DemoPage>
     const PasswordInputPage(),
     const DropdownPage(),
     const DashedLinePage(),
+    LJRouter.argumentPage,
   ];
 
   @override
@@ -50,19 +53,20 @@ class _DemoPageState extends State<DemoPage>
     super.build(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Demo'),
-      ),
+      appBar: AppBar(title: const Text('Demo')),
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 20),
         shrinkWrap: true,
         itemBuilder: (context, index) {
-          Widget? page = _pages[index];
+          var page = _pages[index];
 
           return GestureDetector(
+            behavior: HitTestBehavior.translucent,
             onTap: () async {
               if (page != null) {
-                Navigator.push(context, pageRoute(page));
+                page is String
+                    ? RouterManager.pushNamed(page)
+                    : RouterManager.pushPage(page);
               } else {
                 switch (index) {
                   case 0:
@@ -70,19 +74,25 @@ class _DemoPageState extends State<DemoPage>
                     break;
                   case 1:
                     EasyLoading.show();
-                    ProvinceModel model = await LJNetwork.post<ProvinceModel>('/xzqh/query', params: {
-                    'key': 'b0f6256515bfc7ae93ab3a48835bf91d',
-                    'fid': '130000',
-                    });
+                    ProvinceModel model = await LJNetwork.post<ProvinceModel>(
+                      '/xzqh/query',
+                      params: {
+                        'key': 'b0f6256515bfc7ae93ab3a48835bf91d',
+                        'fid': '130000',
+                      },
+                    );
                     EasyLoading.showToast(model.reason ?? '请求成功');
                     print(model);
                     break;
                   case 2:
                     EasyLoading.show();
-                    String jsonStr = await LJNetwork.post<String>('/xzqh/query', params: {
-                      'key': 'b0f6256515bfc7ae93ab3a48835bf91d',
-                      'fid': '130000',
-                    });
+                    String jsonStr = await LJNetwork.post<String>(
+                      '/xzqh/query',
+                      params: {
+                        'key': 'b0f6256515bfc7ae93ab3a48835bf91d',
+                        'fid': '130000',
+                      },
+                    );
                     EasyLoading.showToast(jsonStr);
                     print(jsonStr);
                     break;
@@ -97,8 +107,11 @@ class _DemoPageState extends State<DemoPage>
                   quickText(_titles[index], 14, LJColor.mainColor),
                   const Spacer(),
                   if (page != null)
-                    const Icon(Icons.arrow_forward_ios,
-                        size: 15, color: LJColor.mainColor),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 15,
+                      color: LJColor.mainColor,
+                    ),
                 ],
               ),
             ),
@@ -114,19 +127,21 @@ class _DemoPageState extends State<DemoPage>
 
   _fetchProvince() {
     EasyLoading.show();
-    LJNetwork.post<ProvinceModel>('/xzqh/query', params: {
-      'key': 'b0f6256515bfc7ae93ab3a48835bf91d',
-      'fid': '',
-    }, successCallback: (ProvinceModel model) {
-      EasyLoading.showSuccess(model.reason ?? '请求成功');
-      print(model);
-      // setState(() {
-      //   _provinceModel = data;
-      // });
-    }, failureCallback: (error) {
-      print(error);
-      EasyLoading.showSuccess(error.errorMessage);
-    });
+    LJNetwork.post<ProvinceModel>(
+      '/xzqh/query',
+      params: {'key': 'b0f6256515bfc7ae93ab3a48835bf91d', 'fid': ''},
+      successCallback: (ProvinceModel model) {
+        EasyLoading.showSuccess(model.reason ?? '请求成功');
+        print(model);
+        // setState(() {
+        //   _provinceModel = data;
+        // });
+      },
+      failureCallback: (error) {
+        print(error);
+        EasyLoading.showSuccess(error.errorMessage);
+      },
+    );
   }
 
   @override
