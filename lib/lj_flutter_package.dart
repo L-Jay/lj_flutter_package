@@ -20,3 +20,4 @@ export 'widgets/keep_alive_widget.dart';
 export 'widgets/avatar_widget.dart';
 
 export 'package:get/get.dart';
+export 'package:url_launcher/url_launcher.dart';

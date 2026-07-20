@@ -235,7 +235,7 @@ class RouterManager {
                 popCallback?.call(value);
                 globalPopCallback?.call();
 
-              return value;
+                return value;
               });
             } else {
               return _goRouter
@@ -244,7 +244,7 @@ class RouterManager {
                 popCallback?.call(value);
                 globalPopCallback?.call();
 
-              return value;
+                return value;
               });
             }
           case RouterType.get:

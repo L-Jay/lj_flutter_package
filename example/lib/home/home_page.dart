@@ -1,4 +1,5 @@
 import 'package:example/home/model/weather_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
@@ -148,7 +149,11 @@ class _HomePageState extends State<HomePage>
                 return model.imageUrl;
               },
               onTap: (model) {
-                RouterManager.pushPage(LJWebViewPage(url: model.contentUrl));
+                if (kIsWeb || model.contentUrl.startsWith('http')) {
+                  launchUrl(Uri.parse(model.contentUrl));
+                }else {
+                  RouterManager.pushPage(LJWebViewPage(url: model.contentUrl));
+                }
               },
             ),
             LJTileAreaView(
