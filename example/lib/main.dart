@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
   }
 
   void _configNetwork() {
-    // LJNetwork.baseUrl = 'http://apis.juhe.cn';
+    LJNetwork.baseUrl = ApiUrl.productUrl;
     LJNetwork.codeKey = 'error_code';
     LJNetwork.successCode = 0;
     LJNetwork.messageKey = 'reason';
