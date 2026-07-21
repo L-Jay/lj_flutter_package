@@ -6,15 +6,18 @@ class DashedLinePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        LJDashedLine(
-          dashedWidth: 10,
-          dashedColor: Colors.orange,
-          height: 4,
-        ),
-      ],
+    return Scaffold(
+      appBar: AppBar(),
+      body: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          LJDashedLine(
+            dashedWidth: 10,
+            dashedColor: Colors.orange,
+            height: 4,
+          ),
+        ],
+      ),
     );
   }
 }

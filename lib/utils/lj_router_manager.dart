@@ -74,6 +74,9 @@ class RouterManager {
   /// 适应场景: 自行处理登录逻辑,高度自定义,任意跳转,任意登录方式
   static Future<bool> Function()? doLogin;
 
+  /// 根页面路由名称rootPageName,默认 '/'
+  static String rootPageName = '/';
+
   /// 对应的page要放在routes里面
   /// 登录页路由名称loginPageName,doLogin同时实现的话优先使用doLogin
   /// 登录页完成登录后,pop的时候需要返回true,才能跳转页面
@@ -439,7 +442,7 @@ class RouterManager {
     if (_goRouter != null) return _goRouter!;
     _goRouter = GoRouter(
       debugLogDiagnostics: kDebugMode,
-      initialLocation: '/',
+      initialLocation: rootPageName,
       restorationScopeId: 'lj_router_manager_router',
       navigatorKey: navigatorKey,
       routes: routes.entries.map(
