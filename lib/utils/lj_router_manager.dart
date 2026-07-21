@@ -26,12 +26,14 @@ enum RouterType {
   navigator1,
 }
 
+typedef PageBuilder = Widget Function();
+
 class RouterManager {
   /// 路由类型,默认GoRouter
   static RouterType routerType = RouterType.goRouter;
 
   /// 命名路由表,name page
-  static Map routes = <String, Widget>{};
+  static Map routes = <String, PageBuilder>{};
 
   /// GoRouter
   static GoRouter? _goRouter;
@@ -43,8 +45,8 @@ class RouterManager {
 
   /// Navigator1.0 routes,不建议使用,建议使用onGenerateRoute
   /// routes优先级比onGenerateRoute高,routes命中的path不会再走onGenerateRoute
-  static Map<String, WidgetBuilder> get navigatorRoutes =>
-      routes.map((name, page) => MapEntry(name, (context) => page));
+  static Map<String, WidgetBuilder> get navigatorRoutes => routes
+      .map((name, pageFunction) => MapEntry(name, (context) => pageFunction()));
 
   /// Navigator 1.0 结合navigatorKey使用,Get内置了,上面的goRouter绑定了这个key
   /// Navigator 1.0 最初是为移动端设计的，本身没有「地址栏 URL」的概念,建议使用GoRouter
@@ -454,7 +456,7 @@ class RouterManager {
               pageBuilder: (context, state) {
                 return MaterialPage(
                   fullscreenDialog: true,
-                  child: routes[e.key],
+                  child: routes[e.key](),
                 );
               },
             );
@@ -463,7 +465,7 @@ class RouterManager {
           return GoRoute(
             path: e.key,
             name: e.key,
-            builder: (context, state) => e.value,
+            builder: (context, state) => e.value(),
           );
         },
       ).toList(),
@@ -497,11 +499,11 @@ class RouterManager {
   static List<GetPage> _getPagesImpl() {
     return routes
         .map(
-          (name, page) => MapEntry(
+          (name, pageFunction) => MapEntry(
             name,
             GetPage(
               name: name,
-              page: () => page,
+              page: () => pageFunction(),
               fullscreenDialog:
                   (isAndroid || isIOS) && fullscreenPageList.contains(name),
             ),
