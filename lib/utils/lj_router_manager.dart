@@ -53,6 +53,30 @@ class RouterManager {
   /// 全局导航key，配置MaterialApp的navigatorKey，可以在任意地方无context push or pop
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+  /// 获取当前可用的BuildContext,如果返回 null,表示路由尚未初始化或当前无页面显示
+  static BuildContext? get context {
+    switch (routerType) {
+      case RouterType.goRouter:
+      case RouterType.navigator1:
+        return navigatorKey.currentContext;
+
+      case RouterType.get:
+        return Get.context;
+    }
+  }
+
+  /// 获取当前可用的Overlay context,如果返回 null,表示路由尚未初始化或当前无页面显示
+  static BuildContext? get overlayContext {
+    switch (routerType) {
+      case RouterType.goRouter:
+      case RouterType.navigator1:
+        return navigatorKey.currentState?.overlay?.context;
+
+      case RouterType.get:
+        return Get.overlayContext;
+    }
+  }
+
   /// 所有页面都需要登录才能访问,比如后台管理,优先级最高
   static bool allPageNeedLogin = false;
 
