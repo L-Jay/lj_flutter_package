@@ -16,6 +16,7 @@ class LJRouter {
     dragDemoPage: () => const DragDemoPage(),
     argumentPage: () => RouterArgumentPage(),
     argumentDetailPage: () => const RouterArgumentDetailPage(),
+    argumentDetailThirdPage: () => const RouterArgumentThirdDetailPage(),
 
     orderPage: () => const OrderPage(),
     aboutPage: () => const AboutPage(),
@@ -34,6 +35,7 @@ class LJRouter {
   //GoRouter跳转必须注册到路由
   static String argumentPage = '/argumentPage';
   static String argumentDetailPage = '/argumentDetailPage';
+  static String argumentDetailThirdPage = '/argumentDetailThirdPage';
 
   static String orderPage = '/orderPage';
   static String settingPage = '/settingPage';

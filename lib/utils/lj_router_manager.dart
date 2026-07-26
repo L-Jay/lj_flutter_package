@@ -54,28 +54,19 @@ class RouterManager {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   /// 获取当前可用的BuildContext,如果返回 null,表示路由尚未初始化或当前无页面显示
-  static BuildContext? get context {
-    switch (routerType) {
-      case RouterType.goRouter:
-      case RouterType.navigator1:
-        return navigatorKey.currentContext;
-
-      case RouterType.get:
-        return Get.context;
-    }
-  }
+  /// 使用GoRouter的话不要使用context.argument去获取参数,会报错
+  static BuildContext? get context => _contextImpl();
 
   /// 获取当前可用的Overlay context,如果返回 null,表示路由尚未初始化或当前无页面显示
-  static BuildContext? get overlayContext {
-    switch (routerType) {
-      case RouterType.goRouter:
-      case RouterType.navigator1:
-        return navigatorKey.currentState?.overlay?.context;
+  static BuildContext? get overlayContext => _overlayContextImpl();
 
-      case RouterType.get:
-        return Get.overlayContext;
-    }
-  }
+  /// 如果调用处有context,优先使用context.argument
+  /// 这个属性在动画专场中可能会出现参数错乱的情况
+  static Object? get argument => _argumentImpl();
+
+  /// 如果调用处有context,优先使用context.argumentMap
+  /// 这个属性在动画专场中可能会出现参数错乱的情况
+  static Map<String, dynamic>? get argumentMap => _argumentMapImpl();
 
   /// 所有页面都需要登录才能访问,比如后台管理,优先级最高
   static bool allPageNeedLogin = false;
@@ -160,8 +151,7 @@ class RouterManager {
               });
             }
           case RouterType.get:
-            return Get.toNamed<T>(routeName, arguments: arguments)
-                ?.then((value) {
+            return Get.toNamed(routeName, arguments: arguments)?.then((value) {
               popCallback?.call(value);
               globalPopCallback?.call();
 
@@ -208,7 +198,7 @@ class RouterManager {
           }
 
         case RouterType.get:
-          return Get.toNamed<T>(routeName, arguments: arguments)?.then((value) {
+          return Get.toNamed(routeName, arguments: arguments)?.then((value) {
             popCallback?.call(value);
             globalPopCallback?.call();
 
@@ -245,7 +235,7 @@ class RouterManager {
             loginResult = await _goRouter?.pushNamed<bool>(loginPageName!);
             break;
           case RouterType.get:
-            loginResult = await Get.toNamed<bool>(loginPageName!);
+            loginResult = await Get.toNamed(loginPageName!);
             break;
           case RouterType.navigator1:
             loginResult = await Navigator.pushNamed<bool>(
@@ -277,8 +267,7 @@ class RouterManager {
               });
             }
           case RouterType.get:
-            return Get.offNamed<T>(routeName, arguments: arguments)
-                ?.then((value) {
+            return Get.offNamed(routeName, arguments: arguments)?.then((value) {
               popCallback?.call(value);
               globalPopCallback?.call();
 
@@ -321,7 +310,7 @@ class RouterManager {
           }
 
         case RouterType.get:
-          return Get.toNamed(routeName, arguments: arguments)?.then((value) {
+          return Get.offNamed(routeName, arguments: arguments)?.then((value) {
             popCallback?.call(value);
             globalPopCallback?.call();
 
@@ -361,12 +350,8 @@ class RouterManager {
   static void pop<T>([T? result]) {
     switch (routerType) {
       case RouterType.goRouter:
-        // 优先 GoRouter.pop，保持 URL 同步
         if (goRouter.canPop()) {
           goRouter.pop(result);
-        } else {
-          // 兜底：如果当前页是通过 Navigator.push 进来的（如 pushPage），GoRouter 无法感知，直接操作 Navigator
-          navigatorKey.currentState?.pop(result);
         }
         break;
       case RouterType.get:
@@ -443,6 +428,25 @@ class RouterManager {
       settings: settings,
       fullscreenDialog: fullScreen,
     );
+  }
+
+  static bool _needLogin(String routeName) {
+    if (routeName == loginPageName) return false;
+
+    bool loginStatus = false;
+    if (getLoginStatus != null) loginStatus = getLoginStatus!();
+    // 已经是登录状态
+    if (loginStatus) return false;
+
+    if (allPageNeedLogin) {
+      return true;
+    } else if (whitePageList.isNotEmpty) {
+      return !whitePageList.contains(routeName);
+    } else if (verifyLoginPageList.isNotEmpty) {
+      return verifyLoginPageList.contains(routeName);
+    }
+
+    return false;
   }
 
   static MaterialPageRoute _unknownPage({String? title}) {
@@ -537,28 +541,59 @@ class RouterManager {
         .toList();
   }
 
-  static bool _needLogin(String routeName) {
-    if (routeName == loginPageName) return false;
-
-    bool loginStatus = false;
-    if (getLoginStatus != null) loginStatus = getLoginStatus!();
-    // 已经是登录状态
-    if (loginStatus) return false;
-
-    if (allPageNeedLogin) {
-      return true;
-    } else if (whitePageList.isNotEmpty) {
-      return !whitePageList.contains(routeName);
-    } else if (verifyLoginPageList.isNotEmpty) {
-      return verifyLoginPageList.contains(routeName);
+  static BuildContext? _contextImpl() {
+    switch (routerType) {
+      case RouterType.goRouter:
+      case RouterType.navigator1:
+        return navigatorKey.currentContext;
+      case RouterType.get:
+        return Get.context;
     }
+  }
 
-    return false;
+  static BuildContext? _overlayContextImpl() {
+    switch (routerType) {
+      case RouterType.goRouter:
+      case RouterType.navigator1:
+        return navigatorKey.currentState?.overlay?.context;
+      case RouterType.get:
+        return Get.overlayContext;
+    }
+  }
+
+  static Object? _argumentImpl() {
+    switch (RouterManager.routerType) {
+      case RouterType.navigator1:
+        return ModalRoute.of(navigatorKey.currentContext!)?.settings.arguments;
+      case RouterType.get:
+        return Get.arguments;
+      case RouterType.goRouter:
+        return _goRouter!.state.extra;
+    }
+  }
+
+  static Map<String, dynamic>? _argumentMapImpl() {
+    switch (RouterManager.routerType) {
+      case RouterType.navigator1:
+        final arg =
+            ModalRoute.of(navigatorKey.currentContext!)?.settings.arguments;
+        return arg is Map<String, dynamic> ? arg : null;
+      case RouterType.get:
+        return Get.arguments is Map<String, dynamic> ? Get.arguments : null;
+      case RouterType.goRouter:
+        var arguments = <String, dynamic>{};
+        arguments.addAll(_goRouter!.state.pathParameters);
+        arguments.addAll(_goRouter!.state.uri.queryParameters);
+        if (_goRouter!.state.extra is Map<String, dynamic>) {
+          arguments.addAll(_goRouter!.state.extra as Map<String, dynamic>);
+        }
+        return arguments.isNotEmpty ? arguments : null;
+    }
   }
 }
 
 extension RouterArguments on BuildContext {
-  /// 如果使用GoRouter直接传的Object,使用argument
+  /// 传的Object,使用argument
   Object? get argument {
     switch (RouterManager.routerType) {
       case RouterType.navigator1:
@@ -570,6 +605,7 @@ extension RouterArguments on BuildContext {
     }
   }
 
+  /// 传的Map,使用argumentMap
   Map<String, dynamic>? get argumentMap {
     switch (RouterManager.routerType) {
       case RouterType.navigator1:

@@ -6,9 +6,14 @@ import 'package:lj_flutter_package/lj_flutter_package.dart';
 
 import '../../common/lj_colors.dart';
 
-class RouterArgumentPage extends StatelessWidget {
-  RouterArgumentPage({super.key});
+class RouterArgumentPage extends StatefulWidget {
+  const RouterArgumentPage({super.key});
 
+  @override
+  State<RouterArgumentPage> createState() => _RouterArgumentPageState();
+}
+
+class _RouterArgumentPageState extends State<RouterArgumentPage> {
   final String stringArg = 'test';
   final int intArg = 666;
   final Map<String, dynamic> mapArg = {'key': 'value'};
@@ -103,18 +108,20 @@ class RouterArgumentPage extends StatelessWidget {
   }
 }
 
-class Product {
-  final String id;
-  final String name;
-
-  Product({required this.id, required this.name});
-}
-
 class RouterArgumentDetailPage extends StatelessWidget {
   const RouterArgumentDetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    if (RouterManager.routerType == RouterType.goRouter) {
+      print(RouterManager.goRouter.state.pathParameters);
+      print(RouterManager.goRouter.state.uri.queryParameters);
+      print(RouterManager.goRouter.state.extra);
+    }
+    print(RouterManager.argument);
+    print(RouterManager.argumentMap);
+    print('========');
+
     return Scaffold(
       appBar: AppBar(title: const Text('Router Argument Detail Page')),
       body: Center(
@@ -147,9 +154,82 @@ class RouterArgumentDetailPage extends StatelessWidget {
               },
               child: quickText('返回一个随机的数字吧', 14, LJColor.mainColor),
             ),
+            SizedBox(height: 88),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                RouterManager.pushNamed(
+                  LJRouter.argumentDetailThirdPage,
+                  arguments: {'name': '伍六七', 'age': "18", 'sex': 'male'},
+                );
+              },
+              child: quickText('换个参数再push一下,看看参数结果', 14, Colors.yellow),
+            ),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                RouterManager.pushNamed(
+                  LJRouter.argumentDetailThirdPage,
+                  arguments: Product(id: '100', name: '产品1'),
+                );
+              },
+              child: quickText('push一个object,看看参数结果', 14, Colors.yellow),
+            ),
           ],
         ),
       ),
     );
   }
+}
+
+class RouterArgumentThirdDetailPage extends StatelessWidget {
+  const RouterArgumentThirdDetailPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (RouterManager.routerType == RouterType.goRouter) {
+      print(RouterManager.goRouter.state.pathParameters);
+      print(RouterManager.goRouter.state.uri.queryParameters);
+      print(RouterManager.goRouter.state.extra);
+    }
+    print(RouterManager.argument);
+    print(RouterManager.argumentMap);
+    print('-------');
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Router Argument Third Page')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 5,
+          children: [
+            quickText(
+              'router type: ${RouterManager.routerType.name}',
+              14,
+              LJColor.mainColor,
+            ),
+            quickText('argument: ${context.argument}', 14, LJColor.mainColor),
+            quickText(
+              'argumentMap: ${context.argumentMap}',
+              14,
+              LJColor.mainColor,
+            ),
+            quickText(
+              'valueForKey: ${context.argumentForKey('name')}',
+              14,
+              LJColor.mainColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Product {
+  final String id;
+  final String name;
+
+  Product({required this.id, required this.name});
 }
