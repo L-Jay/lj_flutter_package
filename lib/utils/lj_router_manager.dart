@@ -151,7 +151,11 @@ class RouterManager {
               });
             }
           case RouterType.get:
-            return Get.toNamed(routeName, arguments: arguments)?.then((value) {
+            return Get.toNamed(
+              routeName,
+              arguments: arguments,
+              parameters: _getWebParams(arguments),
+            )?.then((value) {
               popCallback?.call(value);
               globalPopCallback?.call();
 
@@ -198,7 +202,11 @@ class RouterManager {
           }
 
         case RouterType.get:
-          return Get.toNamed(routeName, arguments: arguments)?.then((value) {
+          return Get.toNamed(
+            routeName,
+            arguments: arguments,
+            parameters: _getWebParams(arguments),
+          )?.then((value) {
             popCallback?.call(value);
             globalPopCallback?.call();
 
@@ -267,7 +275,11 @@ class RouterManager {
               });
             }
           case RouterType.get:
-            return Get.offNamed(routeName, arguments: arguments)?.then((value) {
+            return Get.offNamed(
+              routeName,
+              arguments: arguments,
+              parameters: _getWebParams(arguments),
+            )?.then((value) {
               popCallback?.call(value);
               globalPopCallback?.call();
 
@@ -310,7 +322,11 @@ class RouterManager {
           }
 
         case RouterType.get:
-          return Get.offNamed(routeName, arguments: arguments)?.then((value) {
+          return Get.offNamed(
+            routeName,
+            arguments: arguments,
+            parameters: _getWebParams(arguments),
+          )?.then((value) {
             popCallback?.call(value);
             globalPopCallback?.call();
 
@@ -394,11 +410,24 @@ class RouterManager {
   }
 
   static MaterialPageRoute onGenerateRoute(RouteSettings settings) {
-    if (settings.name?.isNotEmpty != true) {
+    String? routeName = settings.name;
+    if (kIsWeb && routerType == RouterType.get) {
+      var uri = Uri.parse(routeName!);
+      routeName = uri.path;
+
+      if (settings.arguments == null && uri.queryParameters.isNotEmpty) {
+        settings = RouteSettings(
+          name: settings.name,
+          arguments: uri.queryParameters,
+        );
+      }
+    }
+
+    if (routeName?.isNotEmpty != true) {
       return _unknownPage();
     }
 
-    if (_needLogin(settings.name!)) {
+    if (_needLogin(routeName!)) {
       var loginBuilder = navigatorRoutes[loginPageName];
       if (loginPageName?.isNotEmpty != true || loginBuilder == null) {
         return _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页');
@@ -411,7 +440,7 @@ class RouterManager {
       }
     }
 
-    WidgetBuilder? builder = navigatorRoutes[settings.name];
+    WidgetBuilder? builder = navigatorRoutes[routeName];
 
     WidgetBuilder? unknownGetBuilder;
     if (unknownPageName?.isNotEmpty == true) {
@@ -420,7 +449,7 @@ class RouterManager {
 
     bool fullScreen = false;
     if (isIOS || isAndroid) {
-      fullScreen = fullscreenPageList.contains(settings.name);
+      fullScreen = fullscreenPageList.contains(routeName);
     }
 
     return MaterialPageRoute(
@@ -589,6 +618,16 @@ class RouterManager {
         }
         return arguments.isNotEmpty ? arguments : null;
     }
+  }
+
+  // get路由web网页参数
+  static Map<String, String>? _getWebParams(Object? arguments) {
+    Map<String, String>? parameters;
+    if (kIsWeb && arguments is Map<String, dynamic>) {
+      bool allValueIsString = arguments.values.every((v) => v is String);
+      if (allValueIsString) parameters = arguments.cast<String, String>();
+    }
+    return parameters;
   }
 }
 

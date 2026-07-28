@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
   }
 
   void _configRouter() {
-    // RouterManager.routerType = RouterType.get;
+    RouterManager.routerType = RouterType.get;
     RouterManager.rootPageName = LJRouter.root;
     RouterManager.routes = LJRouter.routes;
     RouterManager.verifyLoginPageList = LJRouter.verifyLoginPageList;
