@@ -23,6 +23,10 @@ class _RouterArgumentPageState extends State<RouterArgumentPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(RouterManager.currentRoute);
+    print(RouterManager.routeHistory);
+    print('++++++++++');
+
     return Scaffold(
       appBar: AppBar(title: const Text('Router Argument Page')),
       body: quickContainer(
@@ -120,6 +124,8 @@ class RouterArgumentDetailPage extends StatelessWidget {
     }
     print(RouterManager.argument);
     print(RouterManager.argumentMap);
+    print(RouterManager.currentRoute);
+    print(RouterManager.routeHistory);
     print('========');
 
     return Scaffold(
@@ -175,6 +181,17 @@ class RouterArgumentDetailPage extends StatelessWidget {
               },
               child: quickText('push一个object,看看参数结果', 14, Colors.yellow),
             ),
+            SizedBox(height: 88),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                RouterManager.replaceNamed(
+                  LJRouter.argumentDetailThirdPage,
+                  arguments: Random().nextInt(100),
+                );
+              },
+              child: quickText('replace当前页面,并传个随机数', 14, Colors.red),
+            ),
           ],
         ),
       ),
@@ -194,6 +211,8 @@ class RouterArgumentThirdDetailPage extends StatelessWidget {
     }
     print(RouterManager.argument);
     print(RouterManager.argumentMap);
+    print(RouterManager.currentRoute);
+    print(RouterManager.routeHistory);
     print('-------');
 
     return Scaffold(

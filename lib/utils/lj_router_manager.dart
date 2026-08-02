@@ -35,9 +35,6 @@ class RouterManager {
   /// 命名路由表,name page
   static Map routes = <String, PageBuilder>{};
 
-  /// GoRouter
-  static GoRouter? _goRouter;
-
   static GoRouter get goRouter => _goRouterImpl();
 
   /// Get用的路由表,name page
@@ -67,6 +64,12 @@ class RouterManager {
   /// 如果调用处有context,优先使用context.argumentMap
   /// 这个属性在动画专场中可能会出现参数错乱的情况
   static Map<String, dynamic>? get argumentMap => _argumentMapImpl();
+
+  /// 当前路由名称
+  static String? get currentRoute => _currentRoute;
+
+  /// 路由历史记录
+  static List<String>? get routeHistory => _routeHistory;
 
   /// 所有页面都需要登录才能访问,比如后台管理,优先级最高
   static bool allPageNeedLogin = false;
@@ -109,7 +112,30 @@ class RouterManager {
     Object? arguments,
     ObjectCallback<T?>? popCallback,
   }) async {
+    return _toNamed(routeName, arguments, popCallback, false);
+  }
+
+  /// replace named
+  static replaceNamed<T>(
+    String routeName, {
+    Object? arguments,
+    ObjectCallback<T?>? popCallback,
+  }) async {
+    return _toNamed(routeName, arguments, popCallback, true);
+  }
+
+  static _toNamed<T>(
+    String routeName,
+    Object? arguments,
+    ObjectCallback<T?>? popCallback,
+    bool isReplace,
+  ) async {
+    var tempRouteName = _currentRoute;
+
     if (_needLogin(routeName)) {
+      _currentRoute = loginPageName!;
+      _routeHistory.add(loginPageName!);
+
       bool? loginResult = false;
       if (doLogin != null) {
         loginResult = await doLogin!();
@@ -128,222 +154,76 @@ class RouterManager {
         }
       }
 
-      if (loginResult == true) {
-        switch (routerType) {
-          case RouterType.goRouter:
-            if (arguments is Map<String, dynamic>) {
-              return _goRouter
-                  ?.pushNamed<T>(routeName, queryParameters: arguments)
-                  .then((value) {
-                popCallback?.call(value);
-                globalPopCallback?.call();
-
-                return value;
-              });
-            } else {
-              return _goRouter
-                  ?.pushNamed<T>(routeName, extra: arguments)
-                  .then((value) {
-                popCallback?.call(value);
-                globalPopCallback?.call();
-
-                return value;
-              });
-            }
-          case RouterType.get:
-            return Get.toNamed(
-              routeName,
-              arguments: arguments,
-              parameters: _getWebParams(arguments),
-            )?.then((value) {
-              popCallback?.call(value);
-              globalPopCallback?.call();
-
-              return value;
-            });
-          case RouterType.navigator1:
-            return Navigator.pushNamed<T>(
-              navigatorKey.currentContext!,
-              routeName,
-              arguments: arguments,
-            ).then((value) {
-              popCallback?.call(value);
-              globalPopCallback?.call();
-
-              return value;
-            });
-        }
-      }
-    } else {
-      switch (routerType) {
-        case RouterType.goRouter:
-          try {
-            if (arguments is Map<String, dynamic>) {
-              return _goRouter
-                  ?.pushNamed<T>(routeName, queryParameters: arguments)
-                  .then((value) {
-                popCallback?.call(value);
-                globalPopCallback?.call();
-
-                return value;
-              });
-            } else {
-              return _goRouter
-                  ?.pushNamed<T>(routeName, extra: arguments)
-                  .then((value) {
-                popCallback?.call(value);
-                globalPopCallback?.call();
-
-                return value;
-              });
-            }
-          } catch (e) {
-            _goRouter?.push(routeName);
-          }
-
-        case RouterType.get:
-          return Get.toNamed(
-            routeName,
-            arguments: arguments,
-            parameters: _getWebParams(arguments),
-          )?.then((value) {
-            popCallback?.call(value);
-            globalPopCallback?.call();
-
-            return value;
-          });
-        case RouterType.navigator1:
-          return Navigator.pushNamed<T>(
-            navigatorKey.currentContext!,
-            routeName,
-            arguments: arguments,
-          ).then((value) {
-            popCallback?.call(value as T);
-            globalPopCallback?.call();
-
-            return value;
-          });
+      _routeHistory.removeLast();
+      if (loginResult == false) {
+        _currentRoute = tempRouteName;
+        return;
       }
     }
-  }
 
-  /// push named
-  static replaceNamed<T>(
-    String routeName, {
-    Object? arguments,
-    ObjectCallback<T?>? popCallback,
-  }) async {
-    if (_needLogin(routeName)) {
-      bool? loginResult = false;
-      if (doLogin != null) {
-        loginResult = await doLogin!();
-      } else if (loginPageName != null) {
-        switch (routerType) {
-          case RouterType.goRouter:
-            loginResult = await _goRouter?.pushNamed<bool>(loginPageName!);
-            break;
-          case RouterType.get:
-            loginResult = await Get.toNamed(loginPageName!);
-            break;
-          case RouterType.navigator1:
-            loginResult = await Navigator.pushNamed<bool>(
-                navigatorKey.currentContext!, loginPageName!);
-            break;
-        }
+    _currentRoute = routeName;
+    if (routerType == RouterType.goRouter) {
+      // goRouter replace不会调用pop回调_popCallbackImpl
+      if (isReplace) _routeHistory.removeLast();
+      _routeHistory.add(routeName);
+    }else {
+      if (isReplace) {
+        // replace会调用pop回调_popCallbackImpl
+        _routeHistory.insert(_routeHistory.length - 1, routeName);
+      }else {
+        _routeHistory.add(routeName);
       }
+    }
 
-      if (loginResult == true) {
-        switch (routerType) {
-          case RouterType.goRouter:
-            if (arguments is Map<String, dynamic>) {
-              return _goRouter
-                  ?.replaceNamed<T>(routeName, queryParameters: arguments)
-                  .then((value) {
-                popCallback?.call(value);
-                globalPopCallback?.call();
-
-                return value;
-              });
-            } else {
-              return _goRouter
-                  ?.replaceNamed<T>(routeName, extra: arguments)
-                  .then((value) {
-                popCallback?.call(value);
-                globalPopCallback?.call();
-
-                return value;
-              });
-            }
-          case RouterType.get:
-            return Get.offNamed(
-              routeName,
-              arguments: arguments,
-              parameters: _getWebParams(arguments),
-            )?.then((value) {
-              popCallback?.call(value);
-              globalPopCallback?.call();
-
-              return value;
-            });
-          case RouterType.navigator1:
-            return Navigator.pushReplacementNamed<T, Object?>(
-              navigatorKey.currentContext!,
-              routeName,
-              arguments: arguments,
-            ).then((value) {
-              popCallback?.call(value);
-              globalPopCallback?.call();
-
-              return value;
-            });
+    switch (routerType) {
+      case RouterType.goRouter:
+        if (isReplace) {
+          return _goRouter
+              ?.replaceNamed<T>(
+                routeName,
+                queryParameters:
+                    arguments is Map<String, dynamic> ? arguments : {},
+                extra: arguments,
+              )
+              .then((value) => _popCallbackImpl(value, popCallback));
         }
-      }
-    } else {
-      switch (routerType) {
-        case RouterType.goRouter:
-          if (arguments is Map<String, dynamic>) {
-            return _goRouter
-                ?.pushNamed<T>(routeName, queryParameters: arguments)
-                .then((value) {
-              popCallback?.call(value);
-              globalPopCallback?.call();
 
-              return value;
-            });
-          } else {
-            return _goRouter
-                ?.pushNamed(routeName, extra: arguments)
-                .then((value) {
-              popCallback?.call(value as T?);
-              globalPopCallback?.call();
-
-              return value;
-            });
-          }
-
-        case RouterType.get:
+        return _goRouter
+            ?.pushNamed<T>(
+              routeName,
+              queryParameters:
+                  arguments is Map<String, dynamic> ? arguments : {},
+              extra: arguments,
+            )
+            .then((value) => _popCallbackImpl(value, popCallback));
+      case RouterType.get:
+        if (isReplace) {
           return Get.offNamed(
             routeName,
             arguments: arguments,
             parameters: _getWebParams(arguments),
-          )?.then((value) {
-            popCallback?.call(value);
-            globalPopCallback?.call();
+          )?.then((value) => _popCallbackImpl<T>(value, popCallback));
+        }
 
-            return value;
-          });
-        case RouterType.navigator1:
-          return Navigator.pushNamed<T>(
+        return Get.toNamed(
+          routeName,
+          arguments: arguments,
+          parameters: _getWebParams(arguments),
+        )?.then((value) => _popCallbackImpl<T>(value, popCallback));
+      case RouterType.navigator1:
+        if (isReplace) {
+          return Navigator.pushReplacementNamed<T, Object?>(
             navigatorKey.currentContext!,
             routeName,
             arguments: arguments,
-          ).then((value) {
-            popCallback?.call(value as T);
-            globalPopCallback?.call();
+          ).then((value) => _popCallbackImpl(value, popCallback));
+        }
 
-            return value;
-          });
-      }
+        return Navigator.pushNamed<T>(
+          navigatorKey.currentContext!,
+          routeName,
+          arguments: arguments,
+        ).then((value) => _popCallbackImpl(value, popCallback));
     }
   }
 
@@ -411,6 +291,11 @@ class RouterManager {
 
   static MaterialPageRoute onGenerateRoute(RouteSettings settings) {
     String? routeName = settings.name;
+
+    if (routeName?.isNotEmpty != true) {
+      return _unknownPage();
+    }
+
     if (kIsWeb && routerType == RouterType.get) {
       var uri = Uri.parse(routeName!);
       routeName = uri.path;
@@ -423,15 +308,13 @@ class RouterManager {
       }
     }
 
-    if (routeName?.isNotEmpty != true) {
-      return _unknownPage();
-    }
-
-    if (_needLogin(routeName!)) {
+    // 只web在地址栏输入的路由，需要拦截判断登录
+    if (kIsWeb && _needLogin(routeName!)) {
       var loginBuilder = navigatorRoutes[loginPageName];
       if (loginPageName?.isNotEmpty != true || loginBuilder == null) {
         return _unknownPage(title: '使用onGenerateRoute请配置loginPageName登录页');
       } else {
+        _currentRoute = loginPageName!;
         return MaterialPageRoute(
           builder: loginBuilder,
           settings: settings,
@@ -439,6 +322,9 @@ class RouterManager {
         );
       }
     }
+
+    _currentRoute = routeName!;
+    _currentArgument = settings.arguments;
 
     WidgetBuilder? builder = navigatorRoutes[routeName];
 
@@ -494,6 +380,9 @@ class RouterManager {
       },
     );
   }
+
+  /// GoRouter
+  static GoRouter? _goRouter;
 
   static GoRouter _goRouterImpl() {
     GoRouter.optionURLReflectsImperativeAPIs = true;
@@ -593,7 +482,7 @@ class RouterManager {
   static Object? _argumentImpl() {
     switch (RouterManager.routerType) {
       case RouterType.navigator1:
-        return ModalRoute.of(navigatorKey.currentContext!)?.settings.arguments;
+        return _currentArgument;
       case RouterType.get:
         return Get.arguments;
       case RouterType.goRouter:
@@ -604,9 +493,9 @@ class RouterManager {
   static Map<String, dynamic>? _argumentMapImpl() {
     switch (RouterManager.routerType) {
       case RouterType.navigator1:
-        final arg =
-            ModalRoute.of(navigatorKey.currentContext!)?.settings.arguments;
-        return arg is Map<String, dynamic> ? arg : null;
+        return _currentArgument is Map<String, dynamic>
+            ? _currentArgument
+            : null;
       case RouterType.get:
         return Get.arguments is Map<String, dynamic> ? Get.arguments : null;
       case RouterType.goRouter:
@@ -620,7 +509,11 @@ class RouterManager {
     }
   }
 
-  // get路由web网页参数
+  static String _currentRoute = rootPageName;
+  static final List<String> _routeHistory = [rootPageName];
+  static dynamic _currentArgument;
+
+// get路由web网页参数
   static Map<String, String>? _getWebParams(Object? arguments) {
     Map<String, String>? parameters;
     if (kIsWeb && arguments is Map<String, dynamic>) {
@@ -628,6 +521,15 @@ class RouterManager {
       if (allValueIsString) parameters = arguments.cast<String, String>();
     }
     return parameters;
+  }
+
+  static T? _popCallbackImpl<T>(T? value, ObjectCallback<T?>? popCallback) {
+    _routeHistory.removeLast();
+    _currentRoute =  _routeHistory.last;
+    popCallback?.call(value);
+    globalPopCallback?.call();
+
+    return value;
   }
 }
 
