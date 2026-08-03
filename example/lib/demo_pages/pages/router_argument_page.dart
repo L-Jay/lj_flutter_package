@@ -104,7 +104,8 @@ class _RouterArgumentPageState extends State<RouterArgumentPage> {
               ),
             ),
             SizedBox(height: 44),
-            Obx(() => quickText('返回的随机数: $_random', 14, LJColor.mainColor)),
+            Obx(() =>
+                quickText('返回的随机数: $_random', 14, LJColor.mainColor)),
           ],
         ),
       ),
@@ -127,6 +128,8 @@ class RouterArgumentDetailPage extends StatelessWidget {
     print(RouterManager.currentRoute);
     print(RouterManager.routeHistory);
     print('========');
+
+    final duplicate = RouterManager.duplicate.obs;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Router Argument Detail Page')),
@@ -169,7 +172,8 @@ class RouterArgumentDetailPage extends StatelessWidget {
                   arguments: {'name': '伍六七', 'age': "18", 'sex': 'male'},
                 );
               },
-              child: quickText('换个参数再push一下,看看参数结果', 14, Colors.yellow),
+              child: quickText(
+                  '换个参数再push一下,看看参数结果', 14, Colors.yellow),
             ),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -179,9 +183,10 @@ class RouterArgumentDetailPage extends StatelessWidget {
                   arguments: Product(id: '100', name: '产品1'),
                 );
               },
-              child: quickText('push一个object,看看参数结果', 14, Colors.yellow),
+              child: quickText(
+                  'push一个object,看看参数结果', 14, Colors.yellow),
             ),
-            SizedBox(height: 88),
+            SizedBox(height: 44),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
@@ -190,7 +195,44 @@ class RouterArgumentDetailPage extends StatelessWidget {
                   arguments: Random().nextInt(100),
                 );
               },
-              child: quickText('replace当前页面,并传个随机数', 14, Colors.red),
+              child: quickText(
+                  'replace到third页面,并传个随机数', 14, Colors.red),
+            ),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                RouterManager.pushNamed(
+                  LJRouter.argumentDetailPage,
+                  arguments: Random().nextInt(100),
+                );
+              },
+              child: quickText('push到当前页面,并传个随机数', 14, Colors.red),
+            ),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                RouterManager.replaceNamed(
+                  LJRouter.argumentDetailPage,
+                  arguments: Random().nextInt(100),
+                );
+              },
+              child: quickText(
+                  'replace到当前页面,并传个随机数', 14, Colors.red),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                quickText('允许重复页面', 14, Colors.orange),
+                Obx(() {
+                  return Switch(
+                    value: duplicate.value,
+                    onChanged: (value) {
+                      RouterManager.duplicate = value;
+                      duplicate.value = value;
+                    },
+                  );
+                }),
+              ],
             ),
           ],
         ),

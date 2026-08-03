@@ -71,6 +71,9 @@ class RouterManager {
   /// 路由历史记录
   static List<String>? get routeHistory => _routeHistory;
 
+  /// 是否可以重复弹出相同的页面
+  static bool duplicate = false;
+
   /// 所有页面都需要登录才能访问,比如后台管理,优先级最高
   static bool allPageNeedLogin = false;
 
@@ -130,6 +133,8 @@ class RouterManager {
     ObjectCallback<T?>? popCallback,
     bool isReplace,
   ) async {
+    if (!duplicate && _currentRoute == routeName) return;
+
     var tempRouteName = _currentRoute;
 
     if (_needLogin(routeName)) {
@@ -166,11 +171,11 @@ class RouterManager {
       // goRouter replace不会调用pop回调_popCallbackImpl
       if (isReplace) _routeHistory.removeLast();
       _routeHistory.add(routeName);
-    }else {
+    } else {
       if (isReplace) {
         // replace会调用pop回调_popCallbackImpl
         _routeHistory.insert(_routeHistory.length - 1, routeName);
-      }else {
+      } else {
         _routeHistory.add(routeName);
       }
     }
@@ -202,6 +207,7 @@ class RouterManager {
             routeName,
             arguments: arguments,
             parameters: _getWebParams(arguments),
+            preventDuplicates: !duplicate,
           )?.then((value) => _popCallbackImpl<T>(value, popCallback));
         }
 
@@ -209,6 +215,7 @@ class RouterManager {
           routeName,
           arguments: arguments,
           parameters: _getWebParams(arguments),
+          preventDuplicates: !duplicate,
         )?.then((value) => _popCallbackImpl<T>(value, popCallback));
       case RouterType.navigator1:
         if (isReplace) {
@@ -525,7 +532,7 @@ class RouterManager {
 
   static T? _popCallbackImpl<T>(T? value, ObjectCallback<T?>? popCallback) {
     _routeHistory.removeLast();
-    _currentRoute =  _routeHistory.last;
+    _currentRoute = _routeHistory.last;
     popCallback?.call(value);
     globalPopCallback?.call();
 
