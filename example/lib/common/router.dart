@@ -17,6 +17,7 @@ class LJRouter {
     argumentPage: () => RouterArgumentPage(),
     argumentDetailPage: () => const RouterArgumentDetailPage(),
     argumentDetailThirdPage: () => const RouterArgumentThirdDetailPage(),
+    noAnimationPage: () => const NoAnimationPage(),
 
     orderPage: () => const OrderPage(),
     aboutPage: () => const AboutPage(),
@@ -26,6 +27,7 @@ class LJRouter {
   static List<String> verifyLoginPageList = [orderPage];
 
   static List<String> fullscreenPageList = [loginPage];
+  static List<String> noAnimationPageList = [noAnimationPage];
 
   static String root = '/';
   static String loginPage = '/loginPage';
@@ -36,6 +38,7 @@ class LJRouter {
   static String argumentPage = '/argumentPage';
   static String argumentDetailPage = '/argumentDetailPage';
   static String argumentDetailThirdPage = '/argumentDetailThirdPage';
+  static String noAnimationPage = '/noAnimationPage';
 
   static String orderPage = '/orderPage';
   static String settingPage = '/settingPage';

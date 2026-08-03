@@ -126,6 +126,7 @@ class MyApp extends StatelessWidget {
     RouterManager.routes = LJRouter.routes;
     RouterManager.verifyLoginPageList = LJRouter.verifyLoginPageList;
     RouterManager.fullscreenPageList = LJRouter.fullscreenPageList;
+    RouterManager.noAnimationPageList = LJRouter.noAnimationPageList;
     // RouterManager.doLogin = () {
     //   return LoginManager.showLogin();
     // };
@@ -182,8 +183,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'lj_package demo',
       theme: _themeData(),
-      home: const BottomTabbar(),
+      // home: const BottomTabbar(),
       builder: EasyLoading.init(),
+      // routes: RouterManager.navigatorRoutes,
       navigatorKey: RouterManager.navigatorKey,
       onGenerateRoute: RouterManager.onGenerateRoute,
     );

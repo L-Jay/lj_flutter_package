@@ -87,6 +87,9 @@ class RouterManager {
   /// 需要model形态的路由
   static List<String> fullscreenPageList = [];
 
+  /// 无过场动画的路由,goRouter replace默认没有动画,暂时不处理goRouter中的路由
+  static List<String> noAnimationPageList = [];
+
   /// 全局pop callback，返回都会调用
   static VoidCallback? globalPopCallback;
 
@@ -160,7 +163,7 @@ class RouterManager {
       }
 
       _routeHistory.removeLast();
-      if (loginResult == false) {
+      if (loginResult != true) {
         _currentRoute = tempRouteName;
         return;
       }
@@ -296,7 +299,7 @@ class RouterManager {
     }
   }
 
-  static MaterialPageRoute onGenerateRoute(RouteSettings settings) {
+  static PageRoute onGenerateRoute(RouteSettings settings) {
     String? routeName = settings.name;
 
     if (routeName?.isNotEmpty != true) {
@@ -343,6 +346,16 @@ class RouterManager {
     bool fullScreen = false;
     if (isIOS || isAndroid) {
       fullScreen = fullscreenPageList.contains(routeName);
+    }
+
+    if (builder != null && noAnimationPageList.contains(routeName)) {
+      return PageRouteBuilder(
+        settings: settings,
+        pageBuilder: (context, animation, secondaryAnimation) => builder(context),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+      );
     }
 
     return MaterialPageRoute(
@@ -415,10 +428,24 @@ class RouterManager {
             );
           }
 
+          bool noAnimation = noAnimationPageList.contains(e.key);
+
           return GoRoute(
             path: e.key,
             name: e.key,
-            builder: (context, state) => e.value(),
+            builder: noAnimation ? null : (context, state) => e.value(),
+            pageBuilder: noAnimation
+                ? (context, state) {
+                    return CustomTransitionPage(
+                      child: e.value(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) =>
+                              child,
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    );
+                  }
+                : null,
           );
         },
       ).toList(),
@@ -459,6 +486,9 @@ class RouterManager {
               page: () => pageFunction(),
               fullscreenDialog:
                   (isAndroid || isIOS) && fullscreenPageList.contains(name),
+              transition: noAnimationPageList.contains(name)
+                  ? Transition.noTransition
+                  : null,
             ),
           ),
         )
