@@ -17,7 +17,7 @@ class LoginManager {
     userInfoResult = null;
 
     LJNetwork.headers.remove('Authorization');
-    LJEventBus().emit(kLogoutEvent);
+    LJEventBus.emit(kLogoutEvent);
   }
 
   static Future<bool> showLogin() async {
@@ -27,7 +27,7 @@ class LoginManager {
 
     if (result == true) {
       LJNetwork.headers.addAll({'Authorization': userInfoResult?.token ?? ""});
-      LJEventBus().emit(kLoginEvent);
+      LJEventBus.emit(kLoginEvent);
     }
 
     return result == null ? Future.value(false) : Future.value(result);

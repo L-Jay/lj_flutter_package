@@ -230,7 +230,7 @@ class RouterArgumentDetailPage extends StatelessWidget {
               onTap: () {
                 RouterManager.replaceNamed(
                   LJRouter.argumentDetailPage,
-                  arguments: Random().nextInt(100),
+                  arguments: {'random' : Random().nextInt(100).toString()},
                 );
               },
               child: quickText('replace到当前页面,并传个随机数', 14, Colors.red),

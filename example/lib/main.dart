@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
   }
 
   void _configRouter() {
+    RouterManager.duplicate = true;
     RouterManager.routerType = RouterType.get;
     RouterManager.rootPageName = LJRouter.root;
     RouterManager.routes = LJRouter.routes;

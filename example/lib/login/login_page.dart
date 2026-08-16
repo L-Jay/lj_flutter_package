@@ -111,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
       data: {'phone': _phoneController.text, 'code': _codeController.text},
       successCallback: (UserInfoModel model) {
         LoginManager.userInfoResult = model.result;
-        LJEventBus().emit(kLoginEvent);
+        LJEventBus.emit(kLoginEvent);
         EasyLoading.showSuccess(model.reason!);
         RouterManager.pop(true);
       },

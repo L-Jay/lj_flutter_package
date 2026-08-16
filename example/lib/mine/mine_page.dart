@@ -31,13 +31,13 @@ class _MinePageState extends State<MinePage>
 
   @override
   void initState() {
-    LJEventBus().on(kLoginEvent, (arg) {
+    LJEventBus.on(kLoginEvent, (arg) {
       setState(() {
 
       });
     });
 
-    LJEventBus().on(kLogoutEvent, (arg) {
+    LJEventBus.on(kLogoutEvent, (arg) {
       setState(() {
 
       });
