@@ -108,7 +108,8 @@ class _DebugNetworkHistoryDetailPageState
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   color: const Color(0xFF717171),
                 ),
-                if (widget.historyModel.errorCode == null)
+                if (widget.historyModel.errorCode == null &&
+                    widget.historyModel.jsonResult?.isNotEmpty == true)
                   JsonView.string(widget.historyModel.jsonResult ?? ''),
                 if (widget.historyModel.errorCode != null)
                   Text(

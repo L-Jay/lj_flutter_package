@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,42 @@ typedef LJServiceChangeCallback = void Function(Map<String, String> map);
 class LJDebugConfig {
   /*务必第一个配置正式环境，release版本默认读取第一个配置项*/
   static late List<Map<String, String>> configList;
+
+  // 本地缓存的环境配置 key
+  static const String kLocalServerListKey = 'localServerList';
+
+  // 本地缓存的环境配置，无缓存时为空数组（不为 null）
+  static List<Map<String, String>> localServerList = [];
+
+  static bool _isLocalServerListInited = false;
+
+  // 从本地缓存读取环境配置并初始化 localServerList
+  static void initLocalServerList() {
+    if (_isLocalServerListInited) return;
+    _isLocalServerListInited = true;
+    final String? jsonStr = LJUtil.preferences.getString(kLocalServerListKey);
+    if (jsonStr == null || jsonStr.isEmpty) {
+      localServerList = [];
+      return;
+    }
+    try {
+      localServerList = (jsonDecode(jsonStr) as List)
+          .map((e) => Map<String, String>.from(e as Map))
+          .toList();
+    } catch (e) {
+      localServerList = [];
+    }
+  }
+
+  // 代码内配置 + 本地缓存配置 的合并列表
+  static List<Map<String, String>> get allConfigList =>
+      [...configList, ...localServerList];
+
+  // 缓存 localServerList 到本地
+  static void cacheLocalServerList() {
+    LJUtil.preferences.setString(
+        kLocalServerListKey, jsonEncode(localServerList));
+  }
 
   /*
   第一次赋值会主动调用并返回上次选择的环境
@@ -36,11 +74,22 @@ class LJDebugConfig {
   static set serviceChangeCallback(LJServiceChangeCallback callback) {
     int index;
     if (kDebugMode || show) {
+      initLocalServerList();
       index = LJUtil.preferences.getInt('LJDebugIndex') ?? 0;
     } else {
       index = 0;
     }
-    callback(configList[index]);
+
+    // 索引指向合并列表（代码配置 + 本地缓存配置），越界时回退到第一个环境
+    List<Map<String, String>> allList = allConfigList;
+    if (allList.isEmpty) {
+      throw StateError('LJDebugConfig.configList 不能为空');
+    }
+    if (index < 0 || index >= allList.length) {
+      index = 0;
+      LJUtil.preferences.setInt('LJDebugIndex', 0);
+    }
+    callback(allList[index]);
     _serviceChangeCallback = callback;
 
     if (!kDebugMode) return;

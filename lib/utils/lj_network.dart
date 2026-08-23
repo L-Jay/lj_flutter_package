@@ -282,6 +282,13 @@ class LJNetwork {
         }
       }
 
+      if (kDebugMode) {
+        historyModel.title = path;
+        historyModel.url = baseUrl! + path;
+        historyModel.headers = headers;
+        historyModel.params = {...?params, ...(data is Map ? data : {})};
+      }
+
       /*cancelToken*/
       CancelToken cancelToken = CancelToken();
       _cancelTokens[path] = cancelToken;
@@ -339,14 +346,8 @@ class LJNetwork {
       }
 
       if (kDebugMode) {
-        historyModel.title = path;
-        historyModel.url = response.realUri.toString();
-        historyModel.headers = headers;
-        historyModel.params = {...?params, ...(data is Map ? data : {})};
         historyModel.responseHeaders = response.headers.map;
         historyModel.jsonResult = jsonEncode(response.data);
-
-        historyList.insert(0, historyModel);
       }
 
       // 删除本次请求的cancelToken
