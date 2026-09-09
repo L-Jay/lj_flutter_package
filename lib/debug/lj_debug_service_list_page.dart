@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../utils/lj_define.dart';
 import '../utils/lj_util.dart';
@@ -93,25 +94,43 @@ class _DebugServiceListPageState extends State<DebugServiceListPage> {
             ),
           );
 
-          // 代码内配置不允许删除，仅本地缓存配置支持左滑删除
+          // 代码内配置不允许操作，仅本地缓存配置支持左滑复制/删除
           if (index < LJDebugConfig.configList.length) {
             return item;
           }
 
-          return Dismissible(
+          return Slidable(
             // 使用内容生成稳定 key，避免删除后后续项索引变化导致 key 复用
             key: ValueKey('local_env_${service.toString()}'),
-            direction: DismissDirection.endToStart,
-            // endToStart 方向下不会展示，但 Flutter 要求 secondaryBackground
-            // 存在时 background 必须同时存在，否则会触发断言
-            background: Container(color: const Color(0xFFFF3B30)),
-            secondaryBackground: Container(
-              color: const Color(0xFFFF3B30),
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
-              child: const Icon(Icons.delete, color: Colors.white),
+            endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              dismissible: DismissiblePane(
+                onDismissed: () => _deleteLocalService(index),
+              ),
+              children: [
+                SlidableAction(
+                  onPressed: (BuildContext context) => _editLocalService(index),
+                  backgroundColor: const Color(0xFF4CAF50),
+                  foregroundColor: Colors.white,
+                  icon: Icons.edit,
+                  label: '编辑',
+                ),
+                SlidableAction(
+                  onPressed: (BuildContext context) => _copyLocalService(index),
+                  backgroundColor: const Color(0xFF1BA3FF),
+                  foregroundColor: Colors.white,
+                  icon: Icons.copy,
+                  label: '复制',
+                ),
+                SlidableAction(
+                  onPressed: (BuildContext context) => _deleteLocalService(index),
+                  backgroundColor: const Color(0xFFFF3B30),
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                  label: '删除',
+                ),
+              ],
             ),
-            onDismissed: (_) => _deleteLocalService(index),
             child: item,
           );
         },
@@ -143,12 +162,45 @@ class _DebugServiceListPageState extends State<DebugServiceListPage> {
     setState(() {});
   }
 
-  void _showAddEnvDialog() {
+  // 复制本地缓存环境，将数据传入新增弹窗
+  void _copyLocalService(int index) {
+    Map<String, String> service = _allServiceList[index];
+    _showAddEnvDialog(initialValues: service);
+  }
+
+  // 编辑本地缓存环境
+  void _editLocalService(int index) {
+    Map<String, String> service = _allServiceList[index];
+    int localIndex = index - LJDebugConfig.configList.length;
+    _showAddEnvDialog(
+      title: '编辑环境',
+      initialValues: service,
+      onSave: (config) {
+        LJDebugConfig.localServerList[localIndex] = config;
+        LJDebugConfig.cacheLocalServerList();
+        // 如果编辑的是当前选中的环境，触发切换回调以刷新当前环境
+        if (index == _index) {
+          LJDebugConfig.serviceChangeCallback(_allServiceList[index]);
+        }
+      },
+    );
+  }
+
+  void _showAddEnvDialog({
+    String title = '新增环境',
+    Map<String, String>? initialValues,
+    void Function(Map<String, String>)? onSave,
+  }) {
     List<String> keys = LJDebugConfig.configList.first.keys.toList();
 
     showDialog<bool>(
       context: context,
-      builder: (context) => _AddEnvDialog(keys: keys),
+      builder: (context) => _AddEnvDialog(
+        keys: keys,
+        title: title,
+        initialValues: initialValues,
+        onSave: onSave,
+      ),
     ).then((result) {
       if (result == true) {
         setState(() {});
@@ -157,19 +209,38 @@ class _DebugServiceListPageState extends State<DebugServiceListPage> {
   }
 }
 
-// 新增环境弹窗
+// 新增/编辑环境弹窗
 class _AddEnvDialog extends StatefulWidget {
   final List<String> keys;
+  final String title;
+  final Map<String, String>? initialValues;
+  final void Function(Map<String, String>)? onSave;
 
-  const _AddEnvDialog({Key? key, required this.keys}) : super(key: key);
+  const _AddEnvDialog({
+    Key? key,
+    required this.keys,
+    this.title = '新增环境',
+    this.initialValues,
+    this.onSave,
+  }) : super(key: key);
 
   @override
   State<_AddEnvDialog> createState() => _AddEnvDialogState();
 }
 
 class _AddEnvDialogState extends State<_AddEnvDialog> {
-  late final List<TextEditingController> _controllers =
-      List.generate(widget.keys.length, (_) => TextEditingController());
+  late final List<TextEditingController> _controllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(
+      widget.keys.length,
+      (i) => TextEditingController(
+        text: widget.initialValues?[widget.keys[i]] ?? '',
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -184,7 +255,11 @@ class _AddEnvDialogState extends State<_AddEnvDialog> {
     for (int i = 0; i < widget.keys.length; i++) {
       config[widget.keys[i]] = _controllers[i].text;
     }
-    LJDebugConfig.localServerList.add(config);
+    if (widget.onSave != null) {
+      widget.onSave!(config);
+    } else {
+      LJDebugConfig.localServerList.add(config);
+    }
     LJDebugConfig.cacheLocalServerList();
     Navigator.pop(context, true);
   }
@@ -195,7 +270,7 @@ class _AddEnvDialogState extends State<_AddEnvDialog> {
     return AlertDialog(
       insetPadding: EdgeInsets.zero,
       constraints: BoxConstraints(minWidth: width, maxWidth: 500),
-      title: const Text('新增环境'),
+      title: Text(widget.title),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
