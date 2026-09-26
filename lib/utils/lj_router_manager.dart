@@ -241,7 +241,7 @@ class RouterManager {
   static pushPage<T>(Widget page) async {
     switch (routerType) {
       case RouterType.get:
-        return Get.to<T>(() => page);
+        return Get.to<T>(() => page, preventDuplicates: false);
       case RouterType.goRouter:
       case RouterType.navigator1:
         return Navigator.push<T>(
