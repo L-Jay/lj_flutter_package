@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lj_flutter_package/ui_component/lj_image_preview_page.dart';
-import 'package:lj_flutter_package/utils/lj_define.dart';
+import 'package:lj_flutter_package/utils/lj_quick_widgets.dart';
 import 'package:lj_flutter_package/utils/lj_router_manager.dart';
 import 'package:lj_flutter_package/utils/lj_util.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../utils/lj_define.dart';
+import '../utils/lj_quick_widgets.dart';
 import '../utils/lj_util.dart';
 import 'lj_debug_config.dart';
 
