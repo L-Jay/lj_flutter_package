@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'lj_quick_widgets.dart';
+import 'lj_define.dart';
 import 'lj_event_bus.dart';
 import 'lj_permission.dart';
 

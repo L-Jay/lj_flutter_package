@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
-import 'package:lj_flutter_package/ui_component/lj_imagebutton.dart';
+import 'package:lj_flutter_package/ui_component/lj_image_button.dart';
 import 'package:lj_flutter_package/ui_component/lj_send_code_button.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,7 +15,7 @@ import '../common/lj_colors.dart';
 import 'login_manager.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -156,12 +156,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildPrivacy() {
     return LJImageButton(
-      onTap: () {
+      onPressed: () {
         isAgreeCheck = !isAgreeCheck;
         _agreeCheckSubject.add(isAgreeCheck);
       },
       spaceMargin: 5.5,
-      imageChild: StreamBuilder(
+      imageWidget: StreamBuilder(
         stream: _agreeCheckSubject.stream,
         builder: (context, value) {
           return Icon(
@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         },
       ),
-      textChild: quickRichTextTap(
+      textWidget: quickRichTextTap(
         12,
         ['我已阅读并同意', '《用户服务协议》', '&', '《隐私条款》'],
         [

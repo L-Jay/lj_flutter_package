@@ -44,23 +44,23 @@ extension intToDate on int {
 
 extension StateExtension on State {
   EdgeInsets get padding {
-    return MediaQuery.of(context).padding;
+    return MediaQuery.of(context).viewPadding;
   }
 
   double get top {
-    return MediaQuery.of(context).padding.top;
+    return MediaQuery.of(context).viewPadding.top;
   }
 
   double get bottom {
-    return MediaQuery.of(context).padding.bottom;
+    return MediaQuery.of(context).viewPadding.bottom;
   }
 
   double get left {
-    return MediaQuery.of(context).padding.left;
+    return MediaQuery.of(context).viewPadding.left;
   }
 
   double get right {
-    return MediaQuery.of(context).padding.right;
+    return MediaQuery.of(context).viewPadding.right;
   }
 
   double get width {

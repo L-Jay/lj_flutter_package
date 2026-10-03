@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper_null_safety_flutter3/flutter_swiper_null_safety_flutter3.dart';
 
-import '../utils/lj_quick_widgets.dart';
+import '../utils/lj_define.dart';
 import 'lj_network_image.dart';
 
 class LJSwiper<T> extends StatefulWidget {

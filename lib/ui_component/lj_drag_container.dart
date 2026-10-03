@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/lj_quick_widgets.dart';
+import '../utils/lj_define.dart';
 
 enum LJDragAdsorption {
   onlyTop,

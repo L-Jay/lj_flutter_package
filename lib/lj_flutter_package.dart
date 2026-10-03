@@ -7,7 +7,7 @@ export 'ui_component/lj_refresh_list_view.dart';
 export 'ui_component/lj_refresh_grid_view.dart';
 export 'ui_component/lj_refresh_view_controller.dart';
 
-export 'utils/lj_quick_widgets.dart';
+export 'utils/lj_define.dart';
 export 'utils/lj_event_bus.dart';
 export 'utils/lj_extensions.dart';
 export 'utils/lj_network.dart';

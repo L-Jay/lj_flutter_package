@@ -1,6 +1,6 @@
 # lj_flutter_package
 
-`lj_flutter_package` 是一个功能完善的 Flutter 基础组件库，提供开箱即用的网络请求、路由管理、Event Bus 等工具类，以及轮播图、金刚区、自定义 TabBar、验证码按钮、折叠列表、密码输入框、拖拽 Widget、网络图片缓存、WebView 等常用 UI 组件。
+`lj_flutter_package` 是一个功能完善的 Flutter 基础组件库，提供开箱即用的网络请求、路由管理、Event Bus 等工具类，以及轮播图、金刚区、Button、自定义 TabBar、验证码按钮、折叠列表、密码输入框、拖拽 Widget、网络图片缓存、WebView 等常用 UI 组件。
 
 ## ✨ 特性
 
@@ -8,7 +8,7 @@
 - 🧭 路由管理：支持 GoRouter / Get / Navigator 1.0 三种方案，内置登录态拦截
 - 📡 Event Bus：跨组件事件通信，支持持久值存储
 - 🛠️ 工具扩展：String 日期转换、手机号验证、State/MediaQuery 快捷访问
-- 🎨 UI 组件：轮播图、金刚区、TabBar、验证码、折叠列表、密码框、拖拽、图片缓存、WebView
+- 🎨 UI 组件：轮播图、金刚区、Button、TabBar、验证码、折叠列表、密码框、拖拽、图片缓存、WebView
 - 🔧 调试工具：环境切换、网络请求日志查看
 - 📱 权限管理：相机、相册、存储、麦克风等封装
 
@@ -234,8 +234,6 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
   final count = context.argumentForKey<int>('count'); // 指定类型
 });
 ```
-
-> ⚠️ GoRouter 下不要用 `RouterManager.argument`，会报错，请用 `context.argument`。
 
 ### 路由状态查询 / 无 Context 跳转
 
@@ -515,6 +513,68 @@ LJRefreshGridView(
 )
 ```
 
+## 图片按钮 LJImageButton
+
+基于 `FilledButton` 封装的图文按钮，支持纯色/渐变背景、按下高亮、选中/禁用状态、图片在四个方向布局等能力。
+
+```dart
+// 纯色按钮
+LJImageButton(
+  text: '提交',
+  textStyle: TextStyle(fontSize: 16, color: Colors.white),
+  backgroundColor: Colors.blue,
+  highlightBackgroundColor: Colors.blue.shade700, // 按下高亮色（不传则自动降低透明度）
+  width: 200,
+  height: 44,
+  borderRadius: 22,
+  onPressed: () {},
+)
+
+// 渐变按钮（渐变优先级高于纯色）
+LJImageButton(
+  text: '立即购买',
+  textStyle: TextStyle(fontSize: 16, color: Colors.white),
+  backgroundGradient: LinearGradient(colors: [Colors.orange, Colors.red]),
+  highlightGradient: LinearGradient(colors: [Colors.deepOrange, Colors.red]),
+  height: 44,
+  borderRadius: 22,
+  onPressed: () {},
+)
+
+// 图文按钮（图片可位于 左/上/右/下）
+LJImageButton(
+  text: '微信登录',
+  imageName: 'assets/images/icon_wechat.png',
+  imageWidth: 24,
+  imageHeight: 24,
+  position: ButtonImagePosition.left, // left / top / right / bottom
+  backgroundColor: Colors.green,
+  onPressed: () {},
+)
+
+// 可选中按钮
+LJImageButton(
+  text: '收藏',
+  selected: _isCollected,
+  backgroundColor: Colors.grey[200],
+  selectedBackgroundColor: Colors.red,
+  onPressed: () => setState(() => _isCollected = !_isCollected),
+)
+```
+
+常用属性说明：
+
+| 属性                       | 说明                                                     |
+| -------------------------- | -------------------------------------------------------- |
+| `backgroundColor`          | 纯色背景，可配 `highlightBackgroundColor` / `selectedBackgroundColor` / `disableBackgroundColor` |
+| `backgroundGradient`       | 渐变背景（优先级高于纯色），可配对应 highlight/selected/disable 渐变 |
+| `borderSide`               | 边框，禁用时可由 `disableBorderColor` 覆盖               |
+| `position` / `align`       | 图片方位（左/上/右/下）与垂直布局时的水平对齐方式        |
+| `shrinkWrap`               | 是否紧贴内容（关闭 44x36 最小尺寸与点击热区）            |
+| `disableInkWell`           | 是否关闭水波纹，默认关闭                                 |
+| `image` / `imageName`      | 自定义图片 Widget 或 asset 名称（禁用时自动叠加灰度滤镜） |
+
+
 ## WebView 页面
 
 ```dart
@@ -542,7 +602,7 @@ RouterManager.pushPage(LJWebViewPage('https://www.example.com', title: '网页')
 | LJWrapRadio                 | 流式单选/多选                                        |
 | LJRefreshListViewController | 下拉刷新控制器                                       |
 | LJCloseBar                  | 可关闭的顶部条                                       |
-| LJImageButton               | 自定义 Button                                        |
+| LJImageButton               | 图文按钮（纯色/渐变背景，选中/禁用态，图片四向布局） |
 | LJGradientLinearProgressBar | 直线进度条                                           |
 | LJSliverTabBarDelegate      | SliverPersistentHeader delegate 封装                 |
 | LJStarBar                   | 星级条                                               |

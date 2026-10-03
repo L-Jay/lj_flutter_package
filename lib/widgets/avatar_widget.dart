@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lj_flutter_package/ui_component/lj_network_image.dart';
-import 'package:lj_flutter_package/utils/lj_quick_widgets.dart';
+import 'package:lj_flutter_package/utils/lj_define.dart';
 import 'package:lj_flutter_package/utils/lj_util.dart';
 
 class AvatarWidget extends StatefulWidget {

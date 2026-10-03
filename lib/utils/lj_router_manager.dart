@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'lj_quick_widgets.dart';
+import 'lj_define.dart';
 
 /// 路由类型
 /// goRouter: go_router包，https://pub.dev/packages/go_router, 官方推荐，Web 首选

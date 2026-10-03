@@ -3,12 +3,13 @@ import 'package:example/login/login_manager.dart';
 import 'package:example/setting/about_us_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
+import 'package:lj_flutter_package/ui_component/lj_image_button.dart';
 
 import '../common/lj_colors.dart';
 import '../demo_pages/pages/password_input_page.dart';
 
 class SettingPage extends StatefulWidget {
-  const SettingPage({Key? key}) : super(key: key);
+  const SettingPage({super.key});
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -34,14 +35,13 @@ class _SettingPageState extends State<SettingPage> {
           _buildListView(),
           const SizedBox(height: 10),
           if (LoginManager.isLogin)
-            roundButton(
+            LJImageButton(
               width: 200,
               height: 40,
-              title: '退出登录',
-              fontSize: 16,
-              color: LJColor.mainColor,
-              fontColor: Colors.white,
-              onTap: () {
+              text: '退出登录',
+              textStyle: textStyle(16, Colors.white),
+              backgroundColor: LJColor.mainColor,
+              onPressed: () {
                 showAlert(context, content: '确定退出登录？', submitCallBack: () {
                   LoginManager.logout();
                   setState(() {});

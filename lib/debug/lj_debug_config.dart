@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../ui_component/lj_drag_container.dart';
-import '../utils/lj_quick_widgets.dart';
+import '../utils/lj_define.dart';
 import '../utils/lj_router_manager.dart';
 import '../utils/lj_util.dart';
 import 'lj_debug_network_history_page.dart';

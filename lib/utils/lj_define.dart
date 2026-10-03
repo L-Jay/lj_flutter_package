@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lj_flutter_package/ui_component/lj_image_button.dart';
 
 const FontWeight ultralight = FontWeight.w100;
 const FontWeight thin = FontWeight.w200;
@@ -104,98 +105,12 @@ Text quickText(
   );
 }
 
-Widget roundButton({
-  /// borderWidth>0 使用color作为borderColor
-  /// borderWidth=0 使用color作为bgColor
-  required String title,
-  required double fontSize,
-  required Color fontColor,
-  required GestureTapCallback onTap,
-  Color? color,
-  FontWeight? fontWeight,
-  double? height,
-  double? width,
-  double borderWidth = 0,
-  double space = 5,
-  Widget? imageWidget,
-  bool imageLeft = true,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: quickContainer(
-      width: width,
-      height: height,
-      color: borderWidth == 0 ? color : null,
-      circular: height == null ? 0 : height * 0.5,
-      borderWidth: borderWidth,
-      borderColor: borderWidth > 0 ? color : null,
-
-      /// 一般有背景颜色都是纯色按钮，文本一般居中显示
-      /// 无颜色一般就是文本按钮，显示最小大小
-      alignment: color != null ? Alignment.center : null,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (imageWidget != null && imageLeft) imageWidget,
-          if (imageWidget != null && imageLeft) SizedBox(width: space),
-          quickText(title, fontSize, fontColor, fontWeight: fontWeight),
-          if (imageWidget != null && !imageLeft) SizedBox(width: space),
-          if (imageWidget != null && !imageLeft) imageWidget,
-        ],
-      ),
-    ),
-  );
-}
-
-Widget quickButton({
-  required String text,
-  required double fontSize,
-  required Color fontColor,
-  required VoidCallback onPressed,
-  Color? backgroundColor,
-  FontWeight? fontWeight,
-  double? width,
-  double? height,
-  double? circular,
-}) {
-  return GestureDetector(
-    onTap: onPressed,
-    child: quickContainer(
-      width: width,
-      height: height,
-      circular: circular,
-      color: backgroundColor,
-      alignment: Alignment.center,
-      child: quickText(text, fontSize, fontColor),
-    ),
-  );
-}
-
-Widget gradientButton({
-  required String text,
-  required List<Color> gradientColors,
-  required VoidCallback onPressed,
-  double fontSize = 17,
-  FontWeight? fontWeight,
-  Color textColor = Colors.white,
-  double? width,
-  double? height,
-  double? circular,
-}) {
-  return quickContainer(
-    width: width,
-    height: height,
-    circular: circular,
-    gradientColors: gradientColors,
-    child: quickButton(
-      text: text,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontColor: textColor,
-      backgroundColor: Colors.transparent,
-      onPressed: onPressed,
-    ),
+TextStyle textStyle(double size, Color color,
+    [FontWeight fontWeight = medium]) {
+  return TextStyle(
+    fontSize: size,
+    color: color,
+    fontWeight: fontWeight,
   );
 }
 
