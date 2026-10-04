@@ -210,9 +210,10 @@ class MyApp extends StatelessWidget {
       primaryColor: Colors.white,
       highlightColor: Colors.transparent,
       scaffoldBackgroundColor: Colors.white,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
+        toolbarHeight: 44,
         toolbarTextStyle: TextStyle(
           fontSize: 18,
           color: LJColor.textColor,

@@ -8,6 +8,7 @@
 - 🧭 路由管理：支持 GoRouter / Get / Navigator 1.0 三种方案，内置登录态拦截
 - 📡 Event Bus：跨组件事件通信，支持持久值存储
 - 🛠️ 工具扩展：String 日期转换、手机号验证、State/MediaQuery 快捷访问
+- 📝 字体字重：内置 iOS 平台字重补偿，解决 Flutter(iOS) 比原生偏细、与设计稿不一致的问题
 - 🎨 UI 组件：轮播图、金刚区、Button、TabBar、验证码、折叠列表、密码框、拖拽、图片缓存、WebView
 - 🔧 调试工具：环境切换、网络请求日志查看
 - 📱 权限管理：相机、相册、存储、麦克风等封装
@@ -318,6 +319,67 @@ quickContainer(width: 100, height: 50, color: Colors.blue, circular: 8, child: .
 buttonStyle(16, Colors.white, backgroundColor: Colors.blue);
 showActionSheet(context, ['选项一', '选项二']);
 ```
+
+## 📝 字体字重（iOS 平台适配）
+
+### 背景
+
+设计稿通常按 iOS 原生（CoreText + SF Pro/PingFang SC）标定字重。实测在 iOS 上，
+Flutter 使用自己的渲染引擎（Impeller/Skia，**不走 CoreText**），同样的字重数值会
+**整体偏细**（w300~w600 常用区间约细 6~7 个百分点），且非整百字重会被"吸附"到
+最近的实体字面。为此包内提供了按平台自适应的字重常量，定义在
+`lib/utils/lj_define.dart`。
+
+### 用法
+
+直接使用语义化字重常量，**不要**写 `FontWeight.w500` 这类裸值：
+
+```dart
+import 'package:lj_flutter_package/lj_flutter_package.dart';
+
+Text('标题', style: TextStyle(fontSize: 16, fontWeight: medium));
+quickText('正文', 14, Colors.black, fontWeight: regular); // 不传默认 regular
+```
+
+| 常量          | 设计字重 | iOS 实际取值 | 其他平台 |
+| ------------- | -------- | ------------ | -------- |
+| `ultralight`  | w100     | w200         | w100     |
+| `thin`        | w200     | w300         | w200     |
+| `light`       | w300     | w350         | w300     |
+| `regular`     | w400     | w450         | w400     |
+| `medium`      | w500     | w600         | w500     |
+| `semibold`    | w600     | w700         | w600     |
+| `bold`        | w700     | w700（不补偿）| w700    |
+
+> 取值经过两版迭代：严格按墨迹密度实测的补偿跨度更大（如原生 w300 ≈ Flutter
+> w450、w400 ≈ w600），但视觉走查后采用了当前这组**更保守、更接近原档**的数值。
+> 可在 example 工程的「字重」demo 页查看三行对照（Flutter 原始值 / iOS 补偿后 /
+> iOS 原生渲染图），并结合自家设计稿走查微调。
+>
+> 注意：`semibold` 与 `bold` 在 iOS 上实际都落在 w700（bold 未补偿），二者
+> 视觉等价；若需要严格的"最粗"层级，可把 `bold` 改为 `FontWeight(900)`。
+
+### 适用范围
+
+- **仅对 iOS 生效**：Android 实测与原生接近，不补偿；
+- **不要套用到其他平台**：Windows（Segoe UI/雅黑）、Linux（Cantarell/Noto）系统字体
+  不同，补偿值无效；macOS 渲染情况可能与 iOS 类似但未实测，如需支持应另行标定。
+  平台判断与取值逻辑均封装在常量内部，业务侧无需关心。
+
+### 注意事项
+
+1. **x50 中间字重不可靠**：PingFang SC 只有 100/200/300/400/500/600 六个实体字面，
+   700 以上靠合成粗体。实测吸附关系：
+   `w150=w100`、`w250=w200`、`w650=w600`、`w750=w700`、`w850=w800`；
+   w350/450/550 也只是略偏向相邻整百，取舍方向不固定。**业务代码不要自行使用 x50
+   中间值，只用语义化常量**；上表中 `light→w350`、`regular→w450` 是库内经实测
+   有意选取的补偿值（比整百档更接近视觉目标），属于例外。
+2. **引用这些常量的 `TextStyle`/`Text` 不能加 `const`**：平台判断是运行时逻辑，
+   编译期无法确定值。直接去掉 `const` 即可（性能影响可忽略）；若调用处必须保持
+   const，可自行封装一个在 `build` 内部读取字重的 StatelessWidget。
+3. **层级注意**：受有效档位限制，高档补偿不保证与设计档一一对应。当前映射中
+   `semibold` 与 `bold` 在 iOS 上都渲染为 w700（视觉等价）；如需更粗的强调层级，
+   可将 `bold` 调整为 `FontWeight(900)`（实测密度约 0.32，为 Flutter 端最粗档）。
 
 ## 轮播图
 
@@ -654,7 +716,8 @@ lib/
 3. **路由跳转**：使用 `RouterManager.pushNamed/pop/replaceNamed/popUntil`，**禁止**直接使用 `Navigator.push`
 4. **页面参数**：在 `initState` 的 `addPostFrameCallback` 中用 `context.argumentMap` / `context.argument` 获取；GoRouter 下不要用 `RouterManager.argument`
 5. **资源释放**：StatefulWidget 的 `dispose()` 必须释放 controller、调用 `LJEventBus.off(eventName)` 取消订阅
-6. **禁止事项**：不要在 `build()` 中发起网络请求；不要用 `setState` 模拟数据流，列表分页用 `LJRefreshListViewController`；不要重复造轮子，优先使用框架已有组件
+6. **字体字重**：统一使用 `lib/utils/lj_define.dart` 中的 `ultralight/thin/light/regular/medium/semibold/bold` 常量（iOS 自动补偿，详见上文「字体字重」章节），禁止直接写 `FontWeight.w400` 等裸值，也不要自行使用 x50 中间字重（库内常量已封装补偿值）
+7. **禁止事项**：不要在 `build()` 中发起网络请求；不要用 `setState` 模拟数据流，列表分页用 `LJRefreshListViewController`；不要重复造轮子，优先使用框架已有组件
 
 ### 标准页面模板
 
@@ -721,6 +784,7 @@ class _MyPageState extends State<MyPage> {
 | 路由       | `RouterManager`                           | `Navigator` / `Get.to`   |
 | 网络请求   | `LJNetwork`                               | 直接 `dio`               |
 | 事件通信   | `LJEventBus`                              | 自行实现 Stream          |
+| 字体字重   | `medium` / `regular` 等语义化字重常量     | `FontWeight.w400` 裸值   |
 
 ### 命名规范
 

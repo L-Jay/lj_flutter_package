@@ -249,7 +249,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: 50,
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: LJColor.textColor,
                       fontSize: 16,
                       fontWeight: bold,

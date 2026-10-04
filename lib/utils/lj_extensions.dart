@@ -80,3 +80,100 @@ extension JionExtension<T> on List<T> {
     return list;
   }
 }
+
+// ==================== 通用交互底层 ====================
+class _TappableWidget extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final double pressedOpacity;
+  final double disabledOpacity;
+  final HitTestBehavior behavior;
+
+  const _TappableWidget({
+    required this.child,
+    this.onTap,
+    this.onLongPress,
+    required this.pressedOpacity,
+    required this.disabledOpacity,
+    required this.behavior,
+  });
+
+  @override
+  State<_TappableWidget> createState() => _TappableWidgetState();
+}
+
+class _TappableWidgetState extends State<_TappableWidget> {
+  bool _isPressed = false;
+  bool get _isDisabled => widget.onTap == null && widget.onLongPress == null;
+
+  @override
+  Widget build(BuildContext context) {
+    final double opacity = _isDisabled
+        ? widget.disabledOpacity
+        : (_isPressed ? widget.pressedOpacity : 1.0);
+
+    return GestureDetector(
+      onTap: _isDisabled ? null : widget.onTap,
+      onLongPress: _isDisabled ? null : widget.onLongPress,
+      onTapDown: _isDisabled ? null : (_) => setState(() => _isPressed = true),
+      onTapUp: _isDisabled ? null : (_) => setState(() => _isPressed = false),
+      onTapCancel: _isDisabled ? null : () => setState(() => _isPressed = false),
+      behavior: widget.behavior,
+      child: Opacity(
+        opacity: opacity,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+// ==================== Widget 通用点击扩展 ====================
+extension WidgetTapExtension on Widget {
+  Widget onTap(
+      VoidCallback? onTap, {
+        VoidCallback? onLongPress,
+        double pressedOpacity = 1.0, // 默认无按下效果
+        double disabledOpacity = 1.0, // 默认禁用不改样式
+        HitTestBehavior behavior = HitTestBehavior.opaque,
+      }) {
+    if (pressedOpacity >= 1.0 && disabledOpacity >= 1.0) {
+      return GestureDetector(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        behavior: behavior,
+        child: this,
+      );
+    }
+
+    return _TappableWidget(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      pressedOpacity: pressedOpacity,
+      disabledOpacity: disabledOpacity,
+      behavior: behavior,
+      child: this,
+    );
+  }
+}
+
+// ==================== Text 专属点击扩展 ====================
+extension TextTapExtension on Text {
+  /// 给 Text 添加点击能力，默认自带按下变暗+禁用降灰
+  Widget onTap(
+      VoidCallback? onTap, {
+        VoidCallback? onLongPress,
+        double pressedOpacity = 0.7, // 默认文字按下变暗
+        double disabledOpacity = 0.5, // 默认文字禁用降灰
+        HitTestBehavior behavior = HitTestBehavior.opaque,
+      }) {
+    return _TappableWidget(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      pressedOpacity: pressedOpacity,
+      disabledOpacity: disabledOpacity,
+      behavior: behavior,
+      child: this,
+    );
+  }
+}
