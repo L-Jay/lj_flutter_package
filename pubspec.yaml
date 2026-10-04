@@ -1,5 +1,5 @@
 name: lj_flutter_package
-description: A basic Flutter package.
+description: 开箱即用的 Flutter 基础组件库：封装网络请求、路由管理、Event Bus、调试面板、iOS 字重补偿，以及轮播图、金刚区、下拉刷新等 20+ 常用 UI 组件。
 version: 0.3.0
 homepage: https://github.com/L-Jay/lj_flutter_package
 

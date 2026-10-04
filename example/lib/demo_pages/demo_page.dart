@@ -1,5 +1,6 @@
 import 'package:example/common/router.dart';
 import 'package:example/demo_pages/pages/dashed_line_page.dart';
+import 'package:example/demo_pages/pages/font_weight_page.dart';
 import 'package:example/demo_pages/pages/dropdown_page.dart';
 import 'package:example/demo_pages/pages/fold_list_page.dart';
 import 'package:example/demo_pages/pages/password_input_page.dart';
@@ -33,6 +34,7 @@ class _DemoPageState extends State<DemoPage>
     '下拉菜单',
     '虚线',
     '路由传参',
+    '字重',
   ];
 
   final List _pages = [
@@ -46,6 +48,7 @@ class _DemoPageState extends State<DemoPage>
     const DropdownPage(),
     const DashedLinePage(),
     LJRouter.argumentPage,
+    const FontWeightPage(),
   ];
 
   @override

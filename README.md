@@ -38,6 +38,8 @@ void main() async {
 }
 ```
 
+> 各组件完整用法可参考 `example` 工程，demo 页面位于 `example/lib/demo_pages/`。
+
 ## 🌐 网络请求
 
 基于 `dio` 封装，支持请求/响应拦截、Mock、全局错误处理、网络状态监控。
@@ -235,6 +237,8 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
   final count = context.argumentForKey<int>('count'); // 指定类型
 });
 ```
+
+> 注意：GoRouter Web 刷新后 `extra` 不会恢复（`RouterManager.argument` / `context.argument` 为 null），Map 参数会从 URL 解析，仍可通过 `argumentMap` 获取。
 
 ### 路由状态查询 / 无 Context 跳转
 
@@ -714,7 +718,7 @@ lib/
 1. **初始化**：`main()` 中必须先调用 `await LJUtil.initInstance()`，否则 `LJUtil.preferences` 等为 null
 2. **网络请求**：统一使用 `LJNetwork.post/get/put/delete`，错误已由全局 `LJNetwork.handleAllFailureCallBack` 处理，业务层 `try-catch` 即可，不要重复弹错误提示
 3. **路由跳转**：使用 `RouterManager.pushNamed/pop/replaceNamed/popUntil`，**禁止**直接使用 `Navigator.push`
-4. **页面参数**：在 `initState` 的 `addPostFrameCallback` 中用 `context.argumentMap` / `context.argument` 获取；GoRouter 下不要用 `RouterManager.argument`
+4. **页面参数**：在 `initState` 的 `addPostFrameCallback` 中用 `context.argumentMap` / `context.argument` 获取，三种路由方案均支持；无 context 时可用 `RouterManager.argument` / `RouterManager.argumentMap`（动画转场期间可能参数错乱）；GoRouter 下不要拿全局 `RouterManager.context` 去调 `.argument` 扩展，会报错
 5. **资源释放**：StatefulWidget 的 `dispose()` 必须释放 controller、调用 `LJEventBus.off(eventName)` 取消订阅
 6. **字体字重**：统一使用 `lib/utils/lj_define.dart` 中的 `ultralight/thin/light/regular/medium/semibold/bold` 常量（iOS 自动补偿，详见上文「字体字重」章节），禁止直接写 `FontWeight.w400` 等裸值，也不要自行使用 x50 中间字重（库内常量已封装补偿值）
 7. **禁止事项**：不要在 `build()` 中发起网络请求；不要用 `setState` 模拟数据流，列表分页用 `LJRefreshListViewController`；不要重复造轮子，优先使用框架已有组件
@@ -791,4 +795,4 @@ class _MyPageState extends State<MyPage> {
 - 包名/文件名小写下划线：`lj_flutter_package`、`lj_network.dart`（Dart 强制规范，不可改）
 - 路由名以 `/` 开头：`/loginPage`、`/orderPage`
 
-> **跨项目使用提示**：本 package 通过 git 引用，新项目如需让 AI 助手基于本框架开发，建议在项目根目录创建 `CLAUDE.md` / `.cursorrules` / `AGENTS.md`，写入上述强制规则即可；如需查阅完整 API，可读取 pub 缓存中 `~/.pub-cache/git/lj_flutter_package-*` 目录下的 README.md。
+> **跨项目使用提示**：本 package 通过 git 引用，新项目如需让 AI 助手基于本框架开发，**直接把本仓库根目录的 `AGENTS.md` 复制到业务项目根目录**即可（`AGENTS.md` 已被 Claude Code / Copilot / Cursor / Windsurf 等主流工具读取）；如需查阅完整 API，可读取 pub 缓存中 `~/.pub-cache/git/lj_flutter_package-*` 目录下的 README.md 与 AGENTS.md（只有业务项目根目录的规则文件会被 AI 工具自动加载，缓存中的供按需查阅）。
