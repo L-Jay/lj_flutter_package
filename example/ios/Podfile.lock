@@ -17,7 +17,7 @@ PODS:
     - Flutter
   - package_info_plus (0.4.5):
     - Flutter
-  - permission_handler_apple (9.3.0):
+  - permission_handler_apple (9.4.8):
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -26,9 +26,6 @@ PODS:
     - Flutter
     - FlutterMacOS
   - tobias (0.0.1):
-    - Flutter
-    - tobias/normal (= 0.0.1)
-  - tobias/normal (0.0.1):
     - Flutter
   - TOCropViewController (3.1.2)
   - url_launcher_ios (0.0.1):
@@ -89,20 +86,20 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
   device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   fluwx: 95a2274c23418c1098940bd00dcfe7c975bb0550
   image_cropper: d3ba338ce166ebe54a4e1de742829354b521d473
   image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  permission_handler_apple: ee2fe0fd04551b304eb002714ff067c371c822ed
   shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
-  tobias: 444de28ea3441b5bdbe2f85321544dd62c0dabe4
+  tobias: fe45c356d5fc08e0e9a7322894436e23e83a14b5
   TOCropViewController: a916930c465b5d9445a74d95e0c0da931771b4df
   url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
   webview_flutter_wkwebview: 29eb20d43355b48fe7d07113835b9128f84e3af4
   WechatOpenSDK-XCFramework: b072030c9eeee91dfff1856a7846f70f7b9a88ed
 
-PODFILE CHECKSUM: 06f3adbbd25ae1c06e004ac4120e257e4ac34450
+PODFILE CHECKSUM: ba9959b14e6cf60af0f19db8a34198b89b27bc73
 
 COCOAPODS: 1.16.2

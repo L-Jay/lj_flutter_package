@@ -92,9 +92,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-
-tobias:
-  url_scheme: tobiasexample
-  ios:
-    ignore_security: true
-    universal_link: https://testdomain.com
