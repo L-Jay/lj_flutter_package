@@ -678,7 +678,7 @@ RouterManager.pushPage(LJWebViewPage('https://www.example.com', title: '网页')
 | DoublePopWidget             | 双击返回退出                                         |
 | KeepAliveWidget             | 保持状态 Widget                                      |
 | AlipayUtil / WechatUtil     | 支付宝/微信支付封装                                  |
-| LJExtensions                | String/State 扩展方法（文件 lj_extensions.dart）     |
+| LJExtensions                | String/BuildContext/State 扩展（文件 lj_extensions.dart） |
 | LJCustomUI                  | 快捷 UI 函数 quickText/quickContainer/buttonStyle 等 |
 
 ## 📁 目录结构

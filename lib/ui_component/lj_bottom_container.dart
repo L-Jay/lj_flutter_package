@@ -16,7 +16,7 @@ class BottomContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double bottom = MediaQuery.of(context).viewPadding.bottom;
+    double bottom = MediaQuery.viewPaddingOf(context).bottom;
 
     return Container(
       height: height + bottom,
