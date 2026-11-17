@@ -6,6 +6,7 @@ export 'ui_component/lj_close_bar.dart';
 export 'ui_component/lj_refresh_list_view.dart';
 export 'ui_component/lj_refresh_grid_view.dart';
 export 'ui_component/lj_refresh_view_controller.dart';
+export 'ui_component/lj_webview_page.dart';
 
 export 'utils/lj_define.dart';
 export 'utils/lj_event_bus.dart';
