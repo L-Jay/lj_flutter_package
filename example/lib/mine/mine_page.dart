@@ -3,7 +3,7 @@ import 'package:example/common/router.dart';
 import 'package:flutter/material.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
 
-import '../login/login_manager.dart';
+import '../common/services/user_service.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({Key? key}) : super(key: key);
@@ -110,8 +110,8 @@ class _MinePageState extends State<MinePage>
   _buildUserInfo() {
     return GestureDetector(
       onTap: () async {
-        if (!LoginManager.isLogin) {
-          bool result = await LoginManager.showLogin();
+        if (!UserService.to.isLogin) {
+          bool result = await UserService.to.showLogin();
           if (result) {
             setState(() {});
           }
@@ -122,14 +122,14 @@ class _MinePageState extends State<MinePage>
         child: Row(
           children: [
             LJNetworkImage(
-                url: LoginManager.userInfoResult?.avatarUrl,
+                url: UserService.to.userInfoResult.value?.avatarUrl,
                 width: 80,
                 height: 80,
                 radius: 40),
             const SizedBox(width: 10),
             quickText(
-                LoginManager.isLogin
-                    ? LoginManager.userInfoResult?.nikeName ?? ''
+                UserService.to.isLogin
+                    ? UserService.to.userInfoResult.value?.nikeName ?? ''
                     : '未登录',
                 16,
                 const Color(0xFF333333)),

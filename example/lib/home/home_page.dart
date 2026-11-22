@@ -8,6 +8,7 @@ import 'package:lj_flutter_package/ui_component/lj_swiper.dart';
 import 'package:lj_flutter_package/ui_component/lj_tile_area_view.dart';
 import 'package:lj_flutter_package/ui_component/lj_webview_page.dart';
 
+import '../common/api_url.dart';
 import '../gen_a/A.dart';
 
 class HomePage extends StatefulWidget {
@@ -90,14 +91,33 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     _fetchWeather();
+    _fetchBanner();
 
     super.initState();
+  }
+
+  void _fetchBanner() {
+    LJNetwork.get(
+      ApiUrl.homeBanner,
+      successCallback: (Map data) {
+        List banners = data['result'] ?? [];
+        if (banners.isEmpty) return;
+
+        setState(() {
+          imageList = banners
+              .map(
+                (e) => ImageModel(e['imageUrl'] ?? '', e['contentUrl'] ?? ''),
+              )
+              .toList();
+        });
+      },
+    );
   }
 
   _fetchWeather() {
     EasyLoading.show();
     LJNetwork.post<WeatherModel>(
-      '/simpleWeather/query',
+      ApiUrl.simpleWeather,
       params: {'key': 'f359141d6b74e818a1bfc813b0e3fcb6', 'city': _city},
       successCallback: (WeatherModel model) {
         EasyLoading.showSuccess(model.reason ?? '请求成功');

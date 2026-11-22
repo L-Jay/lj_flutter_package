@@ -1,0 +1,29 @@
+{
+  "/home/banner": {
+    "reason": "查询成功",
+    "error_code": 0,
+    "result": [
+      {
+        "imageUrl": "https://img1.baidu.com/it/u=2093859625,3420507245&fm=253&fmt=auto&app=138&f=JPEG?w=649&h=437",
+        "contentUrl": "https://www.baidu.com"
+      },
+      {
+        "imageUrl": "https://img2.baidu.com/it/u=3157650194,2969546188&fm=253&fmt=auto&app=120&f=JPEG?w=650&h=433",
+        "contentUrl": "https://www.baidu.com"
+      },
+      {
+        "imageUrl": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180920%2Fccc39d430a574d198d404608489419c0.jpeg&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1662275947&t=0a1c0fc072daf1a5356982789489de9f",
+        "contentUrl": "https://www.baidu.com"
+      }
+    ]
+  },
+  "/user/info": {
+    "reason": "查询成功",
+    "error_code": 0,
+    "result": {
+      "userId": 5486,
+      "avatarUrl": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F13236652030%2F1000.jpg&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1661264259&t=702c01270384b8313c1b940ffec3946d",
+      "nikeName": "伍六七"
+    }
+  }
+}

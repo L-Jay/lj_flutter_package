@@ -1,16 +1,19 @@
+import 'dart:convert';
+
 import 'package:example/bottom_tabbar.dart';
 import 'package:example/common/api_url.dart';
 import 'package:example/common/lj_colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:lj_flutter_package/debug/lj_debug_config.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'common/router.dart';
+import 'common/services/user_service.dart';
 import 'generated/json/base/json_convert_content.dart';
-import 'login/login_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,9 +26,14 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   MyApp({super.key}) {
+    _configServices();
     _configNetwork();
     if (!kIsWeb) _configDebug();
     _configRouter();
+  }
+
+  void _configServices() {
+    Get.put(UserService());
   }
 
   void _configDebug() {
@@ -46,8 +54,8 @@ class MyApp extends StatelessWidget {
 
     LJDebugConfig.serviceChangeCallback = (map) async {
       // 切换环境重新登录
-      if (LoginManager.isLogin) {
-        LoginManager.logout();
+      if (UserService.to.isLogin) {
+        UserService.to.logout();
       }
 
       LJNetwork.baseUrl = map['baseUrl'] ?? '';
@@ -55,13 +63,13 @@ class MyApp extends StatelessWidget {
     };
   }
 
-  void _configNetwork() {
+  Future<void> _configNetwork() async {
     LJNetwork.baseUrl = ApiUrl.productUrl;
     LJNetwork.codeKey = 'error_code';
     LJNetwork.successCode = 0;
     LJNetwork.messageKey = 'reason';
     LJNetwork.headers.addAll({
-      'Authorization': LoginManager.userInfoResult?.token ?? "",
+      'Authorization': UserService.to.token,
       'AppVersion': LJUtil.packageInfo.version,
       'AppBuildVersion': LJUtil.packageInfo.buildNumber,
     });
@@ -87,7 +95,7 @@ class MyApp extends StatelessWidget {
     LJNetwork.handleAllFailureCallBack = (error) {
       // 登录过期
       if (error.errorCode == 401) {
-        LoginManager.logout();
+        UserService.to.logout();
       }
 
       EasyLoading.showError(error.errorMessage);
@@ -118,6 +126,17 @@ class MyApp extends StatelessWidget {
         );
       }
     });
+
+    // 读取 assets/json/mock.json，把静态 mock 数据注册到 LJNetwork.mockMap，
+    // json 的 key 为接口 path，value 为完整响应体
+    if (kDebugMode) {
+      String jsonString = await rootBundle.loadString('assets/json/mock.json');
+      Map<String, dynamic> mockMap = json.decode(jsonString);
+
+      mockMap.forEach((path, response) {
+        LJNetwork.mockMap[path] = (params) => json.encode(response);
+      });
+    }
   }
 
   void _configRouter() {
@@ -129,11 +148,11 @@ class MyApp extends StatelessWidget {
     RouterManager.fullscreenPageList = LJRouter.fullscreenPageList;
     RouterManager.noAnimationPageList = LJRouter.noAnimationPageList;
     // RouterManager.doLogin = () {
-    //   return LoginManager.showLogin();
+    //   return UserService.to.showLogin();
     // };
     RouterManager.loginPageName = LJRouter.loginPage;
     RouterManager.getLoginStatus = () {
-      return LoginManager.isLogin;
+      return UserService.to.isLogin;
     };
     RouterManager.globalPopCallback = () {
       EasyLoading.dismiss();

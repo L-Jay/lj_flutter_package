@@ -1,5 +1,5 @@
+import 'package:example/common/services/user_service.dart';
 import 'package:example/common/utils.dart';
-import 'package:example/login/login_manager.dart';
 import 'package:example/setting/about_us_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lj_flutter_package/lj_flutter_package.dart';
@@ -34,7 +34,7 @@ class _SettingPageState extends State<SettingPage> {
         children: [
           _buildListView(),
           const SizedBox(height: 10),
-          if (LoginManager.isLogin)
+          if (UserService.to.isLogin)
             LJImageButton(
               width: 200,
               height: 40,
@@ -43,7 +43,7 @@ class _SettingPageState extends State<SettingPage> {
               backgroundColor: LJColor.mainColor,
               onPressed: () {
                 showAlert(context, content: '确定退出登录？', submitCallBack: () {
-                  LoginManager.logout();
+                  UserService.to.logout();
                   setState(() {});
                 });
               },

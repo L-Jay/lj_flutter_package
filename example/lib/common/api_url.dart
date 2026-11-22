@@ -11,4 +11,8 @@ class ApiUrl {
   static String mobileLogin = '/login';
   ///用户信息
   static String userInfo = '/user/info';
+  ///天气
+  static String simpleWeather = '/simpleWeather/query';
+  ///首页banner
+  static String homeBanner = '/home/banner';
 }

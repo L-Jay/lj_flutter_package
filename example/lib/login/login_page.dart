@@ -12,7 +12,7 @@ import 'package:lj_flutter_package/ui_component/lj_send_code_button.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../common/lj_colors.dart';
-import 'login_manager.dart';
+import '../common/services/user_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -46,8 +46,8 @@ class _LoginPageState extends State<LoginPage> {
       data: {'loginMobile': _phoneController.text},
       successCallback: (Map data) {
         int? code = data['result'];
-        LoginManager.loginPhone = _phoneController.text;
-        LoginManager.loginCode = code?.toString();
+        UserService.to.loginPhone = _phoneController.text;
+        UserService.to.loginCode = code?.toString();
 
         EasyLoading.showSuccess(data['reason']);
         completer.complete(true);
@@ -82,15 +82,13 @@ class _LoginPageState extends State<LoginPage> {
       String phone = requestParams?['phone'];
       String code = requestParams?['code'];
 
-      if (phone == LoginManager.loginPhone && code == LoginManager.loginCode) {
+      if (phone == UserService.to.loginPhone &&
+          code == UserService.to.loginCode) {
         return '''
           {
     "reason": "登录成功",
     "error_code": 0,
     "result": {
-        "userId": 5486,
-        "avatarUrl": "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Finews.gtimg.com%2Fnewsapp_bt%2F0%2F13236652030%2F1000.jpg&refer=http%3A%2F%2Finews.gtimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1661264259&t=702c01270384b8313c1b940ffec3946d",
-        "nikeName": "伍六七",
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
     }
 }
@@ -107,11 +105,12 @@ class _LoginPageState extends State<LoginPage> {
 
     EasyLoading.show();
     LJNetwork.post<UserInfoModel>(
-      '/login',
+      ApiUrl.mobileLogin,
       data: {'phone': _phoneController.text, 'code': _codeController.text},
       successCallback: (UserInfoModel model) {
-        LoginManager.userInfoResult = model.result;
-        LJEventBus.emit(kLoginEvent);
+        if (model.result != null) {
+          UserService.to.loginSuccess(model.result!);
+        }
         EasyLoading.showSuccess(model.reason!);
         RouterManager.pop(true);
       },
