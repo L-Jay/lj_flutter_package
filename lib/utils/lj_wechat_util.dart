@@ -82,11 +82,11 @@ class WechatUtil {
     required String nonceStr,
     required int timestamp,
     required String sign,
-  }) {
+  }) async {
     _completer = Completer();
     _errorMessage = '支付失败';
 
-    fluwx.pay(
+    final started = await fluwx.pay(
       which: Payment(
         appId: appId,
         partnerId: partnerId,
@@ -97,6 +97,12 @@ class WechatUtil {
         sign: sign,
       ),
     );
+
+    /// 微信拉起失败（如配置了 no_pay、未安装微信等）时
+    /// 原生直接返回 false，不会有回调，这里主动结束避免永久挂起
+    if (!started && !_completer.isCompleted) {
+      _completer.completeError(LJError(600, _errorMessage));
+    }
 
     return _completer.future;
   }
