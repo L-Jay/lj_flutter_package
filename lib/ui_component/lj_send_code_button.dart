@@ -16,6 +16,12 @@ class SendCodeButton extends StatefulWidget {
   final int second;
   final Future<bool> Function() sendCodeMethod;
 
+  /// 按钮文案，默认「发送验证码」，可传入多语言文案
+  final String text;
+
+  /// 倒计时文案，参数为剩余秒数；不传时使用「{n}s后重试」
+  final String Function(int seconds)? countdownText;
+
   const SendCodeButton({
     Key? key,
     required this.controller,
@@ -30,6 +36,8 @@ class SendCodeButton extends StatefulWidget {
     this.second = 60,
     this.enableColor = Colors.blue,
     this.disableColor = Colors.grey,
+    this.text = '发送验证码',
+    this.countdownText,
   }) : super(key: key);
 
   @override
@@ -96,8 +104,9 @@ class _SendCodeButtonState extends State<SendCodeButton> {
         ),
         child: Text(
           timer?.isActive ?? false
-              ? "${(widget.second - timer!.tick)}s后重试"
-              : "发送验证码",
+              ? (widget.countdownText?.call(widget.second - timer!.tick) ??
+                  "${(widget.second - timer!.tick)}s后重试")
+              : widget.text,
           style: TextStyle(
             color: enable ? widget.enableColor : widget.disableColor,
             fontSize: widget.fontSize,
