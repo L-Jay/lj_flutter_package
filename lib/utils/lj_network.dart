@@ -16,8 +16,9 @@ typedef LJNetworkFailureCallback = void Function(LJError error);
 
 typedef LJNetworkJsonParse<T> = T Function<T>(dynamic data);
 
-/*requestParams：请求参数，可以判断请求参数返回对应的响应体*/
-typedef LJNetworkMockCallback = String Function(
+/*requestParams：请求参数，可以判断请求参数返回对应的响应体
+  支持异步：延迟、按参数返回等逻辑由注册方自行处理*/
+typedef LJNetworkMockCallback = FutureOr<String> Function(
     Map<String, dynamic>? requestParams);
 
 enum LJNetworkType { wifi, mobile, other, none }
@@ -296,11 +297,9 @@ class LJNetwork {
       // request
       late Response response;
       if (kDebugMode && mockMap[path] != null) {
-        await Future.delayed(const Duration(seconds: 1));
-
         String jsonStr = '';
         if (data is Map<String, dynamic>?) {
-          jsonStr = mockMap[path]!(data ?? params);
+          jsonStr = await mockMap[path]!(data ?? params);
         }
         Map<String, dynamic> responseData = json.decode(jsonStr);
         response = Response(
