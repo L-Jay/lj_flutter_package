@@ -28,6 +28,8 @@ dependencies:
     git: https://github.com/L-Jay/lj_flutter_package.git
 ```
 
+> 完整使用范例可参考基于本组件库的模板工程：[GitHub](https://github.com/L-Jay/flutter_template) ｜ [Gitee](https://gitee.com/LJApp/flutter_template)
+
 ### 初始化
 
 ```dart
